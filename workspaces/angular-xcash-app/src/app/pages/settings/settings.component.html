@@ -1,0 +1,82 @@
+<form #myForm="ngForm">
+  <section class="hero is-primary is-small is-bold">
+    <div class="hero-body">
+      <div class="columns">
+        <div class="column">
+          <div class="is-pulled-left is-flex is-vcentered">
+            <h1 class="title">Settings</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container is-fluid">
+      <form #settingsForm="ngForm">
+        <div class="field">
+          <label class="label" for="remoteNode">Remote Node</label>
+          <div class="control is-hovered">
+            <div class="select is-fullwidth">
+              <select name="remoteNode" class="is-hovered" id="remoteNode" [(ngModel)]="remote_Node" required
+                (ngModelChange)="onNodeChange($event)" name="remoteNode">
+                <!--  <option value="us1.xcash.foundation:18281">US1</option>  -->
+                <option value="europe1.xcash.foundation:18281">Europe1</option>
+                <option value="europe2.xcash.foundation:18281">Europe2</option>
+                <option value="europe3.xcash.foundation:18281">Europe3</option>
+                <option value="oceania1.xcash.foundation:18281">Oceania1</option>
+                <option value="custom">Custom - Not Recomended </option>
+              </select>
+            </div>
+          </div>
+          <div class="control is-hidden" id="customNodeInput">
+            <p class="control has-icons-right">
+              <input class="input is-hovered" type="text" placeholder="Enter custom node, ie www.node.com:18281"
+                [(ngModel)]="custom_Node" id="customNode" name="customNode" [required]="customNodeIsDisplayed">
+              <span class="icon is-small is-right is-clickable">
+                <button class="delete" (click)="clearInputField()"></button>
+              </span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="currency">Currency Conversion (After saving, restart or reload for this setting to take effect)</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select class="input is-hovered" name="currency" id="currency" [(ngModel)]="currency" required>
+                <option *ngFor="let option of currencies" [value]="option">{{option}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="autolock">Auto-Shutdown (After saving, restart or reload for this setting to take effect)</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="autolock" id="autolock" class="is-hovered" [(ngModel)]="autolock" required>
+                <option value="1">1 minute</option>
+                <option value="10">10 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="240">4 hours</option>
+                <option value="1488">24 hours</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button class="button is-primary" class="button is-primary" (click)="updateSettings()"
+              [disabled]="!settingsForm.valid">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+  <div class="notification is-warrning" *ngIf="message">
+    <button class="delete" (click)="showMessage('')"></button>
+    <p class="is-centered">{{ message }}</p>
+  </div>
+  <div class="notification is-information" *ngIf="infoMessage">
+    <p class="is-centered">{{ infoMessage }}</p>
+  </div>
+  </form>

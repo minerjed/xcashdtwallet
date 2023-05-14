@@ -1,0 +1,58 @@
+<section class="hero is-primary is-small is-bold">
+  <div class="hero-body">
+    <div class="columns">
+      <div class="column">
+        <div class="is-pulled-left is-flex is-vcentered">
+          <h1 class="title">Wallets</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container is-fluid">
+    <div class="is-size-4" *ngIf="wcount===0">
+      Lets Create Your First X-CASH wallet!
+    </div>
+    <div class="columns is-multiline" *ngIf="walletList$">
+      <div class="column is-4" *ngFor="let wallet of walletList$ | async">
+        <div class="card">
+          <header class="card-header is-fluid is-centered">
+            <p class="card-header-title is-fluid is-centered">
+              <button class="button is-primary is-fullwidth" routerLink="/wallet/{{wallet.name}}/address/{{wallet.publicKey}}">   
+              <span class="icon"><fa-icon [icon]="faWallet"></fa-icon></span>
+              <span class="is-bold">&nbsp;{{ wallet.name }}</span>
+            </button>   
+            </p>
+          </header>
+          <div class="card-content">
+            <div class="content">
+              <p>{{ wallet.publicKey | xcashPublicAddress:8 }}</p>
+              <p>{{ wallet.balance | xcash:'1.0-2' }}<br>
+                <span class="is-size-7">Balance (since last refresh)</span>
+              </p>
+            </div>
+          </div>
+          <footer class="modal-card-footer buttons is-centered">
+            <button class="button is-danger" (click)="selectDelWallet(wallet.id, wallet.name)">
+              <span class="icon"><fa-icon [icon]="faTrashCan"></fa-icon></span><span class="is-size-7">
+                &nbsp;Delete</span>
+            </button>
+            <button class="button is-primary" (click)="selectRenameWallet(wallet.id, wallet.name)">
+              <span class="icon"><fa-icon [icon]="faEdit"></fa-icon></span><span class="is-size-7">
+                &nbsp;Rename</span>
+            </button>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<app-wallet-delete [idForDel]="idForDel" [nameForDel]="nameForDel" *ngIf="showDelModal"
+  (onClose)="selectedDelWallet($event)"></app-wallet-delete>
+<app-wallet-rename [idForRename]="idForRename" [nameForRename]="nameForRename" *ngIf="showRenameModal"
+  (onClose)="selectedRenameWallet($event)"></app-wallet-rename>
+<div class="notification is-warning" *ngIf="message">
+  <button class="delete" (click)="showMessage('')"></button>
+  <p class="is-centered">{{ message }}</p>
+</div>

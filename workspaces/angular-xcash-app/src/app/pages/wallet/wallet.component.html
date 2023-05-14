@@ -1,0 +1,92 @@
+<section class="hero is-primary is-small is-bold">
+  <div class="hero-body">
+    <div class="columns">
+      <div class="column">
+        <div class="is-pulled-left is-flex is-vcentered">
+          <h1 class="title">Wallet - {{ walletname }}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="columns is-mobile is-gapless">
+  <div class="column is-9 is-left ml-1 mr-1 mt-1">
+    <div class="control has-icons-right">
+      <input class="input is-static has-background-info  is-fullwidth has-text-white is-small" type="text"
+        value="{{walletaddress}}" readonly #copyInput>
+      <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="copyToClipboard(copyInput.value)">
+        <fa-icon [icon]="faCopy"></fa-icon>
+      </span>
+    </div>
+  </div>
+  <div class="column has-text-right ml-1 mr-1 mt-1">
+    <button class="button is-primary">Private Keys</button>
+  </div>
+</div>
+<div class="columns is-mobile is-gapless" style="margin-top: -1.0rem;">
+  <div class="column is-9 is-left ml-1 mr-1 mt-1">
+    <div *ngIf="currencySymbol === 'BTC'">
+      <span class="is-size-6 has-text-weight-semibold">
+        Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - ₿{{ (xcashbalance * toXCASH) | number: '1.1-5' }}</strong></span>
+      <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
+    </div>
+    <div *ngIf="currencySymbol !== 'BTC'">
+      <span class="is-size-6 has-text-weight-semibold">
+        Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - {{ (xcashbalance * toXCASH) | currency: currencySymbol }}</strong></span>
+      <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
+    </div>
+  </div>
+  <div class="column has-text-right ml-1 mr-1">
+    <button class="button is-primary">Change Password</button>
+  </div>
+</div>
+<div class="tabs is-boxed">
+  <ul>
+    <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
+      <a>
+        <span>Send</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">
+      <a>
+        <span>Transactions</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(3)" [ngClass]="{ 'is-active' : showtab === 3 }">
+      <a>
+        <span>Staking</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(4)" [ngClass]="{ 'is-active' : showtab === 4 }">
+      <a>
+        <span>Advanced</span>
+      </a>
+    </li>
+    <li>
+  </ul>
+</div>
+<app-wallet-login [walletname]="walletname" [modalmessage]="modalmessage" *ngIf="showLoginModal"
+  (onClose)="selectedLoginWallet($event)"></app-wallet-login>
+<div [ngSwitch]="showtab">
+  <ng-container *ngSwitchCase="1">
+    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance' [currencySymbol]="currencySymbol"> </app-wallet-send>
+  </ng-container>
+  <ng-container *ngSwitchCase="2">
+    <app-wallet-trans></app-wallet-trans>
+  </ng-container>
+  <ng-container *ngSwitchCase="3">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="4">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchDefault>
+    <div class="container is-fluid">
+      <p><strong>Please select one of the tabs above.</strong></p>
+    </div>
+  </ng-container>
+</div>
+<div class="notification is-warning" *ngIf="message">
+  <button class="delete" (click)="showMessage('');"></button>
+  <p class="is-centered">{{ message }}</p>
+</div>

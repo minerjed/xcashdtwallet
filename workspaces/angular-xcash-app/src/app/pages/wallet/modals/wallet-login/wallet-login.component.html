@@ -1,0 +1,40 @@
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Open Wallet {{ walletname }}</p>
+    </header>
+    <form #newwalletform="ngForm">
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Password</label>
+          <p class="control has-icons-left has-icons-right">
+            <input id="password" [type]="showpassword ? 'text' : 'password'" name="walletpass" class="input is-hovered"
+              [(ngModel)]="walletpass" #walletpassinput="ngModel" pattern="[a-zA-Z0-9~!@#$%^&*()_+=;:.,?/;:|]*" required
+              placeholder="Enter password" autofocus [disabled]="fielddisabled">
+            <span class="icon is-small is-left">
+              <fa-icon [icon]="faKey"></fa-icon>
+            </span>
+            <span class="icon is-small is-right is-clickable" (click)="togglePasswordVis()">
+              <fa-icon [icon]="faEye"></fa-icon>
+            </span>
+          <div class="help" *ngIf="walletpassinput.invalid && (walletpassinput.touched || walletpassinput.dirty)">
+            Password is required and can not include embeded spaces.
+          </div>
+          <div class="is-small">&nbsp;</div>
+          <div class="container is-fluid">
+            <div class="notification is-warning" *ngIf="modalmessage">
+              <button class="delete" routerLink=""></button>
+              <p class="is-centered">{{ modalmessage }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button id="loginbutton" type="submit" class="button is-primary" [disabled]="newwalletform.invalid"
+          (click)="selectLogin()">Login</button>
+        <button type="button" class="button" routerLink="">Cancel</button>
+      </footer>
+    </form>
+  </div>
+</div>

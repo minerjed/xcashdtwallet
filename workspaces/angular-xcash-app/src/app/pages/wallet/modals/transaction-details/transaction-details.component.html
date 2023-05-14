@@ -1,0 +1,75 @@
+<div class="modal is-active is-centered">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Transaction Details</p>
+    </header>
+    <section class="modal-card-body">
+      <div>
+        <label>Address: </label>
+        <span [class.has-text-danger]="faddress.slice(0,5) === 'Trans'" class="has-text-weight-semibold is-small">{{ faddress }}&nbsp;</span>
+      </div>
+      <div *ngIf="famount !== 0">
+        <label>Amount: </label>
+        <span class="has-text-weight-semibold">{{ famount | xcash:'1.0-2' }}</span>
+      </div>
+      <div>
+        <label>Confirmations: </label>
+        <span class="has-text-weight-semibold">{{ fconfirmations }}</span>
+      </div>
+      <div>
+        <label>Double Spend Seen: </label>
+        <span class="has-text-weight-semibold">{{ fdouble_spend_seen }}</span>
+      </div>
+      <div>
+        <label>Fee: </label><span class="has-text-weight-semibold">{{ ffee | xcash:'1.0-2' }}</span>
+      </div>
+      <div>
+        <label>Height: </label>
+        <span class="has-text-weight-semibold">{{ fheight }}</span>
+      </div>
+      <div>
+        <label>Note: </label>
+        <span class="has-text-weight-semibold">{{ fnote }}</span>
+      </div>
+      <div>
+        <label>Payment ID: </label>
+        <span class="has-text-weight-semibold">{{ fpayment_id }}</span>
+      </div>
+      <div>
+        <label>Subaddress Index:</label>
+        <div>
+          <label>Major: </label>
+          <span class="has-text-weight-semibold">{{ fsubaddres_index_major }}</span>
+        </div>
+        <div>
+          <label>Minor: </label>
+          <span class="has-text-weight-semibold">{{ fsubaddress_index_minor }}</span>
+        </div>
+      </div>
+      <div>
+        <label>Suggested Confirmations Threshold: </label>
+        <span class="has-text-weight-semibold">{{ fsuggested_confirmations_threshold }}</span>
+      </div>
+      <div>
+        <label>Timestamp: </label>
+        <span class="has-text-weight-semibold">{{ftimestamp | date:'MM/dd/yyyy, h:mm a'}}</span>
+      </div>
+      <div>
+        <label>Txid: </label>
+        <span class="has-text-weight-semibold">{{ ftxid }}</span>
+      </div>
+      <div>
+        <label>Type: </label>
+        <span class="has-text-weight-semibold">{{ ftype }}</span>
+      </div>
+      <div>
+        <label>Unlock Time In Blocks: </label>
+        <span class="has-text-weight-semibold">{{ funlock_time }}</span>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button id="closemodal" type="button" class="button" is-primary (click)="closeModal()">Cancel</button>
+    </footer>
+  </div>
+</div>

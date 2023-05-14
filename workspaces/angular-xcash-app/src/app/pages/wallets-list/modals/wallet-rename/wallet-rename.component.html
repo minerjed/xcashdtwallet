@@ -1,0 +1,35 @@
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Rename Wallet</p>
+    </header>
+    <form #newwalletform="ngForm">
+ 
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Enter a new name for wallet {{ nameForRename }}:</label>
+          <div class="control has-icons-left">
+            <input type="text" 
+             name="newwalletname" 
+             class="input is-hovered" 
+             [(ngModel)]="newwalletname" 
+             #newwalletnameinput="ngModel"
+             [pattern]="nameCk" 
+             required>
+            <span class="icon is-small is-left">
+              <i><fa-icon [icon]="faWallet"></fa-icon></i>
+            </span>
+            <div class="help" *ngIf="newwalletnameinput.invalid && (newwalletnameinput.touched || newwalletnameinput.dirty)">
+              New wallet name must be between 1 and 30 characters and only contain numbers and letters.
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button type="button" class="button is-primary" [disabled]="newwalletform.invalid" (click)="selectRename()">Rename</button>
+        <button type="button" class="button" (click)="cancelRename()">Cancel</button>
+      </footer>
+    </form>
+  </div>
+</div>

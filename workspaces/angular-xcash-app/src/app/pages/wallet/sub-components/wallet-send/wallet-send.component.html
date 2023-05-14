@@ -1,0 +1,94 @@
+<div class="container is-fluid">
+  <div container>
+    <form #sendForm="ngForm">
+      <div class="columns is-mobile is-gapless" style="margin-top: -1.0rem;">
+        <div class="column is-8 is-gapless mr-4">
+          Sending From Wallet:
+          <span class="is-size-4 has-text-weight-semibold">{{ walletname}}</span>
+        </div>
+        <div class="column is-gapless">
+          <div class="field is-horizontal">
+            <label class="label">Privacy:&nbsp;</label>
+            <div class="buttons">
+              <label class="button is-rounded is-success is-small required">
+                <input type="radio" name="privacy" value="private" [(ngModel)]="toPrivacy" checked>
+                Private
+              </label>
+              <label class="button is-rounded is-success is-small">
+                <input type="radio" name="privacy" value="public" [(ngModel)]="toPrivacy">
+                Public
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Recipient:</label>
+        <div class="control has-icons-right">
+          <input class="input is-hovered is-small" type="text" placeholder="Enter recipient address" id="toAddress"
+            name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
+            autofocus>
+          <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
+            <fa-icon [icon]="faClipboard"></fa-icon>
+          </span>
+          <div *ngIf="toAddressInput.invalid && toAddressInput.touched">
+            <div *ngIf="toAddressInput.errors?.required">This field is required.</div>
+            <div *ngIf="toAddressInput.errors?.pattern">Enter a valid XCASH address.</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Payment ID:</label>
+        <div class="control">
+          <input class="input is-hovered" type="text" placeholder="Enter optional payment id" id="toPaymentId"
+            name="toPaymentId" [(ngModel)]="toPaymentId" #toPaymentIdInput="ngModel" [pattern]="paymentidCk">
+          <div *ngIf="toPaymentIdInput.invalid && toPaymentIdInput.touched">
+            <div *ngIf="toPaymentIdInput.errors?.pattern">A valid Payment Id must be either {{paymentidlen1}} or
+              {{paymentidlen2}} characters in length.</div>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <div class="field">
+            <label class="label">Amount:&nbsp;&nbsp;&nbsp;&nbsp;
+              <label class="checkbox">
+                <input type="checkbox" [(ngModel)]="toMax" id="pickMax" name="pickMax" (change)="onCheckboxChange()">
+                Max Available&nbsp;&nbsp;
+              </label>
+              <div class="control">
+                <input class="input is-hovered is-6" type="number" placeholder="Enter Payment amount" id="toAmount"
+                  name="toAmount" [(ngModel)]="toAmount" #toAmountInput="ngModel" required [pattern]="amountCk">
+                <div *ngIf="toAmountInput.invalid && toAmountInput.touched">
+                  <div *ngIf="toAmountInput.errors?.required">This field is required.</div>
+                  <div *ngIf="toAmountInput.errors?.pattern">Enter a valid amount.</div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="column">
+          <div class="field">
+            <label class="label">&nbsp;</label>
+            <div class="control">
+              <div *ngIf="currencySymbol === 'BTC'">
+                <span class="is-size-6 has-text-weight-semibold">
+                  = <strong> ₿{{ (toAmount * toXCASH) | number: '1.1-5' }}</strong></span>
+              </div>
+              <div *ngIf="currencySymbol !== 'BTC'">
+                <span class="is-size-6 has-text-weight-semibold">
+                  = <strong>{{ (toAmount * toXCASH) | currency: currencySymbol }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="button" class="button is-primary" [disabled]="sendForm.invalid"
+            (click)="submitSend()">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

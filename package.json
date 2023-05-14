@@ -1,0 +1,164 @@
+{
+	"name": "xcashdtwallet",
+	"productName": "X-CASH Desktop Wallet",
+	"version": "2.0.0",
+	"description": "The X-CASH Dektop Wallet.",
+	"author": "XCASH",
+	"license": "MIT",
+	"main": ".webpack/main",
+	"keywords": [
+		"X-CASH"
+	],
+	"workspaces": [
+		"workspaces/angular-xcash-app",
+		"workspaces/shared-lib"
+	],
+	"scripts": {
+		"start": "npm-run-all -p start:shared-lib start:angular-xcash-app start:electron-xcash-app",
+		"start:shared-lib": "tsc -b workspaces/shared-lib -w",
+		"start:angular-xcash-app": "wait-on workspaces/shared-lib/.dist/index.d.ts && cd workspaces/angular-xcash-app && npm run start",
+		"start:electron-xcash-app": "node scripts/electron-forge-start-watch.js",
+		"start:electron-xcash-app:once": "wait-on http://localhost:4200 && electron-forge start",
+		"package": "npm run package:angular-xcash-app && npm run package:electron-xcash-app",
+		"package:shared-lib": "tsc -b workspaces/shared-lib",
+		"package:angular-xcash-app": "npm run package:shared-lib && cd workspaces/angular-xcash-app && npm run package",
+		"package:electron-xcash-app": "npm run package:shared-lib && electron-forge package",
+		"make": "npm run package:angular-xcash-app && electron-forge make",
+		"publish": "electron-forge publish",
+		"lint": "npm run package:shared-lib && eslint --ext .ts .",
+		"test:e2e": "npm run test:angular-e2e && npm run test:electron-e2e",
+		"test:angular-e2e": "npm-run-all -p -r start start:angular-e2e",
+		"start:angular-e2e": "wait-on http://localhost:4200 && cd workspaces/angular-xcash-app && npm run cypress:run",
+		"test:electron-e2e": "npm run package && npm run test:electron-e2e:wdio-only",
+		"test:electron-e2e:wdio-only": "cross-env X_NODE_ENV=e2e-test wdio run workspaces/electron-e2e/webdriverio.config.ts --autoCompileOpts.tsNodeOpts.project=workspaces/electron-e2e/tsconfig.json",
+		"clean": "shx rm -rf .webpack out allure-results package-lock.json node_modules workspaces/shared-lib/.dist workspaces/angular-xcash-app/node_modules workspaces/angular-xcash-app/.angular workspaces/angular-xcash-app/.dist",
+		"prepare": "husky install",
+		"postinstall": "husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks",
+		"outdated-deps": "npm run outdated-deps:electron-xcash-app && npm run outdated-deps:angular-xcash-app && npm run outdated-deps:shared-lib",
+		"outdated-deps:electron-xcash-app": "npx ncu",
+		"outdated-deps:angular-xcash-app": "cd workspaces/angular-xcash-app && npx ncu",
+		"outdated-deps:shared-lib": "cd workspaces/shared-lib && npx ncu",
+		"update-deps": "npm run update-deps:electron-xcash-app && npm run update-deps:angular-xcash-app && npm run update-deps:shared-lib",
+		"update-deps:electron-xcash-app": "npx ncu -u",
+		"update-deps:angular-xcash-app": "cd workspaces/angular-xcash-app && ng update @angular/cli @angular/core --force && npx ncu -u && cd ../.. && npm run clean",
+		"update-deps:shared-lib": "cd workspaces/shared-lib && npx ncu -u",
+		"release:minor": "standard-version --release-as minor",
+		"release:patch": "standard-version --release-as patch",
+		"release:major": "standard-version --release-as major"
+	},
+	"config": {
+		"forge": {
+			"packagerConfig": {
+				"name": "Electron Angular App",
+				"executableName": "electron-angular-xcash-app",
+				"icon": "./workspaces/electron-xcash-app/main/assets/icons/icon",
+				"extraResource": "./extraResources/xcash-wallet-rpc-win.exe"
+			},
+			"makers": [
+				{
+					"name": "@electron-forge/maker-dmg",
+					"config": {}
+				},
+				{
+					"name": "@electron-forge/maker-deb",
+					"config": {}
+				},
+				{
+					"name": "@electron-forge/maker-squirrel",
+					"config": {}
+				}
+			],
+			"plugins": [
+				{
+					"name": "@electron-forge/plugin-webpack",
+					"config": {
+						"mainConfig": "./webpack.main.config.js",
+						"renderer": {
+							"config": "./webpack.renderer.config.js",
+							"entryPoints": [
+								{
+									"name": "main_window",
+									"html": "./workspaces/electron-xcash-app/renderer/index.html",
+									"js": "./workspaces/electron-xcash-app/renderer/index.ts",
+									"preload": {
+										"js": "./workspaces/electron-xcash-app/renderer/preload.ts"
+									}
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^17.6.1",
+		"@commitlint/config-conventional": "^17.6.1",
+		"@electron-forge/cli": "^6.1.1",
+		"@electron-forge/maker-deb": "^6.1.1",
+		"@electron-forge/maker-dmg": "^6.1.1",
+		"@electron-forge/maker-rpm": "^6.1.1",
+		"@electron-forge/maker-squirrel": "^6.1.1",
+		"@electron-forge/maker-zip": "^6.1.1",
+		"@electron-forge/plugin-webpack": "6.1.1",
+		"@types/datatables.net": "^1.10.24",
+		"@types/jquery": "^3.5.16",
+		"@types/lodash": "^4.14.194",
+		"@types/node": "^18.16.1",
+		"@typescript-eslint/eslint-plugin": "^5.59.1",
+		"@typescript-eslint/parser": "^5.59.1",
+		"@vercel/webpack-asset-relocator-loader": "^1.7.3",
+		"@wdio/allure-reporter": "^7.24.1",
+		"@wdio/cli": "^7.24.1",
+		"@wdio/jasmine-framework": "^7.24.1",
+		"@wdio/local-runner": "^7.24.1",
+		"@wdio/spec-reporter": "^7.24.1",
+		"allure-commandline": "^2.21.0",
+		"chokidar-cli": "^3.0.0",
+		"chromedriver": "^112.0.0",
+		"copy-webpack-plugin": "^11.0.0",
+		"cross-env": "^7.0.3",
+		"css-loader": "^6.7.3",
+		"electron": "^23.2.4",
+		"eslint": "^8.39.0",
+		"eslint-config-prettier": "^8.8.0",
+		"eslint-import-resolver-typescript": "^3.5.5",
+		"eslint-plugin-import": "^2.27.5",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-sonarjs": "^0.19.0",
+		"eslint-plugin-unicorn": "^46.0.0",
+		"fork-ts-checker-webpack-plugin": "^8.0.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^13.2.2",
+		"node-loader": "^2.0.0",
+		"npm-check-updates": "^16.10.9",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^2.8.8",
+		"shx": "^0.3.4",
+		"standard-version": "^9.5.0",
+		"style-loader": "^3.3.2",
+		"tree-kill": "^1.2.2",
+		"ts-loader": "^9.4.2",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.9.5",
+		"wait-on": "^7.0.1",
+		"wdio-chromedriver-service": "^7.3.2",
+		"wdio-electron-service": "^3.5.0",
+		"wdio-wait-for": "^2.2.6"
+	},
+	"dependencies": {
+		"@electron/remote": "^2.0.9",
+		"angular-datatables": "^15.0.1",
+		"datatables.net": "^1.13.4",
+		"datatables.net-dt": "^1.13.4",
+		"electron-squirrel-startup": "^1.0.0",
+		"fs-extra": "^11.1.1",
+		"i": "^0.3.7",
+		"jquery": "^3.6.4",
+		"npm": "^9.6.5",
+		"winston": "^3.8.2"
+	},
+	"lint-staged": {
+		"*.ts": "npm run lint"
+	}
+}

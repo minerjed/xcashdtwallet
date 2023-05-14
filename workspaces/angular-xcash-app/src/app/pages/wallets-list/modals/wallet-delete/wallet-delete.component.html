@@ -1,0 +1,17 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Delete Wallet</p>
+      </header>
+      <section class="modal-card-body">
+        <p>Are you sure you want to delete the wallet with the name <span class="has-text-weight-bold">{{ nameForDel }}</span>? <span class="has-text-danger has-text-weight-bold">
+          This will delete the wallet and the wallet files.</span> Once deleted, you must have either the wallets mnemonic seed or the private 
+          key, view key, and the public address in order to restore this wallet.</p>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-danger" (click)="selectDel()">Remove</button>
+        <button class="button" (click)="cancelDel()">Cancel</button>
+      </footer>
+    </div>
+  </div>

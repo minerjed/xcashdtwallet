@@ -1,0 +1,48 @@
+<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item">
+      <img src="assets/images/xcash_logo.png" width="113" height="28" title="X-Cash Wallet">
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="xnavbar">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div id="xnavbar" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" routerLink="">
+        <span class="icon">
+          <fa-icon [icon]="faWallet"></fa-icon>
+        </span>
+        &nbsp;Wallet
+      </a>
+      <a class="navbar-item" routerLink="/contacts">
+        <span class="icon">
+          <fa-icon [icon]="faAddressBook"></fa-icon>
+        </span>
+        &nbsp;Contacts
+      </a>
+    </div>
+    <div class="navbar-end">
+      <a title="Settings" class="navbar-item" routerLink="settings">
+        <span class="icon">
+          <fa-icon [icon]="faGear"></fa-icon>
+        </span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a title="Currency" class="navbar-link is-arrowless">
+          <span class="icon">
+            <fa-icon [icon]="faDollar"></fa-icon>
+          </span>&nbsp;{{curCurrency}}&nbsp;&nbsp;
+        </a>
+        <div class="navbar-dropdown">
+          <div *ngFor="let currency of currencies">
+            <a class="navbar-item" (click)="onCurrencyClick(currency);">{{ currency }}</a>
+            <hr class="navbar-divider">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
