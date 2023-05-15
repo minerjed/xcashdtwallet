@@ -2,14 +2,22 @@
   <div container>
     <div *ngIf="showmain">
       <form #sendForm="ngForm">
-        <div class="columns is-mobile is-gapless" style="margin-top: -1.0rem;">
-          <div class="column is-8 is-gapless mr-4">
-            Sending From:
-            <span class="is-size-4 has-text-weight-semibold">{{ walletname}}</span>
-          </div>
-          <div class="column is-gapless">
+        <div class="columns is-mobile is-gapless">
+          <div class="column is-6 is-gapless">
             <div class="field is-horizontal">
-              <label class="label">Privacy:&nbsp;</label>
+              <label class="label is-flex is-align-items-center">From:&nbsp;</label>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <input class="input is-hovered has-text-weight-bold" type="text" name="wname" [(ngModel)]="walletname" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-gapless is-6 ml-6">
+            <div class="field is-horizontal">
+              <label class="label is-flex is-align-items-center">Privacy:&nbsp;</label>
               <div class="buttons">
                 <label class="button is-rounded is-success is-small required">
                   <input type="radio" name="privacy" value="private" [(ngModel)]="toPrivacy" checked>
@@ -26,7 +34,7 @@
         <div class="field">
           <label class="label">Recipient:</label>
           <div class="control has-icons-right">
-            <input class="input is-hovered is-small" type="text" placeholder="Enter recipient address" id="toAddress"
+            <input class="input is-hovered" type="text" placeholder="Enter recipient address" id="toAddress"
               name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
               autofocus>
             <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
@@ -85,17 +93,14 @@
             </div>
           </div>
         </div>
-        <div class="field is-grouped">
-          <div class="control">
-            <button type="button" class="button is-primary" [disabled]="sendForm.invalid"
-              [disabled]="toAmount > xcashbalance" (click)="submitSend()">Submit</button>
-          </div>
+        <div class="buttons">
+          <button type="submit" class="button is-primary" (click)="submitSend(sendForm.invalid)">Submit</button>
+          <button type="button" class="button is-hovered" (click)="cancelStSend()">Cancel</button>
         </div>
       </form>
     </div>
     <div *ngIf="showconfirm">
       <form #confirmForm="ngForm">
-
         <div class="field">
           <label class="label">Amount Sent:</label>
           <div class="control">

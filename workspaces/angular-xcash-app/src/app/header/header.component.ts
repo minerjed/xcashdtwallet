@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faLock, faWallet, faAddressBook, faGear, faGlobe, faDollar } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faWallet, faAddressBook, faGear, faDollar } from '@fortawesome/free-solid-svg-icons';
 import { CurrencyService } from '../services/currency.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -18,7 +18,6 @@ export class HeaderComponent {
   faWallet = faWallet;
   faAddressBook = faAddressBook;
   faGear = faGear;
-  faGlobe = faGlobe;
   faDollar = faDollar;
   currencies = [
     'BTC', 'BRL', 'CNY', 'EUR', 'GBP', 'JPY', 'KRW', 'RUB', 'USD', 'VND'

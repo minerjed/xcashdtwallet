@@ -43,7 +43,7 @@ export class WalletLoginComponent implements OnInit {
   cancelLogin() {
     this.walletpass = '';
     this.router.navigate(['']);
-}
+  }
 
   togglePasswordVis() {
     if (this.showpassword === true) {

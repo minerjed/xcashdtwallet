@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { XcashPriceIndexService } from 'src/app/services/xcash-price-index.service';
@@ -7,6 +7,7 @@ import { ConstantsService } from 'src/app/services/constants.service';
 import { faClipboard } from '@fortawesome/free-solid-svg-icons';
 import { ChangeDetectorRef } from '@angular/core';
 import { CurrencyService } from 'src/app/services/currency.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-wallet-send',
@@ -26,7 +27,8 @@ export class WalletSendComponent implements OnInit {
 		private validatorsRegexService: ValidatorsRegexService,
 		private constantsService: ConstantsService,
 		private changeDetectorRef: ChangeDetectorRef,
-		public currencyService: CurrencyService
+		public currencyService: CurrencyService,
+		private router: Router
 	) { };
 
 	faClipboard = faClipboard;
@@ -49,9 +51,10 @@ export class WalletSendComponent implements OnInit {
 	txAmount: number = 0;
 	txPrivacy: string = '';
 	infoMessage: string = '';
+	@ViewChild('toAddressInput', { static: false }) toAddressInput: any;
+	@ViewChild('toPaymentIdInput', { static: false }) toPaymentIdInput: any;
+	@ViewChild('toAmountInput', { static: false }) toAmountInput: any;
 	sendPaymentData: object | unknown;
-
-	// XCA1XPTG3pCNoNQvx3qSmRh9uif4fNBBMgLDBUtYkWW687R9NrqVKinLVdJTqQkGnUNkxoiPbeUAjKNGpUjzGxWB4Ba7BBNSm1
 
 	ngOnInit(): void {
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
@@ -62,23 +65,29 @@ export class WalletSendComponent implements OnInit {
 		this.paymentidlen2 = this.constantsService.unencrypted_payment_id_length;
 	}
 
-	async submitSend() {
-		this.showspinner = true;
-		let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
-			this.toAmount, this.toPrivacy, true);
-		this.showspinner = false;
-		if (data.status === 'success') {
-			this.showmain = false;
-			this.showconfirm = true;
-			this.txFee = data.fee;
-			this.txAmount = data.total;
-			if (this.toPrivacy === 'private') {
-				this.txPrivacy = 'Private';
+	async submitSend(isInvalid: any) {
+		if (!isInvalid) {
+			this.showspinner = true;
+			let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
+				this.toAmount, this.toPrivacy, true);
+			this.showspinner = false;
+			if (data.status === 'success') {
+				this.showmain = false;
+				this.showconfirm = true;
+				this.txFee = data.fee;
+				this.txAmount = data.total;
+				if (this.toPrivacy === 'private') {
+					this.txPrivacy = 'Private';
+				} else {
+					this.txPrivacy = 'Public';
+				}
 			} else {
-				this.txPrivacy = 'Public';	
+				this.message = data.message;
 			}
 		} else {
-			this.message = data.message;
+			this.toAddressInput.control.markAsTouched();
+			this.toPaymentIdInput.control.markAsTouched();
+			this.toAmountInput.control.markAsTouched();
 		}
 	}
 
@@ -120,12 +129,12 @@ export class WalletSendComponent implements OnInit {
 		}
 	}
 
-	modifySend(): void{
+	modifySend(): void {
 		this.showmain = true;
-		this.showconfirm = false;	
+		this.showconfirm = false;
 	}
 
-	cancelSend(): void{
+	cancelSend(): void {
 		this.toAddress = '';
 		this.toPaymentId = '';
 		this.toAmount = '';
@@ -144,6 +153,13 @@ export class WalletSendComponent implements OnInit {
 		this.infoMessage = 'Transaction Sent Successfully.';
 		await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
 		this.infoMessage = '';
-	  }
-	
+	}
+
+	cancelStSend() {
+		this.toAddress = '';
+		this.toPaymentId = '';
+		this.toAmount = '';
+		this.router.navigate(['']);
+	}
+
 }
