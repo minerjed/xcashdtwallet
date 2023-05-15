@@ -84,34 +84,29 @@ export class RpcCallsService {
       return [];
     } else {
       const data: any = result;
-//      console.log('check this=', data.result);
       return data.result;
     }
   }
 
-  public async sendPayment(toAddress: string, toPaymentId: string, toAmount: number, toPrivacy: string, 
-    toMax: boolean, settings: boolean): Promise<Record<string, unknown>> {
-
-      console.log(toAddress);
-      console.log(toPaymentId);
-      console.log(toAmount);
-      console.log(toPrivacy);
-      console.log(toMax);
-
-      const sendType = toMax === true ? "sweep_all" : "transfer_split";
+  public async sendPayment(toAddress: string, toPaymentId: string, toAmount: number, toPrivacy: string,
+    settings: boolean): Promise<Record<string, unknown>> {
     const decimal_places = this.constantsService.xcash_decimal_places;
-    const intrans = `{"jsonrpc":"2.0","id":"0","method":"${sendType}","params":{"destinations":[{"amount":${toAmount * decimal_places}, 
-     "address":"${toAddress}"}],"priority":0,"ring_size":21,"get_tx_keys": true, "payment_id":"${toPaymentId}", "tx_privacy_settings":"${toPrivacy}", 
-     "do_not_relay":${settings}}}`;
-//     let result: string = await this.getPostRequestData(intrans);
-//     const data: any = result;
-//     return { "status": "success", "txid": data.result.tx_hash_list[0], "txkey": data.result.tx_key_list[0], "fee": data.result.fee_list[0] / decimal_places, 
-//      "total": (data.result.fee_list[0] + data.result.amount_list[0]) / decimal_places };
-    return {"status": "error"};
-
-     // reject({ "status": "error" });
-
+    const intrans: string = `{"jsonrpc":"2.0","id":"0","method":"transfer_split","params":{"destinations":[{"amount":${toAmount * decimal_places}, "address":"${toAddress}"}],
+    "priority":0,"ring_size":21,"get_tx_keys": true, "payment_id":"${toPaymentId}", "tx_privacy_settings":"${toPrivacy}", 
+    "do_not_relay":${settings}}}`;
+    let result: string = await this.getPostRequestData(intrans);
+    const data: any = result;
+    if (data.error === undefined) {
+      return {
+        "status": "success", "txid": data.result.tx_hash_list[0], "txkey": data.result.tx_key_list[0], "fee": data.result.fee_list[0] / decimal_places,
+        "total": (data.result.fee_list[0] + data.result.amount_list[0]) / decimal_places
+      };
+    } else {
+      if (data.error.code === -17) {
+        return { "status": "error", "message": "Not enough XCASH for this transaction." }
+      } else {
+        return { "status": "error", "message": "RPC error, ${data.error.message}" };
+      }
+    }
   }
-
-
 }

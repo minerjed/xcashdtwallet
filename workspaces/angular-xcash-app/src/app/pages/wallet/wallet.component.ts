@@ -106,9 +106,7 @@ export class WalletComponent implements OnInit {
 
 	copyToClipboard(value: string) {
 		navigator.clipboard.writeText(value)
-			.then(() => {
-				console.log('Text copied to clipboard');
-			})
+			.then(() => {})
 			.catch(err => {
 				console.error('Failed to copy text: ', err);
 			});

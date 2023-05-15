@@ -10,13 +10,17 @@ export class ValidatorsRegexService {
   public readonly text_settings: string = '';
   public readonly payment_id: string = '';
   public readonly xcash_amount: string = '';
+  public readonly password_format: string = '';
+  public readonly password_length: number = 0;
 
   constructor(private constantsService: ConstantsService) { 
     this.xcash_address = `^(${this.constantsService.xcash_public_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_public_address_length_settings}}|${this.constantsService.xcash_integrated_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_integrated_address_length_settings}}|${this.constantsService.xcash_sub_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_sub_address_length_settings}})$`;
     this.text_settings = `^[a-zA-Z0-9]{1,${this.constantsService.text_settings_length}}$`;
     this.payment_id = `^([0-9a-f]{${this.constantsService.unencrypted_payment_id_length}}|[0-9a-f]{${this.constantsService.encrypted_payment_id_length}}|)$`;
     this.xcash_amount = `\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply})\\b$`;
-    
+    this.password_format = `^[a-zA-Z0-9~!@#$%^&*_+=?]*`;
+    this.password_length = 8;
+
   }
 
 //mnemonic_seed_or_private_key:RegExp = new RegExp(`^((?:\\b[a-z]+\\b[ ]*){${this.constantsService.mnemonic_seed_word_length}}|(?:[0-9a-f]{${this.constantsService.private_key_length}}))$`);

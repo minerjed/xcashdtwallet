@@ -1,12 +1,14 @@
-<section class="hero is-primary is-small is-bold">
-  <div class="hero-body">
-    <div class="columns">
-      <div class="column">
-        <div class="is-pulled-left is-flex is-vcentered">
-          <h1 class="title">Wallet - {{ walletname }}</h1>
-        </div>
-      </div>
-    </div>
+<section class="has-background-primary py-1">
+  <span class="is-size-3 has-text-white has-text-weight-semibold">&nbsp;Wallet - {{ walletname }}</span>
+  <div *ngIf="currencySymbol === 'BTC'">
+    <span class="is-size-6 has-text-weight-semibold">
+      &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - ₿{{ (xcashbalance * toXCASH) | number: '1.1-5' }}</strong></span>
+    <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
+  </div>
+  <div *ngIf="currencySymbol !== 'BTC'">
+    <span class="is-size-6 has-text-weight-semibold">
+      &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - {{ (xcashbalance * toXCASH) | currency: currencySymbol }}</strong></span>
+    <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
   </div>
 </section>
 <div class="columns is-mobile is-gapless">
@@ -20,27 +22,10 @@
     </div>
   </div>
   <div class="column has-text-right ml-1 mr-1 mt-1">
-    <button class="button is-primary">Private Keys</button>
-  </div>
-</div>
-<div class="columns is-mobile is-gapless" style="margin-top: -1.0rem;">
-  <div class="column is-9 is-left ml-1 mr-1 mt-1">
-    <div *ngIf="currencySymbol === 'BTC'">
-      <span class="is-size-6 has-text-weight-semibold">
-        Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - ₿{{ (xcashbalance * toXCASH) | number: '1.1-5' }}</strong></span>
-      <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
-    </div>
-    <div *ngIf="currencySymbol !== 'BTC'">
-      <span class="is-size-6 has-text-weight-semibold">
-        Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - {{ (xcashbalance * toXCASH) | currency: currencySymbol }}</strong></span>
-      <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
-    </div>
-  </div>
-  <div class="column has-text-right ml-1 mr-1">
     <button class="button is-primary">Change Password</button>
   </div>
 </div>
-<div class="tabs is-boxed">
+<div class="tabs is-boxed" style="margin-top: -1.7rem;">
   <ul>
     <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
       <a>
@@ -58,6 +43,11 @@
       </a>
     </li>
     <li (click)="onTabClick(4)" [ngClass]="{ 'is-active' : showtab === 4 }">
+      <a>
+        <span>Private Keys</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(5)" [ngClass]="{ 'is-active' : showtab === 5 }">
       <a>
         <span>Advanced</span>
       </a>
@@ -78,6 +68,9 @@
     <p>Option not implemented.</p>
   </ng-container>
   <ng-container *ngSwitchCase="4">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="5">
     <p>Option not implemented.</p>
   </ng-container>
   <ng-container *ngSwitchDefault>

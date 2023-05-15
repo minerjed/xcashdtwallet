@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { XcashPriceIndexService } from 'src/app/services/xcash-price-index.service';
@@ -41,17 +41,20 @@ export class WalletSendComponent implements OnInit {
 	toPrivacy: string = 'private';
 	toMax: boolean = false;
 	walletname: string = '';
-//	walletaddress: string = '';
+	message: string = '';
+	showspinner: boolean = false;
+	showmain: boolean = true;
+	showconfirm: boolean = false;
+	txFee: number = 0;
+	txAmount: number = 0;
+	txPrivacy: string = '';
+	infoMessage: string = '';
 	sendPaymentData: object | unknown;
 
-	
-	
-	
 	// XCA1XPTG3pCNoNQvx3qSmRh9uif4fNBBMgLDBUtYkWW687R9NrqVKinLVdJTqQkGnUNkxoiPbeUAjKNGpUjzGxWB4Ba7BBNSm1
 
 	ngOnInit(): void {
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
-//		this.walletaddress = this.route.snapshot.paramMap.get('waddress') ?? '';
 		this.xcashaddressCk = this.validatorsRegexService.xcash_address;
 		this.paymentidCk = this.validatorsRegexService.payment_id;
 		this.amountCk = this.validatorsRegexService.xcash_amount;
@@ -60,9 +63,23 @@ export class WalletSendComponent implements OnInit {
 	}
 
 	async submitSend() {
-		let data2:any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId, 
-			this.toAmount, this.toPrivacy, this.toMax, true);
-
+		this.showspinner = true;
+		let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
+			this.toAmount, this.toPrivacy, true);
+		this.showspinner = false;
+		if (data.status === 'success') {
+			this.showmain = false;
+			this.showconfirm = true;
+			this.txFee = data.fee;
+			this.txAmount = data.total;
+			if (this.toPrivacy === 'private') {
+				this.txPrivacy = 'Private';
+			} else {
+				this.txPrivacy = 'Public';	
+			}
+		} else {
+			this.message = data.message;
+		}
 	}
 
 	async onPaste(event: Event): Promise<void> {
@@ -78,14 +95,55 @@ export class WalletSendComponent implements OnInit {
 
 	onCheckboxChange(): void {
 		if (this.toMax) {
-			this.toAmount = this.xcashbalance; 
-		  } else {
+			this.toAmount = this.xcashbalance - (this.xcashbalance * this.constantsService.xcash_calc_fee);
+		} else {
 			this.toAmount = '';
-		  }
+		}
 	}
 
-	ngOnDestroy(): void {
-
+	async confirmSend() {
+		this.showspinner = true;
+		let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
+			this.toAmount, this.toPrivacy, false);
+		this.showspinner = false;
+		if (data.status === 'success') {
+			this.showInfoMessage();
+			this.toAddress = '';
+			this.toPaymentId = '';
+			this.toAmount = '';
+			this.toPrivacy = 'private';
+			this.toMax = false;
+			this.showmain = true;
+			this.showconfirm = false;
+		} else {
+			this.message = data.message;
+		}
 	}
 
+	modifySend(): void{
+		this.showmain = true;
+		this.showconfirm = false;	
+	}
+
+	cancelSend(): void{
+		this.toAddress = '';
+		this.toPaymentId = '';
+		this.toAmount = '';
+		this.toPrivacy = 'private';
+		this.toMax = false;
+		this.showmain = true;
+		this.showconfirm = false;
+	}
+
+	showMessage(message: string): void {
+		console.log('in showMessage');
+		this.message = message;
+	}
+
+	async showInfoMessage() {
+		this.infoMessage = 'Transaction Sent Successfully.';
+		await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
+		this.infoMessage = '';
+	  }
+	
 }

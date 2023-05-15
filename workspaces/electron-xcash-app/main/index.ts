@@ -5,6 +5,7 @@ import { AppConfig } from 'shared-lib';
 import { App } from './components/app';
 import * as crypto from "crypto";
 import { exec } from 'child_process';
+import { WindowApiConst } from 'shared-lib';
 
 declare const global: Global;
 
@@ -25,8 +26,8 @@ global.appConfig =
 		: _.merge(defaultConfig, currentConfig);
 // Housekeeping stuff
 const dbrec = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "europe1.xcash.foundation:18281","currency": "USD"}}';
-const wdir = process.platform !== "win32" ? `${process.env.HOME}/xcash-official-test-v3/` : (`${process.env.USERPROFILE}\\xcash-official-v3\\`).replace(/\\/g, "\\\\");
-const rpcexe = process.platform !== "win32" ? `${process.env.NODE_ENV}/xxxxx.exe` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-2.0.0\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
+const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
+const rpcexe = process.platform !== "win32" ? `${process.env.NODE_ENV}/xxxxx.exe` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
 const dbfile = `${wdir}database.txt`;
 const rpclog = `${wdir}xcash-wallet-rpc.log`;
@@ -63,12 +64,7 @@ if (fs.existsSync(`{rpcexe}`)) {
 			fs.unlinkSync(rpclog);
 		}
 		const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
-		exec(`${rpccommand}`, (error) => {
-			if (error) {
-				console.error(`Error executing command: ${error}`);
-				return;
-			}
-		});
+		exec(`${rpccommand}`);
 	}, 5000);
 	//  Launch app
 	App.launch();

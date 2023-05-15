@@ -1,11 +1,11 @@
 import * as remoteMain from '@electron/remote/main';
 import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
 import * as path from 'node:path';
-//import { AbstractService } from '../services/abstract-service';
 import { Logger } from '../utils/logger';
 import * as fs from 'fs-extra';
+import { WindowApiConst } from 'shared-lib';
 
-const wdir = process.platform !== "win32" ? `${process.env.HOME}/xcash-official-test-v3/` : (`${process.env.USERPROFILE}\\xcash-official-v3\\`).replace(/\\/g, "\\\\");
+const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
 
 declare const global: Global;
