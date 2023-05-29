@@ -17,10 +17,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.showInfoMessage();
-    this.resetInactivityTimeout();
     const activityTimer = await this.settingsService.getAutoLock();
-    // Application will shutdown after inactivity timer expires
-    this.inactivityDelay = activityTimer * 60 * 1000;
+    if (activityTimer !== 0) {
+      this.resetInactivityTimeout();
+      // Application will shutdown after inactivity timer expires
+      this.inactivityDelay = activityTimer * 60 * 1000;
+    }
   }
 
   ngOnDestroy(): void {
@@ -35,10 +37,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private async resetInactivityTimeout() {
-		while (this.inactivityDelay < 1) {
-			// Wait for a short time before checking again
-			await new Promise(resolve => setTimeout(resolve, 100));
-		}
+    while (this.inactivityDelay < 1) {
+      // Wait for a short time before checking again
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
     clearTimeout(this.inactivityTimeout);
     this.inactivityTimeout = setTimeout(() => {
       this.gracefulShutdown();

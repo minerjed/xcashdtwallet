@@ -10,23 +10,21 @@
           <label class="label">Password</label>
           <p class="control has-icons-left has-icons-right">
             <input id="password" [type]="showpassword ? 'text' : 'password'" name="walletpass" class="input is-hovered"
-              [(ngModel)]="walletpass" #walletpassinput="ngModel" required [pattern]="passwordCk" [minlength]="pwlengthCk"
-              placeholder="Enter password" autofocus [disabled]="fielddisabled">
+              [(ngModel)]="walletpass" #walletpassinput="ngModel" placeholder="Enter password" 
+              autofocus [disabled]="fielddisabled" required>
             <span class="icon is-small is-left">
               <fa-icon [icon]="faKey"></fa-icon>
             </span>
             <span class="icon is-small is-right is-clickable" (click)="togglePasswordVis()">
               <fa-icon [icon]="faEye"></fa-icon>
             </span>
-            <div *ngIf="walletpassinput.invalid && walletpassinput.touched">
-              <div *ngIf="walletpassinput.errors?.required">Password is required.</div>
-              <div *ngIf="walletpassinput.errors?.minlength">Password must be a minimum length of {{pwlengthCk}} characters.</div>
-              <div *ngIf="walletpassinput.errors?.pattern">Password can only contain letters, numbers, and the follow special characters: ~!@#$%^&*_+=?]</div>
-            </div>
+          <div *ngIf="walletpassinput.invalid && walletpassinput.touched">
+            <div *ngIf="walletpassinput.errors?.required">Password is required.</div>
+          </div>
           <div class="is-small">&nbsp;</div>
           <div class="container is-fluid">
             <div class="notification is-warning" *ngIf="modalmessage">
-              <button class="delete" routerLink=""></button>
+              <button class="delete" (click)="resetLogin()"></button>
               <p class="is-centered">{{ modalmessage }}</p>
             </div>
           </div>
@@ -34,9 +32,9 @@
       </section>
       <footer class="modal-card-foot">
         <button id="loginbutton" type="submit" class="button is-primary"
-          (click)="selectLogin(walletpassinput.invalid)">Login</button>
-        <button type="button" class="button  is-hovered" (click)="cancelLogin()">Cancel</button>
+          (click)="selectLogin(walletpassinput.invalid)" [disabled]="fielddisabled">Login</button>
+        <button type="button" class="button is-hovered" (click)="cancelLogin()" [disabled]="fielddisabled">Cancel</button>
       </footer>
     </form>
-  </div>
+  </div> 
 </div>

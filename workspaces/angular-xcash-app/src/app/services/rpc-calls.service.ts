@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ConstantsService } from './constants.service';
+import { WindowApiConst } from 'shared-lib';
+
+const fs: any = window['electronFs'];
+const APIs: any = window['electronAPIs'];
 
 @Injectable({
   providedIn: 'root'
@@ -24,18 +28,22 @@ export class RpcCallsService {
 
   public async openWallet(wallet: string, password: string): Promise<any> {
     // make sure no wallets are open
-    this.closeWallet();
-    const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
-    const result: string = await this.getPostRequestData(intrans);
-    const ckerror: any = result;
-    if (ckerror.hasOwnProperty('error')) {
-      if (ckerror.error.code === -1) {
-        return ('You may have entered an incorrect password. Please try again.');
+    try {
+      this.closeWallet();
+      const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        if (ckerror.error.code === -1) {
+          return ('Invalid password. Please try again.');
+        } else {
+          return ckerror.error.message;
+        }
       } else {
-        return ckerror.error.message;
+        return '';
       }
-    } else {
-      return '';
+    } catch (error) {
+      return 'Errror occured openning wallet.'
     }
   }
 
@@ -109,4 +117,211 @@ export class RpcCallsService {
       }
     }
   }
+
+  public async getPrivateKeys(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      const privatekeys = { "seed": "", "viewkey": "", "spendkey": "" };
+      let data: any;
+      try {
+        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}');
+        privatekeys.seed = data.result.key;
+        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}');
+        privatekeys.viewkey = data.result.key;
+        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}');
+        privatekeys.spendkey = data.result.key;
+        resolve(privatekeys);
+      }
+      catch (error) {
+        reject();
+      }
+    });
+  }
+
+  public async changePassword(currentpassword: string, newpassword: string): Promise<string> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"change_wallet_password","params":{"old_password":"${currentpassword}","new_password":"${newpassword}"}}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckerror: any = result;
+    if (ckerror.hasOwnProperty('error')) {
+      if (ckerror.error.code === -22) {
+        return ('Current password is invalid. Please try again.');
+      } else {
+        return ckerror.error.message;
+      }
+    } else {
+      return 'success';
+    }
+  }
+
+  public async delegateVote(delegateData: any): Promise<string> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote","params":{"delegate_data":"${delegateData}"}}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckerror: any = result;
+    if (ckerror.hasOwnProperty('error')) {
+      return (ckerror.error.message);
+    } else {
+      return ('success');
+    }
+  }
+
+  public async revote(): Promise<string> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"revote"}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckerror: any = result;
+    if (ckerror.hasOwnProperty('error')) {
+      return (ckerror.error.message);
+    } else {
+      return ('success');
+    }
+  }
+
+  public async sweep_all_vote(inpublicAddress: string): Promise<any> {
+    // Lets validate the public address just to make sure we have the correct one.
+    const public_address = await this.getPublicAddress();
+    if (public_address === 'failure') {
+      return ('RPC error retriving public address')
+    } else {
+      const intrans = `{"jsonrpc":"2.0","id":"0","method":"sweep_all","params":{"address":"${inpublicAddress}","ring_size":21}}`;
+      if (public_address !== inpublicAddress) {
+        return ('Error matching pubilc address.');
+      }
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        return (ckerror.error.message);
+      } else {
+        return ('success');
+      }
+    }
+  }
+
+  public async check_vote_status(): Promise<any> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote_status"}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        if (ckerror.error.code === -1) {
+          return ('novote');
+        } else {
+          return (ckerror.error.message);
+        }
+      } else {
+        return ('success');
+      }
+    } catch (error) {
+      return ('novote');
+    }
+  }
+
+  public async createWallet(walletName: string, walletPassword: string): Promise<any> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"create_wallet","params":{"filename":"${walletName}","password":"${walletPassword}","language":"English"}}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckerror: any = result;
+    if (ckerror.hasOwnProperty('error')) {
+      return (ckerror.error.message);
+    } else {
+      return ('success');
+    }
+  }
+
+  public async getPublicAddress(): Promise<string> {
+    const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_address"}';
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        return 'failure';
+      } else {
+        return (ckerror.result.address);
+      }
+    } catch (error) {
+      return 'failure';
+    }
+  }
+
+  public async getCurrentBlockHeight(): Promise<any> {
+    const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_height"}';
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        return 'failure';
+      } else {
+        return (ckerror.result.height);
+      }
+    } catch (error) {
+      return 'failure';
+    }
+  }
+
+  public async importWallet(walletData: any): Promise<Record<any, any>> {
+    try {
+      if (APIs.platform === "win32") {
+        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+      } else {
+        APIs.exec("killall -9 'xcash-wallet-rpc-win.exe'");
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      const wdir = APIs.platform !== "win32" ? `${APIs.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
+      const rpcexe = APIs.platform !== "win32" ? `${APIs.env.NODE_ENV}/xxxxx.exe` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
+      const rpclog = `${wdir}xcash-wallet-rpc.log`;
+      const dbfile = `${wdir}database.txt`;
+      const data = fs.readFileSync(dbfile, "utf8");
+      const dbdata = JSON.parse(data);
+      const rnode = dbdata.wallet_settings.remote_node;
+      const rpcUserAgent = navigator.userAgent;
+      const IMPORT_WALLET_DATA = walletData.seed != '' ? `{"version":1,"filename":"${wdir}${walletData.walletName}","scan_from_height":0,"password":"${walletData.password}","seed":"${walletData.seed}"}` : `{"version":1,"filename":"${wdir}${walletData.walletName}","scan_from_height":0,"password":"${walletData.password}","address":"${walletData.publicaddress}","viewkey":"${walletData.viewkey}","spendkey":"${walletData.privatekey}"}`;
+      const IMPORT_WALLET_FILE = `${wdir}importwallet.txt`;
+      if (fs.existsSync(rpclog)) {
+        fs.unlinkSync(rpclog);
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      fs.writeFileSync(IMPORT_WALLET_FILE, IMPORT_WALLET_DATA);
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      // open the wallet in import mode
+      APIs.exec(`${rpcexe}  --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --generate-from-json "${IMPORT_WALLET_FILE}" --daemon-address "${rnode}" --rpc-user-agent "${rpcUserAgent}"`);
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      fs.unlinkSync(IMPORT_WALLET_FILE);
+      if (fs.existsSync(rpclog)) {
+        fs.unlinkSync(rpclog);
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      if (APIs.platform === "win32") {
+        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+      } else {
+        APIs.exec("killall -9 'xcash-wallet-rpc-win.exe'");
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
+      APIs.exec(`${rpccommand}`);
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      await this.openWallet(walletData.walletName, walletData.password);
+      const publicaddress: any = await this.getPublicAddress();
+      let block_height: number = 0;
+      let current_block_height: number = 0;
+      for (; ;) {
+        block_height = await this.getCurrentBlockHeight();
+        await new Promise(resolve => setTimeout(resolve, 60000));
+        current_block_height = await this.getCurrentBlockHeight();
+        if (block_height === current_block_height && block_height !== 0) {
+          break;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 60000));
+        }
+      }
+      const xcashbalance: number = await this.getBalance();
+      await this.closeWallet();
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-1`)) {
+        fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-1`);
+      }
+      if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-2`)) {
+        fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-2`);
+      }
+      return { 'result': publicaddress, 'balance': xcashbalance };
+    } catch (error) {
+      return { 'result': 'failure', 'balance': 0 };
+    }
+  }
+
 }

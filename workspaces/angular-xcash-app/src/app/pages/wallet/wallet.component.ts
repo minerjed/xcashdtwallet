@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { faCopy, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { XcashPriceIndexService } from 'src/app/services/xcash-price-index.service';
@@ -7,6 +7,7 @@ import { Observable, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WindowApiConst } from 'shared-lib';
 import { CurrencyService } from 'src/app/services/currency.service';
+
 
 interface XCashPriceData {
 	[key: string]: {
@@ -32,8 +33,9 @@ export class WalletComponent implements OnInit {
 	message: string = '';
 	modalmessage: string = '';
 	showLoginModal: boolean = true;
-	walletopen: boolean = false;
 	showtab: number = 0;
+	showAdvTab: number = 0;
+	showAdvTabs: boolean = false;
 	xcashbalance: number = 0;
 	toXCASH: number = 0;
 	data$: Observable<any> | undefined;
@@ -41,40 +43,47 @@ export class WalletComponent implements OnInit {
 	private destroy$ = new Subject<void>();
 	currencySymbol: string = '';
 	displayValue: any = '';
+	walletOpen: boolean = false;
 
 	constructor(
-		private route: ActivatedRoute,
+		private activatedroute: ActivatedRoute,
+		private router: Router,
 		private rpcCallsService: RpcCallsService,
 		private xcashPriceIndexService: XcashPriceIndexService,
 		public currencyService: CurrencyService
 	) { };
 
-	selectedLoginWallet(walletpw: string): void {
-		// check for wallet and try and log in
-		this.walletpw = walletpw;
-		this.openwallet();
-		this.getbalance();
+	closeLogin(status: string): void {
+		if (status === 'success') {
+			this.getbalance();
+			this.showtab = 1;
+			this.showLoginModal = false;
+			this.walletOpen = true;
+		} else {
+			this.router.navigate(['']);
+		}
 	}
 
-	async openwallet(): Promise<void> {
-		this.modalmessage = await this.rpcCallsService.openWallet(this.walletname, this.walletpw);
-		if (this.modalmessage) {
-			this.walletpw = '';
-		} else {
-			this.walletopen = true;
-			this.showLoginModal = false;
-		}
+	closeTab(): void {
+		this.showtab = 1;
 	}
 
 	async getbalance(): Promise<void> {
-		while (this.walletopen === false) {
-			await new Promise(resolve => setTimeout(resolve, 500));
-		}
 		this.xcashbalance = await this.rpcCallsService.getBalance();
 	}
 
 	onTabClick(tab: number): void {
 		this.showtab = tab;
+		if (tab === 6) {
+			this.showAdvTabs = true;
+			this.showAdvTab = 10;
+		} else {
+			this.showAdvTabs = false;
+		}
+	}
+
+	onTabClickAdv(tab: number): void {
+		this.showAdvTab = tab;
 	}
 
 	showMessage(message: string): void {
@@ -83,8 +92,8 @@ export class WalletComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.currencySymbol = this.currencyService.tocurrency;
-		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
-		this.walletaddress = this.route.snapshot.paramMap.get('waddress') ?? '';
+		this.walletname = this.activatedroute.snapshot.paramMap.get('wname') ?? '';
+		this.walletaddress = this.activatedroute.snapshot.paramMap.get('waddress') ?? '';
 		this.data$ = this.xcashPriceIndexService.getPrice();
 		this.xcashsubscription = this.data$.subscribe(data => {
 			this.toXCASH = data['x-cash'][`${this.currencyService.tocurrency.toLowerCase()}`];
@@ -106,25 +115,14 @@ export class WalletComponent implements OnInit {
 
 	copyToClipboard(value: string) {
 		navigator.clipboard.writeText(value)
-			.then(() => {})
+			.then(() => { })
 			.catch(err => {
 				console.error('Failed to copy text: ', err);
 			});
 	}
 
-	async waitForLogin() {
-		while (this.walletopen === false) {
-			await new Promise(resolve => setTimeout(resolve, 500));
-		}
-		this.showtab = 1;
-	}
-
-	ngAfterViewInit(): void {
-		this.waitForLogin();
-	}
-
 	async ngOnDestroy(): Promise<void> {
-		if (this.walletopen) {
+		if (this.walletOpen) {
 			this.refreshBalance();
 			await new Promise(resolve => setTimeout(resolve, 500));
 			this.rpcCallsService.closeWallet();

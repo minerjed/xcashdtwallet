@@ -18,7 +18,6 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 	message: string = '';
 	showLoginModal: boolean = true;
 	hidetrans: boolean = true;
-	walletopen: boolean = false;
 	notrans: boolean = false;
 	showTransModal: boolean = false;
 	txid: string = '';

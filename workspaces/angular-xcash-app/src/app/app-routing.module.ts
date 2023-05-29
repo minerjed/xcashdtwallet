@@ -6,6 +6,7 @@ import { WalletsListComponent } from './pages/wallets-list/wallets-list.componen
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { WalletTransComponent } from './pages/wallet/sub-components/wallet-trans/wallet-trans.component';
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
+import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 
 const routes: Routes = [
@@ -14,7 +15,8 @@ const routes: Routes = [
     pathMatch: 'full'},
   { path: 'wallet/:wname/address/:waddress', component: WalletComponent, children: [
     {path: 'wallettrans', component: WalletTransComponent },
-    {path: 'walletsend', component: WalletSendComponent }
+    {path: 'walletsend', component: WalletSendComponent },
+    {path: 'walletprivatekeys', component: WalletPrivateKeysComponent}
   ]},
   { path: 'contacts', component: ContactsComponent, children: [
     { path: 'contactstable', component: ContactsTableComponent }

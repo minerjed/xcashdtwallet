@@ -1,0 +1,88 @@
+<form #stakingForm="ngForm">
+  <div *ngIf="notrans">
+    <div class="container is-fluid">
+      <p><strong>{{ initMessage }}</strong></p>
+    </div>
+  </div>
+  <div id="delegates" [ngClass]="{ 'is-hidden' : notrans }">
+    <div class="container is-fluid is-mobile">
+      <div class="columns is-mobile">
+        <div class="column is-6">
+          <label class="label is-flex is-align-items-center">Current Staking Information:</label>
+          <div class="field">
+            <div class="control">
+              <input class="input is-hovered has-text-weight-bold" type="text" name="cdelegate"
+                [(ngModel)]="currentDelegate" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6 is-flex is-justify-content-flex-end">
+          <div class="field">
+            <div class="label">&nbsp;</div>
+            <button type="submit" class="button is-primary" (click)="reVote()">
+              <span class="icon"><fa-icon [icon]="faRefresh"></fa-icon></span>
+              &nbsp;&nbsp;ReVote
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="notification is-warning mt-2 mx-1" *ngIf="message">
+        <button class="delete" (click)="showMessage('');"></button>
+        <p class="is-centered">{{ message }}</p>
+      </div>
+      <div class="columns is-mobile">
+        <div class="column is-6">
+          <div class="has-text-weight-bold">
+            <p>Prepare Wallet For Vote:</p>
+          </div>
+        </div>
+        <div class="column is-6 is-flex is-justify-content-flex-end">
+          <button type="submit" class="button is-primary" (click)="sweepTrans()">
+            <span class="icon"><fa-icon [icon]="faBroom"></fa-icon></span>
+            &nbsp;&nbsp;Sweep
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="container is-fluid has-text-weight-semibold mb-4">
+      <p>To Vote for A delegate Pick the Delegate Name from the table below:</p>
+    </div>
+    <div class="container is-fluid">
+      <form>
+        <table id="delegatestable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
+          [dtTrigger]="dtTrigger">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Delegate Name</th>
+              <th>Fee</th>
+              <th>Votes</th>
+              <th>Online</th>
+              <th>Verifier Rounds</th>
+              <th>Producer Rounds</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let displaydelegate of displayDelegates">
+              <td>{{ displaydelegate.id }}</td>
+              <td><a (click)="castVote(displaydelegate.name)">{{ displaydelegate.name }}</a></td>
+              <td>{{ displaydelegate.fee }}%</td>
+              <td>{{ displaydelegate.vote_count | voteFormat }}</td>
+              <td>{{ displaydelegate.online_percentage }}%</td>
+              <td>{{ displaydelegate.vtotal_rounds }}</td>
+              <td>{{ displaydelegate.total_rounds }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+</form>
+<app-wallet-vote [delegateVote]="delegateVote" [xcashbalance]='xcashbalance' *ngIf="showVoteModal" (onClose)="exitVoteModal()"></app-wallet-vote>
+<app-wallet-revote [delegateVote]="delegateVote" *ngIf="showRevoteModal"
+  (onClose)="exitReVoteModal()"></app-wallet-revote>
+<app-wallet-sweep [walletname]="walletname" [walletaddress]="walletaddress" *ngIf="showSweepModal"
+  (onClose)="exitSweepModal()"></app-wallet-sweep>
+<div class="spinner-container" *ngIf="showspinner || showspinnerGetDel">
+  <div class="spinner"></div>
+</div>

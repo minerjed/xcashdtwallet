@@ -38,7 +38,7 @@
               name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
               autofocus>
             <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
-              <fa-icon [icon]="faClipboard"></fa-icon>
+              <fa-icon [icon]="faPaste"></fa-icon>
             </span>
             <div *ngIf="toAddressInput.invalid && toAddressInput.touched">
               <div *ngIf="toAddressInput.errors?.required">This field is required.</div>

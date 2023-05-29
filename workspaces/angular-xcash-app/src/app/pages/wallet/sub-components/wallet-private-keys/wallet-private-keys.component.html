@@ -1,0 +1,83 @@
+<div class="container is-fluid">
+    <div container>
+        <div class="has-text-weight-semibold mb-3">Be sure to store your Private Keys data in a safe place. They are
+            needed to restore your wallet.</div>
+        <div class="field">
+            <label class="label is-flex is-align-items-center">Private View Key:</label>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-right">
+                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
+                            [(ngModel)]="walletViewkey" readonly #walletspendkeyInput>
+                        <span class="icon is-small is-right is-clickable"
+                            (click)="copyToClipboard(walletspendkeyInput.value)">
+                            <fa-icon [icon]="faCopy"></fa-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label is-flex is-align-items-center">Private Spend Key:</label>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-right">
+                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
+                            [(ngModel)]="walletSpendkey" readonly #walletviewkeyInput>
+                        <span class="icon is-small is-right is-clickable"
+                            (click)="copyToClipboard(walletviewkeyInput.value)">
+                            <fa-icon [icon]="faCopy"></fa-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label is-flex is-align-items-center">Public Address:</label>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-right">
+                        <textarea class="textarea is-hovered has-text-weight-semibold" type="text" name="publicAddress"
+                            [(ngModel)]="publicAddress" readonly #publicaddressInput rows="2"></textarea>
+                        <span class="icon is-small is-right is-clickable"
+                            (click)="copyToClipboard(publicaddressInput.value)">
+                            <fa-icon [icon]="faCopy"></fa-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label is-flex is-align-items-center">Mnemonic Seed:</label>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-right">
+                        <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
+                            [(ngModel)]="walletMnemonicseed" readonly #mnemonicInput
+                            (click)="copyToClipboard(mnemonicInput.value)" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field is-horizontalmt-3">
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <div class="buttons">
+                            <button type="button" class="button is-hovered is-primary" (click)="printCreate()">Print</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-flex is-justify-content-flex-end">
+                    <div class="control">
+                        <div class="is-size-7">Click anywhere in the Mnemonic Seed field to copy the contents.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-wallet-login *ngIf="showLoginModal" (onClose)="closeLogin($event)"></app-wallet-login>
+<div class="spinner-container" *ngIf="showSpinner">
+    <div class="spinner"></div>
+</div>

@@ -1,10 +1,9 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
-import { XcashPriceIndexService } from 'src/app/services/xcash-price-index.service';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
-import { faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { faPaste } from '@fortawesome/free-solid-svg-icons';
 import { ChangeDetectorRef } from '@angular/core';
 import { CurrencyService } from 'src/app/services/currency.service';
 import { Router } from '@angular/router';
@@ -23,7 +22,6 @@ export class WalletSendComponent implements OnInit {
 	constructor(
 		private route: ActivatedRoute,
 		private rpcCallsService: RpcCallsService,
-		private xcashPriceIndexService: XcashPriceIndexService,
 		private validatorsRegexService: ValidatorsRegexService,
 		private constantsService: ConstantsService,
 		private changeDetectorRef: ChangeDetectorRef,
@@ -31,7 +29,7 @@ export class WalletSendComponent implements OnInit {
 		private router: Router
 	) { };
 
-	faClipboard = faClipboard;
+	faPaste = faPaste;
 	xcashaddressCk: string = '';
 	paymentidCk: string = '';
 	paymentidlen1: number = 0;

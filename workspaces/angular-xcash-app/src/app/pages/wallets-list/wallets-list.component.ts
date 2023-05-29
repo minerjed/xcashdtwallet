@@ -24,6 +24,8 @@ export class WalletsListComponent implements OnInit {
 	wcount: number = 0;
 	showDelModal: boolean = false;
 	showRenameModal: boolean = false;
+	showCreateModal: boolean = false;
+	showImportModal: boolean = false;
 	idForDel: number = 0;
 	nameForDel: string = '';
 	idForRename: number = 0;
@@ -127,4 +129,21 @@ export class WalletsListComponent implements OnInit {
 			this.showMessage('Error occured reading wallet db file.  It should be automically created on startup.');
 		}
 	}
+
+	createWallet(): void {
+		this.showCreateModal = true;
+	}
+
+	exitCreateModal(): void {
+		this.showCreateModal = false;
+	}
+
+	importWallet(): void {
+		this.showImportModal = true;
+	}
+
+	exitImportModal(): void {
+		this.showImportModal = false;
+	}
+
 }

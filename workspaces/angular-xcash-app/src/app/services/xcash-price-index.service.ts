@@ -8,18 +8,18 @@ import { CurrencyService } from './currency.service';
   providedIn: 'root'
 })
 export class XcashPriceIndexService {
-  
+
   constructor(private http: HttpClient,
     public currencyService: CurrencyService) { }
-  
-  reqOptions = {               
+
+  reqOptions = {
     headers: {
-      'Cache-Control':  'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
       'Pragma': 'no-cache',
       'Expires': '0'
     },
   };
-  
+
   // For the moment this service is really simple and only uses coingecko API
   /**
    * Get the XCASH price index in USD via CoinGecko
@@ -33,5 +33,5 @@ export class XcashPriceIndexService {
       })
     );
   }
-  
+
 }

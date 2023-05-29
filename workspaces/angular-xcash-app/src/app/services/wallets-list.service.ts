@@ -75,4 +75,16 @@ export class WalletsListService {
     this.update();
   }
 
+  public findWallet(walletName: string): boolean {
+    const walletList: Wallet[] = this.walletList.getList();
+    const foundWallet = walletList.find((item) => item.name === walletName);
+    return !!foundWallet;
+  }
+
+  public findbyPublicKey(publickey: string): boolean {
+    const walletList: Wallet[] = this.walletList.getList();
+    const foundWallet = walletList.find((item) => item.publicKey === publickey);
+    return !!foundWallet;
+  }
+  
 }

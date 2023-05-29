@@ -1,0 +1,211 @@
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Import Wallet</p>
+    </header>
+    <form #importForm="ngForm">
+      <section class="modal-card-body">
+        <div *ngIf="usingSeed || usingKey">
+          <div class="buttons">
+            <button type="submit" class="button is-primary" (click)="importSeed()">Mnemonic Seed</button>
+            <button type="button" class="button is-primary" (click)="importKey()">Private Key</button>
+          </div>
+        </div>
+<!--
+    Using Seed Initial Form
+-->
+        <div *ngIf="usingSeed">
+          <div class="field mt-3">
+            <label class="label is-flex is-align-items-center">Mnemonic Seed:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
+                    [(ngModel)]="walletMnemonicseed" required [pattern]="mnemonicwordsCk" #mnemonicInput="ngModel"
+                    placeholder="Enter the 25 words for your Mnemonic Seed seprated by spaces." rows="2"></textarea>
+                  <span class="icon is-small is-right is-clickable is-fullwidth"
+                    (click)="onPaste($event,'walletMnemonicseed')">
+                    <fa-icon [icon]="faPaste"></fa-icon>
+                  </span>
+                  <div *ngIf="mnemonicInput.invalid && mnemonicInput.touched">
+                    <div *ngIf="mnemonicInput.errors?.required">This field is required.</div>
+                    <div *ngIf="mnemonicInput.errors?.pattern">You did not enter {{ wordlength }} words with no trailing
+                      spaces.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+<!--
+    Using Key Initial Form
+-->
+        <div *ngIf="usingKey">
+          <div class="field mt-3">
+            <label class="label is-flex is-align-items-center">Private View Key:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
+                    [(ngModel)]="walletViewkey" required #walletspendkeyInput="ngModel"
+                    placeholder="Enter 64 hexadecimal characters." [pattern]="keyCk">
+                  <span class="icon is-small is-right is-clickable" (click)="onPaste($event,'walletViewkey')">
+                    <fa-icon [icon]="faPaste"></fa-icon>
+                  </span>
+                  <div *ngIf="walletspendkeyInput.invalid && walletspendkeyInput.touched">
+                    <div *ngIf="walletspendkeyInput.errors?.required">This field is required.</div>
+                    <div *ngIf="walletspendkeyInput.errors?.pattern">Private View Key must be {{ keylength }}
+                      hexadecimal characters.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label is-flex is-align-items-center">Private Spend Key:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
+                    [(ngModel)]="walletSpendkey" required #walletviewkeyInput="ngModel"
+                    placeholder="Enter 64 hexadecimal characters." [pattern]="keyCk">
+                  <span class="icon is-small is-right is-clickable" (click)="onPaste($event,'walletSpendkey')">
+                    <fa-icon [icon]="faPaste"></fa-icon>
+                  </span>
+                  <div *ngIf="walletviewkeyInput.invalid && walletviewkeyInput.touched">
+                    <div *ngIf="walletviewkeyInput.errors?.required">This field is required.</div>
+                    <div *ngIf="walletviewkeyInput.errors?.pattern">Private Spend Key must be {{ keylength }}
+                      hexadecimal characters.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label is-flex is-align-items-center">Public Address:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <textarea class="textarea is-hovered has-text-weight-semibold" name="walletPublicKey"
+                    [(ngModel)]="walletPublicKey" required #walletpublickeyInput="ngModel"
+                    placeholder="The public address key starts with XCA." [pattern]="xcashkeyCk" rows="2"></textarea>
+                  <span class="icon is-small is-right is-clickable" (click)="onPaste($event,'walletPublicKey')">
+                    <fa-icon [icon]="faPaste"></fa-icon>
+                  </span>
+                  <div *ngIf="walletpublickeyInput.invalid && walletpublickeyInput.touched">
+                    <div *ngIf="walletpublickeyInput.errors?.required">This field is required.</div>
+                    <div *ngIf="walletpublickeyInput.errors?.pattern">Public Address must begin with {{ xcashprefix}}
+                      and be {{ xcashlength }} characters in length.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="notification is-warning" *ngIf="message">
+            <button class="delete" (click)="showMessage('')"></button>
+            <p class="is-centered">{{ message }}</p>
+          </div>
+        </div>
+<!--
+    Get Name and Password, second form
+-->
+        <div *ngIf="getwalletName">
+          <div class="field mt-4">
+            <label class="label">Wallet Name:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" type="text" name="walletname" class="input is-hovered" [(ngModel)]="walletname"
+                #walletnameinput="ngModel" placeholder="Enter wallet name" autofocus [disabled]="fielddisabled" required
+                [pattern]="textSettings">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faWallet"></fa-icon>
+              </span>
+            <div *ngIf="walletnameinput.invalid && walletnameinput.touched">
+              <div *ngIf="walletnameinput.errors?.required">Password is required.</div>
+              <div *ngIf="walletnameinput.errors?.pattern">Wallet name must be between {{ textSettingsMin }} an {{
+                textSettingsMax }} characters or numbers.</div>
+            </div>
+          </div>
+          <div class="field mt-4">
+            <label class="label">Password:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" [type]="showpassword ? 'text' : 'password'" name="walletpass"
+                class="input is-hovered" [(ngModel)]="walletpassword" #passwordinput="ngModel"
+                placeholder="Enter password" [minlength]="passwordLength" [disabled]="fielddisabled" required
+                [pattern]="passwordFormat">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faKey"></fa-icon>
+              </span>
+              <span class="icon is-small is-right is-clickable" (click)="togglePasswordVis()">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+            <div *ngIf="passwordinput.invalid && passwordinput.touched">
+              <div *ngIf="passwordinput.errors?.required">Confirm Password is required.</div>
+              <div *ngIf="passwordinput.errors?.minlength">Password should be at least {{ passwordLength }} characters
+                long.</div>
+              <div *ngIf="passwordinput.errors?.pattern">Password must contain only characters, number, and special
+                characters (~!@#$%^&*_+=?)</div>
+            </div>
+          </div>
+          <div class="field mt-4">
+            <label class="label">Confirm Password:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" [type]="showconfirmpassword ? 'text' : 'password'" name="confirmpassword"
+                class="input is-hovered" [(ngModel)]="confirmpassword" #confirmpasswordinput="ngModel"
+                placeholder="Please confirm the password above" [disabled]="fielddisabled" required>
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faKey"></fa-icon>
+              </span>
+              <span class="icon is-small is-right is-clickable" (click)="toggleconfirmPasswordVis()">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+            <div *ngIf="confirmpasswordinput.invalid && confirmpasswordinput.touched">
+              <div *ngIf="confirmpasswordinput.errors?.required">Confirm Password is required.</div>
+            </div>
+            <div *ngIf="confirmpasswordinput.value !== passwordinput.value && confirmpasswordinput.touched">
+              Passwords do not match.
+            </div>
+          </div>
+          <div class="notification is-warning" *ngIf="message">
+            <button class="delete" (click)="showMessage('')"></button>
+            <p class="is-centered">{{ message }}</p>
+          </div>
+        </div>
+        <!--
+    Sync wallet, third form
+-->
+        <div *ngIf="showCreate">
+          <p class="mt-4">{{ textMessage }}<br><br><br><br></p>
+        </div>
+        <!--  -->
+      </section>
+      <footer class="modal-card-foot">
+        <div *ngIf="usingSeed">
+          <button id="importseedbutton" type="submit" class="button is-primary"
+            (click)="confirmseedImport(importForm.invalid)" [disabled]="buttonDisabled">Continue</button>
+          <button type="button" class="button  is-hovered" (click)="cancelImport()"
+            [disabled]="buttonDisabled">Cancel</button>
+        </div>
+        <div *ngIf="usingKey">
+          <button id="importkeybutton" type="submit" class="button is-primary"
+            (click)="confirmkeyImport(importForm.invalid)" [disabled]="buttonDisabled">Continue</button>
+          <button type="button" class="button  is-hovered" (click)="cancelImport()"
+            [disabled]="buttonDisabled">Cancel</button>
+        </div>
+        <div *ngIf="getwalletName">
+          <button id="importkeybutton" type="submit" class="button is-primary"
+            (click)="confirmkeyWalletInfo(importForm.invalid)" [disabled]="buttonDisabled">Confirm</button>
+          <button type="button" class="button  is-hovered" (click)="cancelImport()"
+            [disabled]="buttonDisabled">Cancel</button>
+        </div>
+        <div *ngIf="showCreate">
+          <button type="button" class="button  is-hovered" (click)="cancelImport()"
+            [disabled]="buttonDisabled">Exit</button>
+        </div>
+      </footer>
+    </form>
+  </div>
+  <div class="spinner-container" *ngIf="showspinner">
+    <div class="spinner"></div>
+  </div>
+</div>

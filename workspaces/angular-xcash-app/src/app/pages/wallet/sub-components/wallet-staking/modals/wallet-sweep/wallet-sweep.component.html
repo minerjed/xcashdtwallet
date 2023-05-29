@@ -1,0 +1,27 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Wallet Maintenance</p>
+      </header>
+      <form #voteForm="ngForm">
+        <section class="modal-card-body">
+          {{ modalText }}<br><br><br><br>
+        </section>
+        <footer class="modal-card-foot">
+          <div *ngIf="!showExit">
+            <button id="votebutton" type="submit" class="button is-primary" (click)="confirmSweep()"
+              [disabled]="buttonDisabled">Confirm</button>
+            <button type="button" class="button  is-hovered" (click)="cancelSweep()"
+              [disabled]="buttonDisabled">Cancel</button>
+          </div>
+          <div *ngIf="showExit">
+            <button type="button" class="button  is-hovered" (click)="cancelSweep()">Exit</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+    <div class="spinner-container" *ngIf="showspinner">
+      <div class="spinner"></div>
+    </div>
+  </div>

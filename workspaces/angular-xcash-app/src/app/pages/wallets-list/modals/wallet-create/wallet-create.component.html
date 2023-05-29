@@ -1,0 +1,155 @@
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Create New Wallet</p>
+    </header>
+    <form #walletcreateForm="ngForm">
+      <section class="modal-card-body">
+        <div *ngIf="showMain">
+          <div class="field mt-4">
+            <label class="label">Wallet Name:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" type="text" name="walletname" class="input is-hovered" [(ngModel)]="walletname"
+                #walletnameinput="ngModel" placeholder="Enter wallet name" autofocus [disabled]="fielddisabled" required
+                [pattern]="textSettings">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faWallet"></fa-icon>
+              </span>
+            <div *ngIf="walletnameinput.invalid && walletnameinput.touched">
+              <div *ngIf="walletnameinput.errors?.required">Password is required.</div>
+              <div *ngIf="walletnameinput.errors?.pattern">Wallet name must be between {{ textSettingsMin }} an {{
+                textSettingsMax }} characters or numbers.</div>
+            </div>
+          </div>
+          <div class="field mt-4">
+            <label class="label">Password:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" [type]="showpassword ? 'text' : 'password'" name="walletpass"
+                class="input is-hovered" [(ngModel)]="walletpassword" #passwordinput="ngModel"
+                placeholder="Enter password" [minlength]="passwordLength" [disabled]="fielddisabled" required
+                [pattern]="passwordFormat">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faKey"></fa-icon>
+              </span>
+              <span class="icon is-small is-right is-clickable" (click)="togglePasswordVis()">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+            <div *ngIf="passwordinput.invalid && passwordinput.touched">
+              <div *ngIf="passwordinput.errors?.required">Confirm Password is required.</div>
+              <div *ngIf="passwordinput.errors?.minlength">Password should be at least {{ passwordLength }} characters
+                long.</div>
+              <div *ngIf="passwordinput.errors?.pattern">Password must contain only characters, number, and special
+                characters (~!@#$%^&*_+=?)</div>
+            </div>
+          </div>
+          <div class="field mt-4">
+            <label class="label">Confirm Password:</label>
+            <p class="control has-icons-left has-icons-right">
+              <input id="password" [type]="showconfirmpassword ? 'text' : 'password'" name="confirmpassword"
+                class="input is-hovered" [(ngModel)]="confirmpassword" #confirmpasswordinput="ngModel"
+                placeholder="Please confirm the password above" [disabled]="fielddisabled" required>
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faKey"></fa-icon>
+              </span>
+              <span class="icon is-small is-right is-clickable" (click)="toggleconfirmPasswordVis()">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+            <div *ngIf="confirmpasswordinput.invalid && confirmpasswordinput.touched">
+              <div *ngIf="confirmpasswordinput.errors?.required">Confirm Password is required.</div>
+            </div>
+            <div *ngIf="confirmpasswordinput.value !== passwordinput.value && confirmpasswordinput.touched">
+              Passwords do not match.
+            </div>
+          </div>
+          <div class="notification is-warning" *ngIf="message">
+            <button class="delete" (click)="showMessage('')"></button>
+            <p class="is-centered">{{ message }}</p>
+          </div>
+        </div>
+        <div *ngIf="showCreate">
+          Your new wallet, <span class="has-text-weight-semibold">{{ walletname }}</span> has been successfully created. The
+          wallet is now synchronizing and this process will take a while. Thank you for your patience.<br><br><br><br>
+        </div>
+        <div *ngIf="showExit">
+          <div class="has-text-weight-semibold mt-4">Be sure to store your Private Keys data in a safe place. They are
+            needed to restore your wallet.</div>
+          <div class="field mt-4">
+            <label class="label is-flex is-align-items-center">Private View Key:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
+                    [(ngModel)]="walletViewkey" readonly #walletspendkeyInput>
+                  <span class="icon is-small is-right is-clickable"
+                    (click)="copyToClipboard(walletspendkeyInput.value)">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label is-flex is-align-items-center">Private Spend Key:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
+                    [(ngModel)]="walletSpendkey" readonly #walletviewkeyInput>
+                  <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(walletviewkeyInput.value)">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label is-flex is-align-items-center">Public Address:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="publicAddress"
+                    [(ngModel)]="publicAddress" readonly #publicaddressInput>
+                  <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(publicaddressInput.value)">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label is-flex is-align-items-center">Mnemonic Seed:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
+                    [(ngModel)]="walletMnemonicseed" readonly #mnemonicInput rows="2"
+                    (click)="copyToClipboard(mnemonicInput.value)"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="is-size-7">Click anywhere in the Mnemonic Seed field to copy the contents.</div>
+        </div>
+  </section>
+  <footer class="modal-card-foot">
+    <div *ngIf="showMain">
+      <button id="createbutton" type="submit" class="button is-primary"
+        (click)="confirmCreate(walletcreateForm.invalid)" [disabled]="buttonDisabled">Confirm</button>
+      <button type="button" class="button  is-hovered" (click)="cancelCreate()"
+        [disabled]="buttonDisabled">Cancel</button>
+    </div>
+    <div *ngIf="showCreate">
+      <button type="button" class="button  is-hovered" (click)="continueCreate()">Continue</button>
+    </div>
+    <div *ngIf="showExit">
+      <button type="button" class="button is-primary" (click)="printCreate()">Print</button>
+      <button type="button" class="button  is-hovered" (click)="cancelCreate()">Exit</button>
+    </div>
+  </footer>
+  </form>
+</div>
+<div class="spinner-container" *ngIf="showspinner">
+  <div class="spinner"></div>
+</div>
+</div>

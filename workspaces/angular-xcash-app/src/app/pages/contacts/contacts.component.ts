@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class ContactsComponent {
 
+addContact(): void {
+
+}
+
+deleteContact(): void {
+
+}
+
 }

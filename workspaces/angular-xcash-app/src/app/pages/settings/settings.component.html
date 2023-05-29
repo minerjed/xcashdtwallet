@@ -43,14 +43,13 @@
           <label class="label" for="autolock">Auto-Shutdown (After saving, restart or reload for this setting to take effect)</label>
           <div class="control">
             <div class="select is-fullwidth">
+<!-- Added 5 mins on each to allow staking to complete -->
               <select name="autolock" id="autolock" class="is-hovered" [(ngModel)]="autolock" required>
-                <option value="1">1 minute</option>
-                <option value="10">10 minutes</option>
-                <option value="20">20 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="240">4 hours</option>
-                <option value="1488">24 hours</option>
+                <option value="125">2 hours</option>
+                <option value="245">4 hours</option>
+                <option value="485">8 hours</option>
+                <option value="1493">24 hours</option>
+                <option value="0">None</option>
               </select>
             </div>
           </div>

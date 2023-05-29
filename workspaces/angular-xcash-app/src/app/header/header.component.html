@@ -23,9 +23,14 @@
         </span>
         &nbsp;Contacts
       </a>
-      <a class="navbar-item">
-        About
-      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a title="Currency" class="navbar-link is-arrowless">
+          About
+        </a>
+        <div class="navbar-dropdown">
+            <a class="navbar-item">Version: {{versionInfo}}</a>
+          </div>
+        </div>
     </div>
     <div class="navbar-end">
       <a title="Settings" class="navbar-item" routerLink="settings">

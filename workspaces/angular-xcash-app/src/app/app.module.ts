@@ -23,12 +23,21 @@ import { ValidatorsRegexService } from './services/validators-regex.service';
 import { WalletsListService } from './services/wallets-list.service';
 import { WalletDeleteComponent } from './pages/wallets-list/modals/wallet-delete/wallet-delete.component';
 import { WalletRenameComponent } from './pages/wallets-list/modals/wallet-rename/wallet-rename.component';
+import { WalletVoteComponent } from './pages/wallet/sub-components/wallet-staking/modals/wallet-vote/wallet-vote.component';
+import { WalletSweepComponent } from './pages/wallet/sub-components/wallet-staking/modals/wallet-sweep/wallet-sweep.component';
+import { WalletRevoteComponent } from './pages/wallet/sub-components/wallet-staking/modals/wallet-revote/wallet-revote.component';
+import { WalletCreateComponent } from './pages/wallets-list/modals/wallet-create/wallet-create.component';
+import { WalletImportComponent } from './pages/wallets-list/modals/wallet-import/wallet-import.component';
 import { DecimalPipe } from '@angular/common';
 
 import { XcashCurrencyPipe } from './pipes/xcash-currency.pipe';
 import { XcashPublicAddressPipe } from './pipes/xcash-public-address.pipe';
 import { TransactionDetailsComponent } from './pages/wallet/modals/transaction-details/transaction-details.component';
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
+import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
+import { WalletChangePasswordComponent } from './pages/wallet/sub-components/wallet-change-password/wallet-change-password.component';
+import { WalletStakingComponent } from './pages/wallet/sub-components/wallet-staking/wallet-staking.component';
+import { VoteFormatPipe } from './pipes/vote-format.pipe';
 
 @NgModule({
   declarations: [
@@ -46,7 +55,16 @@ import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/w
     WalletTransComponent,
     TransactionDetailsComponent,
     WalletSendComponent,
-    SettingsComponent
+    SettingsComponent,
+    WalletPrivateKeysComponent,
+    WalletChangePasswordComponent,
+    WalletStakingComponent,
+    VoteFormatPipe,
+    WalletVoteComponent,
+    WalletSweepComponent,
+    WalletRevoteComponent,
+    WalletCreateComponent,
+    WalletImportComponent
   ],
   imports: [
     BrowserModule,

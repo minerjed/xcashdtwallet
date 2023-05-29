@@ -1,86 +1,142 @@
 <section class="has-background-primary py-1">
-  <span class="is-size-3 has-text-white has-text-weight-semibold">&nbsp;Wallet - {{ walletname }}</span>
+  <div class="columns">
+    <div class="column">
+      <span class="is-size-3 has-text-white has-text-weight-semibold">&nbsp;Wallet - {{ walletname }}</span>
+    </div>
+    <div class="column is-flex is-justify-content-flex-end mr-4">
+      <div class="columns">
+        <div class="column is-flex is-align-items-center">
+          <div *ngIf="toXCASH !== 0">
+            <div *ngIf="currencySymbol === 'BTC'">
+              <span class="is-size-6 has-text-weight-semibold">
+                &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - ₿{{ (xcashbalance * toXCASH) | number:
+                  '1.1-5' }}</strong></span>
+              <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon
+                  [icon]="faRefresh"></fa-icon></span>
+            </div>
+            <div *ngIf="currencySymbol !== 'BTC'">
+              <span class="is-size-6 has-text-weight-semibold">
+                &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - {{ (xcashbalance * toXCASH) |
+                  currency:
+                  currencySymbol }}</strong></span>
+              <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon
+                  [icon]="faRefresh"></fa-icon></span>
+            </div>
+          </div>
+          <div *ngIf="toXCASH === 0">
+            <span class="is-size-6 has-text-weight-semibold">
+              &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }}</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 <div class="mt-1 mb-1 mr-1 ml-1">
   <div class="control has-icons-right">
-    <input class="input is-static has-background-info  is-fullwidth has-text-white" type="text"
-      value="{{walletaddress}}" readonly #copyInput>
-    <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="copyToClipboard(copyInput.value)">
+    <input class="input is-static has-background-info is-fullwidth has-text-white" type="text" value="{{walletaddress}}"
+      readonly #copyInput>
+    <span class="icon is-small is-right is-clickable is-fullwidth" (click)="copyToClipboard(copyInput.value)">
       <fa-icon [icon]="faCopy"></fa-icon>
     </span>
   </div>
 </div>
-<div class="columns">
-  <div class="column">
-    <div class="tabs is-boxed">
-      <ul>
-        <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
-          <a>
-            <span>Send</span>
-          </a>
-        </li>
-        <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">
-          <a>
-            <span>Transactions</span>
-          </a>
-        </li>
-        <li (click)="onTabClick(3)" [ngClass]="{ 'is-active' : showtab === 3 }">
-          <a>
-            <span>Staking</span>
-          </a>
-        </li>
-        <li (click)="onTabClick(4)" [ngClass]="{ 'is-active' : showtab === 4 }">
-          <a>
-            <span>Private Keys</span>
-          </a>
-        </li>
-        <li (click)="onTabClick(5)" [ngClass]="{ 'is-active' : showtab === 5 }">
-          <a>
-            <span>Change Password</span>
-          </a>
-        </li>
-        <li (click)="onTabClick(6)" [ngClass]="{ 'is-active' : showtab === 6 }">
-          <a>
-            <span>Advanced</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div class="column is-flex is-align-items-center">
-    <div>
-      <div *ngIf="currencySymbol === 'BTC'">
-        <span class="is-size-6 has-text-weight-semibold">
-          &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - ₿{{ (xcashbalance * toXCASH) | number: '1.1-5' }}</strong></span>
-        <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
-      </div>
-      <div *ngIf="currencySymbol !== 'BTC'">
-        <span class="is-size-6 has-text-weight-semibold">
-          &nbsp;&nbsp;Balance: <strong>{{ xcashbalance | xcash:'1.0-2' }} - {{ (xcashbalance * toXCASH) | currency: currencySymbol }}</strong></span>
-        <span class="icon is-small is-clickable" (click)="refreshBalance()">&nbsp;&nbsp;<fa-icon [icon]="faRefresh"></fa-icon></span>
-      </div>
-    </div>
-  </div>
+<div class="tabs is-boxed mb-3">
+  <ul>
+    <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
+      <a>
+        <span>Transactions</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">
+      <a>
+        <span>Send</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(3)" [ngClass]="{ 'is-active' : showtab === 3 }">
+      <a>
+        <span>Staking</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(4)" [ngClass]="{ 'is-active' : showtab === 4 }">
+      <a>
+        <span>Private Keys</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(5)" [ngClass]="{ 'is-active' : showtab === 5 }">
+      <a>
+        <span>Change Password</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(6)" [ngClass]="{ 'is-active' : showtab === 6 }">
+      <a>
+        <span>Advanced</span>
+      </a>
+    </li>
+  </ul>
 </div>
-<app-wallet-login [walletname]="walletname" [modalmessage]="modalmessage" *ngIf="showLoginModal"
-  (onClose)="selectedLoginWallet($event)"></app-wallet-login>
+<div *ngIf="showAdvTabs">
+ <div class="tabs">
+    <ul>
+      <li (click)="onTabClickAdv(10)" [ngClass]="{ 'is-active' : showAdvTab === 10 }">
+        <a>
+          <span>Integrated Address</span>
+        </a>
+      </li>
+      <li (click)="onTabClickAdv(11)" [ngClass]="{ 'is-active' : showAdvTab === 11 }">
+        <a>
+          <span>Sub Accounts</span>
+        </a>
+      </li>
+      <li (click)="onTabClickAdv(12)" [ngClass]="{ 'is-active' : showAdvTab === 12 }">
+        <a>
+          <span>Sing Data</span>
+        </a>
+      </li>
+      <li (click)="onTabClickAdv(13)" [ngClass]="{ 'is-active' : showAdvTab === 13 }">
+        <a>
+          <span>Reserve Proof</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  
+
+
+
+</div>
+<app-wallet-login *ngIf="showLoginModal" (onClose)="closeLogin($event)"></app-wallet-login>
 <div [ngSwitch]="showtab">
   <ng-container *ngSwitchCase="1">
-    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance' [currencySymbol]="currencySymbol"> </app-wallet-send>
-  </ng-container>
-  <ng-container *ngSwitchCase="2">
     <app-wallet-trans></app-wallet-trans>
   </ng-container>
+  <ng-container *ngSwitchCase="2">
+    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance' [currencySymbol]="currencySymbol">
+    </app-wallet-send>
+  </ng-container>
   <ng-container *ngSwitchCase="3">
-    <p>Option not implemented.</p>
+    <app-wallet-staking [xcashbalance]="xcashbalance" (onClose)="closeTab()"></app-wallet-staking>
   </ng-container>
   <ng-container *ngSwitchCase="4">
-    <p>Option not implemented.</p>
+    <app-wallet-private-keys (onClose)="closeTab()"></app-wallet-private-keys>
   </ng-container>
   <ng-container *ngSwitchCase="5">
-    <p>Option not implemented.</p>
+    <app-wallet-change-password></app-wallet-change-password>
   </ng-container>
   <ng-container *ngSwitchCase="6">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="10">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="11">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="12">
+    <p>Option not implemented.</p>
+  </ng-container>
+  <ng-container *ngSwitchCase="13">
     <p>Option not implemented.</p>
   </ng-container>
   <ng-container *ngSwitchDefault>

@@ -1,5 +1,15 @@
 <section class="has-background-primary py-1">
-  <h1 class="title has-text-white">&nbsp;Wallets</h1>
+  <div class="columns">
+    <div class="column">
+      <h1 class="title has-text-white">&nbsp;Wallets</h1>
+    </div>
+    <div class="column">
+      <div class="buttons is-justify-content-flex-end mr-4">
+        <button type="submit" class="button is-info" (click)="createWallet()">Create Wallet</button>
+        <button type="button" class="button is-info" (click)="importWallet()">Import Wallet</button>
+      </div>
+    </div>
+  </div>
 </section>
 <section class="section">
   <div class="container is-fluid">
@@ -11,15 +21,16 @@
         <div class="card">
           <header class="card-header is-fluid is-centered">
             <p class="card-header-title is-fluid is-centered">
-              <button class="button is-primary is-fullwidth" routerLink="/wallet/{{wallet.name}}/address/{{wallet.publicKey}}">   
-              <span class="icon"><fa-icon [icon]="faWallet"></fa-icon></span>
-              <span class="is-bold">&nbsp;{{ wallet.name }}</span>
-            </button>   
+              <button class="button is-primary is-fullwidth"
+                routerLink="/wallet/{{wallet.name}}/address/{{wallet.publicKey}}">
+                <span class="icon"><fa-icon [icon]="faWallet"></fa-icon></span>
+                <span>&nbsp;{{ wallet.name }}</span>
+              </button>
             </p>
           </header>
-          <div class="card-content">
+          <div class="card-content is-fluid has-text-centered">
             <div class="content">
-              <p>{{ wallet.publicKey | xcashPublicAddress:8 }}</p>
+              <p class="has-text-weight-semibold">{{ wallet.publicKey | xcashPublicAddress:8 }}</p>
               <p>{{ wallet.balance | xcash:'1.0-2' }}<br>
                 <span class="is-size-7">Balance (since last refresh)</span>
               </p>
@@ -44,6 +55,8 @@
   (onClose)="selectedDelWallet($event)"></app-wallet-delete>
 <app-wallet-rename [idForRename]="idForRename" [nameForRename]="nameForRename" *ngIf="showRenameModal"
   (onClose)="selectedRenameWallet($event)"></app-wallet-rename>
+<app-wallet-create *ngIf="showCreateModal" (onClose)="exitCreateModal()"></app-wallet-create>
+<app-wallet-import *ngIf="showImportModal" (onClose)="exitImportModal()"></app-wallet-import>
 <div class="notification is-warning" *ngIf="message">
   <button class="delete" (click)="showMessage('')"></button>
   <p class="is-centered">{{ message }}</p>

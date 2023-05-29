@@ -18,8 +18,7 @@ export class WalletDeleteComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-   }
+  ngOnInit() {}
 
   cancelDel() { this.onClose.emit(null); }
   selectDel() { this.onClose.emit(this.idForDel); }
