@@ -6,6 +6,7 @@ import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Delegate } from 'src/app/models/delegates';
 import { faRefresh, faBroom } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
+import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
 
 @Component({
 	selector: 'app-wallet-staking',
@@ -40,7 +41,8 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	constructor(
 		private route: ActivatedRoute,
 		private xcashdelegatesservice: XcashDelegatesService,
-		private rpcCallsService: RpcCallsService
+		private rpcCallsService: RpcCallsService,
+		private xcashCurrencyPipe: XcashCurrencyPipe
 	) { };
 
 	ngOnInit(): void {
@@ -55,12 +57,18 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 		const data = await this.rpcCallsService.check_vote_status();
 		if (Array.isArray(data)) {
 			const ckerror: any = data;
-			(ckerror.error.message);
+			this.showMessage(ckerror.error.message);
 		} else if (data === 'novote') {
-			this.currentDelegate = 'This wallet has not staked to a delegate.'
+			this.currentDelegate = 'This wallet has not staked to a delegate.';
+		} else if (data === 'error') {
+			this.currentDelegate = 'Error occured checking delegate status.';
 		} else {
 			this.delegated = true;
-			this.currentDelegate = data;
+			let splitData = data.split(', ');
+			let delegateName = splitData[0];
+			let totalValue = splitData[1].split(': ')[1];
+			let transformedTotalValue = this.xcashCurrencyPipe.transform(totalValue, '1.0-2');
+			this.currentDelegate = delegateName + ' amount staked: ' + transformedTotalValue;
 		}
 		this.showspinnerGetDel = false;
 	}

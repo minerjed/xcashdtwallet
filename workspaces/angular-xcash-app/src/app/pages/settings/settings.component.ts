@@ -29,10 +29,9 @@ export class SettingsComponent {
       this.showMessage('Error retrieving data from configuration file.');
     } else {
       this.autolock = this.settings.autolock;
-      if (this.settings.remote_node === 'europe1.xcash.foundation:18281' ||
-        this.settings.remote_node === 'europe2.xcash.foundation:18281' ||
-        this.settings.remote_node === 'europe3.xcash.foundation:18281' ||
-        this.settings.remote_node === 'oceania1.xcash.foundation:18281') {
+      if (this.settings.remote_node === 'seed1.xcash.tech:18281' ||
+        this.settings.remote_node === 'seed2.xcash.tech:18281' ||
+        this.settings.remote_node === 'seed3.xcash.tech:18281') {
         this.remote_Node = this.settings.remote_node;
       } else {
         this.remote_Node = 'custom';

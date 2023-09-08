@@ -25,7 +25,7 @@ global.appConfig =
 		? defaultConfig
 		: _.merge(defaultConfig, currentConfig);
 // Housekeeping stuff
-const dbrec = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 125,"remote_node": "europe1.xcash.foundation:18281","currency": "USD"}}';
+const dbrec = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 125,"remote_node": "seed1.xcash.tech:18281","currency": "USD"}}';
 const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
 const rpcexe = process.platform !== "win32" ? `${process.env.NODE_ENV}/xxxxx.exe` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
@@ -42,7 +42,7 @@ fs.writeFileSync(rpcfile, rpcUserAgent);
 let rnode: string = '';
 if (!fs.existsSync(dbfile)) {
 	fs.writeFileSync(dbfile, dbrec);
-	rnode = "europe1.xcash.foundation:18281";
+	rnode = "seed1.xcash.tech:18281";
 } else {
 	const data = fs.readFileSync(dbfile, "utf8");
 	const dbdata = JSON.parse(data);

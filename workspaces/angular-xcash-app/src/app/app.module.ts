@@ -78,7 +78,8 @@ import { VoteFormatPipe } from './pipes/vote-format.pipe';
     ConstantsService,
     ValidatorsRegexService,
     WalletsListService,
-    DecimalPipe
+    DecimalPipe,
+    XcashCurrencyPipe
   ],
   bootstrap: [AppComponent]
 })

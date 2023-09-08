@@ -61,7 +61,10 @@ export class RpcCallsService {
     } else if (outgoingTransactions === undefined) {
       outgoingTransactions = [];
     }
-    const transactions = incomingTransactions.concat(outgoingTransactions).map((item: any, index: any) => ({
+    // Filter out transactions with an amount of zero
+    const filteredIncomingTransactions = incomingTransactions.filter((item: any) => item.amount !== 0);
+    const filteredOutgoingTransactions = outgoingTransactions.filter((item: any) => item.amount !== 0);
+    const transactions = filteredIncomingTransactions.concat(filteredOutgoingTransactions).map((item: any, index: any) => ({
       id: index + 1,
       amount: item.amount / this.constantsService.xcash_decimal_places,
       txid: item.txid,
@@ -198,18 +201,18 @@ export class RpcCallsService {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote_status"}`;
     try {
       const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        if (ckerror.error.code === -1) {
+      const data: any = result;
+      if (data.hasOwnProperty('error')) {
+        if (data.error.code === -1) {
           return ('novote');
         } else {
-          return (ckerror.error.message);
+          return (data);
         }
       } else {
-        return ('success');
+        return (data.result.status);
       }
     } catch (error) {
-      return ('novote');
+      return ('error');
     }
   }
 
