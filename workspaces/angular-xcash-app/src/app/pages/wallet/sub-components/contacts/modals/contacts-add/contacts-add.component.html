@@ -1,0 +1,47 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create New Contact</p>
+        </header>
+        <form #contactaddfrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Enter the contact name:</label>
+                    <div class="control has-icons-left">
+                        <input type="text" name="contactname" class="input is-hovered" [(ngModel)]="contactname"
+                            #contactnameinput="ngModel" [pattern]="nameCk" required>
+                        <span class="icon is-small is-left">
+                            <i><fa-icon [icon]="faContact"></fa-icon></i>
+                        </span>
+                        <div class="help"
+                            *ngIf="contactnameinput.invalid && (contactnameinput.touched || contactnameinput.dirty)">
+                            New wallet name must be between {{ minlen }} and {{ maxlen }} characters and only contain
+                            numbers and letters.
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="address">Enter the wallet address:&nbsp;
+                        <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                    </label>
+                    <div>
+                        <textarea type="text" name="contactaddress" class="textarea is-hovered" [(ngModel)]="contactaddress"
+                            #contactaddressinput="ngModel" [pattern]="addressCk" required rows="2"></textarea>
+                        <div class="help"
+                            *ngIf="contactaddressinput.invalid && (contactaddressinput.touched || contactaddressinput.dirty)">
+                            Wallet address must be a vaild xCash address.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="button" class="button is-primary" [disabled]="contactaddfrom.invalid"
+                    (click)="selectAdd()">Add</button>
+                <button type="button" class="button" (click)="cancelAdd()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

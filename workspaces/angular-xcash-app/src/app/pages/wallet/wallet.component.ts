@@ -8,7 +8,6 @@ import { takeUntil } from 'rxjs/operators';
 import { WindowApiConst } from 'shared-lib';
 import { CurrencyService } from 'src/app/services/currency.service';
 
-
 interface XCashPriceData {
 	[key: string]: {
 		[currency: string]: number;
@@ -74,7 +73,7 @@ export class WalletComponent implements OnInit {
 
 	onTabClick(tab: number): void {
 		this.showtab = tab;
-		if (tab === 6) {
+		if (tab === 7) {
 			this.showAdvTabs = true;
 			this.showAdvTab = 10;
 		} else {
@@ -155,4 +154,5 @@ export class WalletComponent implements OnInit {
 			return;
 		}
 	}
+	
 }

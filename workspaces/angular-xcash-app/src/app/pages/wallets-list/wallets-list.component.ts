@@ -123,7 +123,7 @@ export class WalletsListComponent implements OnInit {
 			this.wcount = JSON.parse(dbstring).wallet_data.length;
 			this.walletList$ = this.walletslistService.getWalletList();
 		} catch (err: any) {
-			this.dbjson = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "europe1.xcash.foundation:18281"}}';
+			this.dbjson = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "seed1.xcash.tech:18281"}}';
 			this.wcount = 0;
 			this.walletslistService.loadWallets(this.dbjson);
 			this.showMessage('Error occured reading wallet db file.  It should be automically created on startup.');

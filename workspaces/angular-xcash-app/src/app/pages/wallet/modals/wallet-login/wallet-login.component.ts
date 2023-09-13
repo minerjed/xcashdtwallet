@@ -5,7 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ConstantsService } from 'src/app/services/constants.service';
 
-
 @Component({
   selector: 'app-wallet-login',
   templateUrl: './wallet-login.component.html',
@@ -30,7 +29,7 @@ export class WalletLoginComponent implements OnInit {
   constructor(private validatorsRegexService: ValidatorsRegexService,
 		private rpcCallsService: RpcCallsService,
     private constantsService: ConstantsService,
-    private activedroute: ActivatedRoute,
+    private activedroute: ActivatedRoute
     ) { }
 
   ngOnInit(): void {

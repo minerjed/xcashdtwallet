@@ -1,0 +1,27 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Contacts</p>
+        </header>
+        <form #contactdelfrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label" for="contact">Please select the contact for your xCash transaction. Click the drop down arror or type the first character of your contact:</label>
+                    <div class="control is-hovered">
+                        <div class="select is-fullwidth">
+                            <select [(ngModel)]="outaddress" class="is-hovered" name="option" id="contacts">
+                                <option value="" disabled selected>Select a contact</option>
+                                <option *ngFor="let contact of contacts" [value]="contact.address">{{contact.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="button" class="button" (click)="confirmAddress()">Confirm</button>
+                <button type="button" class="button" (click)="cancelAddress()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

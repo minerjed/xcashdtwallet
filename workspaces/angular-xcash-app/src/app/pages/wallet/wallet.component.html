@@ -70,6 +70,11 @@
     </li>
     <li (click)="onTabClick(6)" [ngClass]="{ 'is-active' : showtab === 6 }">
       <a>
+        <span>Contacts</span>
+      </a>
+    </li>
+    <li (click)="onTabClick(7)" [ngClass]="{ 'is-active' : showtab === 7 }">
+      <a>
         <span>Advanced</span>
       </a>
     </li>
@@ -100,11 +105,6 @@
       </li>
     </ul>
   </div>
-
-  
-
-
-
 </div>
 <app-wallet-login *ngIf="showLoginModal" (onClose)="closeLogin($event)"></app-wallet-login>
 <div [ngSwitch]="showtab">
@@ -125,6 +125,9 @@
     <app-wallet-change-password></app-wallet-change-password>
   </ng-container>
   <ng-container *ngSwitchCase="6">
+    <app-contacts></app-contacts>
+  </ng-container>
+  <ng-container *ngSwitchCase="7">
     <p>Option not implemented.</p>
   </ng-container>
   <ng-container *ngSwitchCase="10">

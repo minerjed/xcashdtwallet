@@ -1,9 +1,8 @@
 import { Component, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ContactsComponent } from './pages/contacts/contacts.component';
-import { ContactsTableComponent } from './pages/contacts/contacts-list/contacts-table.component';
 import { WalletsListComponent } from './pages/wallets-list/wallets-list.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
+import { ContactsComponent } from './pages/wallet/sub-components/contacts/contacts.component';
 import { WalletTransComponent } from './pages/wallet/sub-components/wallet-trans/wallet-trans.component';
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
 import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
@@ -16,10 +15,8 @@ const routes: Routes = [
   { path: 'wallet/:wname/address/:waddress', component: WalletComponent, children: [
     {path: 'wallettrans', component: WalletTransComponent },
     {path: 'walletsend', component: WalletSendComponent },
-    {path: 'walletprivatekeys', component: WalletPrivateKeysComponent}
-  ]},
-  { path: 'contacts', component: ContactsComponent, children: [
-    { path: 'contactstable', component: ContactsTableComponent }
+    {path: 'walletprivatekeys', component: WalletPrivateKeysComponent},
+    {path: 'contacts', component: ContactsComponent}
   ]},
   { path: 'settings', component: SettingsComponent}
 ];

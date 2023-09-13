@@ -21,7 +21,7 @@
               <i><fa-icon [icon]="faWallet"></fa-icon></i>
             </span>
             <div class="help" *ngIf="newwalletnameinput.invalid && (newwalletnameinput.touched || newwalletnameinput.dirty)">
-              New wallet name must be between 1 and 30 characters and only contain numbers and letters.
+              New wallet name must be between {{ minlen }} and {{ maxlen }} characters and only contain numbers and letters.
             </div>
           </div>
         </div>

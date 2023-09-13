@@ -3,10 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
-import { faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faPaste, faContactCard } from '@fortawesome/free-solid-svg-icons';
 import { ChangeDetectorRef } from '@angular/core';
 import { CurrencyService } from 'src/app/services/currency.service';
 import { Router } from '@angular/router';
+import { DatabaseService } from 'src/app/services/database.service';
+import { Contact } from 'src/app/models/contact.model';
 
 @Component({
 	selector: 'app-wallet-send',
@@ -26,10 +28,12 @@ export class WalletSendComponent implements OnInit {
 		private constantsService: ConstantsService,
 		private changeDetectorRef: ChangeDetectorRef,
 		public currencyService: CurrencyService,
-		private router: Router
+		private router: Router,
+		private databaseService: DatabaseService
 	) { };
 
 	faPaste = faPaste;
+	faContactCard = faContactCard;
 	xcashaddressCk: string = '';
 	paymentidCk: string = '';
 	paymentidlen1: number = 0;
@@ -45,6 +49,7 @@ export class WalletSendComponent implements OnInit {
 	showspinner: boolean = false;
 	showmain: boolean = true;
 	showconfirm: boolean = false;
+	contactModal: boolean = false;
 	txFee: number = 0;
 	txAmount: number = 0;
 	txPrivacy: string = '';
@@ -53,8 +58,16 @@ export class WalletSendComponent implements OnInit {
 	@ViewChild('toPaymentIdInput', { static: false }) toPaymentIdInput: any;
 	@ViewChild('toAmountInput', { static: false }) toAmountInput: any;
 	sendPaymentData: object | unknown;
+	modelData = { name: "", address: "" };
+	contacts: Contact[] = [];
+	contactName: any = "";
+	noContacts: boolean = true;
 
-	ngOnInit(): void {
+	async ngOnInit() {
+		this.contacts = await this.databaseService.getContacts();
+		if (this.contacts.length >= 1) {
+			this.noContacts = false;
+		}
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
 		this.xcashaddressCk = this.validatorsRegexService.xcash_address;
 		this.paymentidCk = this.validatorsRegexService.payment_id;
@@ -95,6 +108,7 @@ export class WalletSendComponent implements OnInit {
 			const clipboardText = await navigator.clipboard.readText();
 			this.toAddress = clipboardText;
 			this.changeDetectorRef.detectChanges()
+			this.searchAddress();
 		} catch (err) {
 			console.error('Failed to read clipboard contents: ', err);
 		}
@@ -143,7 +157,6 @@ export class WalletSendComponent implements OnInit {
 	}
 
 	showMessage(message: string): void {
-		console.log('in showMessage');
 		this.message = message;
 	}
 
@@ -158,6 +171,29 @@ export class WalletSendComponent implements OnInit {
 		this.toPaymentId = '';
 		this.toAmount = '';
 		this.router.navigate(['']);
+	}
+
+
+	useContacts() {
+		this.contactModal = true;
+	}
+
+	setsendAddress(data: any) {
+		this.modelData = data;
+		if (this.modelData.address != "") {
+		  this.toAddress = this.modelData.address;
+		  this.searchAddress();
+		} 
+		this.contactModal = false;
+	}
+
+	searchAddress() {
+		const foundContact = this.contacts.find(contact => contact.address === this.toAddress);
+		if (foundContact?.address) {
+			this.contactName = "[" + foundContact?.name + "]";
+		} else {
+			this.contactName = "";
+		}
 	}
 
 }

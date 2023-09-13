@@ -8,12 +8,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 
-import { ContactsComponent } from './pages/contacts/contacts.component';
-import { ContactsTableComponent } from './pages/contacts/contacts-list/contacts-table.component';
 import { WalletsListComponent } from './pages/wallets-list/wallets-list.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { WalletTransComponent } from './pages/wallet/sub-components/wallet-trans/wallet-trans.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { ContactsComponent } from './pages/wallet/sub-components/contacts/contacts.component';
 
 import { WalletLoginComponent } from './pages/wallet/modals/wallet-login/wallet-login.component';
 import { DataTablesModule } from 'angular-datatables';
@@ -38,6 +37,10 @@ import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet
 import { WalletChangePasswordComponent } from './pages/wallet/sub-components/wallet-change-password/wallet-change-password.component';
 import { WalletStakingComponent } from './pages/wallet/sub-components/wallet-staking/wallet-staking.component';
 import { VoteFormatPipe } from './pipes/vote-format.pipe';
+import { ContactsModifyComponent } from './pages/wallet/sub-components/contacts/modals/contacts-modify/contacts-modify.component';
+import { ContactsAddComponent } from './pages/wallet/sub-components/contacts/modals/contacts-add/contacts-add.component';
+import { ContactsDeleteComponent } from './pages/wallet/sub-components/contacts/modals/contacts-delete/contacts-delete.component';
+import { GetAddressComponent } from './pages/wallet/modals/get-address/get-address.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +49,6 @@ import { VoteFormatPipe } from './pipes/vote-format.pipe';
     ContactsComponent,
     XcashCurrencyPipe,
     XcashPublicAddressPipe,
-    ContactsTableComponent,
     WalletsListComponent,
     WalletDeleteComponent,
     WalletRenameComponent,
@@ -64,7 +66,11 @@ import { VoteFormatPipe } from './pipes/vote-format.pipe';
     WalletSweepComponent,
     WalletRevoteComponent,
     WalletCreateComponent,
-    WalletImportComponent
+    WalletImportComponent,
+    ContactsModifyComponent,
+    ContactsAddComponent,
+    ContactsDeleteComponent,
+    GetAddressComponent
   ],
   imports: [
     BrowserModule,

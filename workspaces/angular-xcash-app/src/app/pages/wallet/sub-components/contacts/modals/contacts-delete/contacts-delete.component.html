@@ -1,0 +1,19 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Delete Contact</p>
+        </header>
+        <form #contactdelfrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Confirm the deletion of contact {{ inName }}.</label>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="button" class="button is-primary" (click)="confirmDel()">Confirm</button>
+                <button type="button" class="button" (click)="cancelDel()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

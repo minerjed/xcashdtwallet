@@ -13,8 +13,7 @@ export class ValidatorsRegexService {
   public readonly password_format: string = '';
   public readonly mnemonic_seed: string = '';
   public readonly private_key: string = '';
-
-
+ 
   constructor(private constantsService: ConstantsService) { 
 
     this.xcash_address = `^(${this.constantsService.xcash_public_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_public_address_length_settings}}|${this.constantsService.xcash_integrated_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_integrated_address_length_settings}}|${this.constantsService.xcash_sub_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_sub_address_length_settings}})$`;
@@ -33,7 +32,6 @@ export class ValidatorsRegexService {
   //reserve_proof:RegExp = new RegExp("^ReserveProofV1[a-zA-Z0-9]+$");
   //signature:RegExp = new RegExp(`^${this.constantsService.signature_prefix}[a-zA-Z0-9]{${this.constantsService.signature_length_settings}}$`);
   //data_to_sign:RegExp = new RegExp(`^[a-zA-Z0-9]+$`);
-  //contact_name:RegExp = new RegExp("^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
   //delegate_name:RegExp = new RegExp(`^[a-zA-Z0-9._-]+$`);
   //delegate_item:RegExp = new RegExp(`\\b(IP_address|about|website|team|shared_delegate_status|delegate_fee|server_specs)\\b`);
 }

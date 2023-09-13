@@ -9,7 +9,8 @@
               <div class="field-body">
                 <div class="field">
                   <div class="control">
-                    <input class="input is-hovered has-text-weight-bold" type="text" name="wname" [(ngModel)]="walletname" readonly>
+                    <input class="input is-hovered has-text-weight-bold" type="text" name="wname"
+                      [(ngModel)]="walletname" readonly>
                   </div>
                 </div>
               </div>
@@ -32,11 +33,18 @@
           </div>
         </div>
         <div class="field">
-          <label class="label">Recipient:</label>
+          <label class="label">Recipient:
+            <span [ngClass]="{ 'is-hidden' : noContacts }">
+              &nbsp;<span class="icon is-small is-right is-clickable is is-fullwidth" (click)="useContacts()">
+                <fa-icon [icon]="faContactCard"></fa-icon>
+              </span>
+              &nbsp;{{contactName}}
+            </span>
+          </label>
           <div class="control has-icons-right">
             <input class="input is-hovered" type="text" placeholder="Enter recipient address" id="toAddress"
               name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
-              autofocus>
+              autofocus placeholder="Enter recipient xcash address or click contacts icon" (blur)="searchAddress()">
             <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
               <fa-icon [icon]="faPaste"></fa-icon>
             </span>
@@ -145,3 +153,4 @@
   <button class="delete" (click)="showMessage('');"></button>
   <p class="is-centered">{{ message }}</p>
 </div>
+<app-get-address *ngIf="contactModal" (onClose)="setsendAddress($event)"></app-get-address>

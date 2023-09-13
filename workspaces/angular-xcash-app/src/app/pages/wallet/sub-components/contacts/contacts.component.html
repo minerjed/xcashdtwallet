@@ -1,0 +1,62 @@
+<div class="container is-fluid">
+  <!--
+  <div class="buttons is-justify-content-flex-end mr-4">
+    -->
+  <div class="buttons is-justify-content-flex-end">
+    <button type="submit" class="button is-info is-small" (click)="showaddContact()">Add</button>
+  </div>
+  <div id="nocontact" [ngClass]="{ 'is-hidden' : !noContacts }">
+    <p>No contacts have been defined. Click the ADD button to add your first contact.</p>
+  </div>
+  <div id="contact" [ngClass]="{ 'is-hidden' : hidetrans || noContacts }">
+    <div calss="container">
+      <form>
+        <div id="contacts">
+          <!--table-hover-->
+          <div class="container">
+            <table id="contacttable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
+              [dtTrigger]="dtTrigger">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contact of contacts">
+                  <td>{{ contact.id }}</td>
+                  <td>{{ contact.name }}</td>
+                  <td>{{ contact.address | xcashPublicAddress:17 }}</td>
+                  <td>
+                    <div>
+                      <span class="icon is-small is-right is-clickable mr-4" (click)="copyAddress(contact.id)">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                      </span>
+                      <span class="icon is-small is-right is-clickable mr-4" (click)="modContactPick(contact.id)">
+                        <fa-icon [icon]="faEdit"></fa-icon>
+                      </span>
+                      <span class="icon is-small is-right is-clickable mr-4" (click)="delContactPick(contact.id)">
+                        <fa-icon [icon]="faTrashCan"></fa-icon>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<app-contacts-add *ngIf="showaddModal" (onClose)="addContact($event)"></app-contacts-add>
+<app-contacts-modify [inId]="idtoMod" [inName]="nametoMod" [inAddress]="addresstoMod" *ngIf="showmodModal"
+  (onClose)="modifyContact($event)"></app-contacts-modify>
+<app-contacts-delete [inId]="idtoDel" [inName]="nametoDel" *ngIf="showdelModal"
+  (onClose)="delContact($event)"></app-contacts-delete>
+<div class="notification is-warning mt-1" *ngIf="message">
+  <button class="delete" (click)="showMessage('');"></button>
+  <p class="is-centered">{{ message }}</p>
+</div>
