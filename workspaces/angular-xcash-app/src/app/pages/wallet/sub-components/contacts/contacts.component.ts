@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ContactListService } from 'src/app/services/contact-list.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { BehaviorSubject } from 'rxjs';
 import { Contact } from 'src/app/models/contact.model';
 import { Subject } from 'rxjs';
 import { faTrashCan, faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { DataTableDirective } from 'angular-datatables';
+declare var $: any;
 
 @Component({
   selector: 'app-contacts',
@@ -12,6 +14,8 @@ import { faTrashCan, faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./contacts.component.sass']
 })
 export class ContactsComponent implements OnInit {
+  @ViewChild(DataTableDirective, { static: false })
+  dtElement!: DataTableDirective;
   dtOptions: DataTables.Settings = { "deferRender": true };
   dtTrigger: Subject<any> = new Subject<any>();
   contacts: Contact[] = [];
@@ -28,7 +32,6 @@ export class ContactsComponent implements OnInit {
   modelDel = { id: 0, confirmflag: 0 };
   noContacts: boolean = false;
   message: string = "";
-  needInit = true;
   nametoMod: string = "";
   addresstoMod: string = "";
   showmodModal: boolean = false;
@@ -45,9 +48,9 @@ export class ContactsComponent implements OnInit {
     this.contactlistService.loadContacts(this.contacts);
     this.contactList$ = this.contactlistService.getContactList();
     if (this.contacts.length >= 1) {
-      this.needInit = false;
       this.dtTrigger.next(this.contacts);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 500));
+      this.changePageLength(7);
       this.hidetrans = false;
     } else {
       this.noContacts = true;
@@ -68,12 +71,14 @@ export class ContactsComponent implements OnInit {
         this.contactlistService.addContact(this.modelAdd.name, this.modelAdd.public_address);
         this.contactList$ = this.contactlistService.getContactList();
         this.contacts = this.contactList$.getValue();
-        if (this.needInit) {
-          this.needInit = false;
-          this.dtTrigger.next(this.contacts);
-          await new Promise(resolve => setTimeout(resolve, 200));
-          this.hidetrans = false;
-        }
+        this.hidetrans = true;
+        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+          dtInstance.destroy();
+        });
+        this.dtTrigger.next(this.contacts);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.changePageLength(7);
+        this.hidetrans = false;
         this.noContacts = false;
       }
     }
@@ -88,7 +93,6 @@ export class ContactsComponent implements OnInit {
   }
 
   async modifyContact(data: any) {
-//   modelMod = { id: 0, name: "", public_address: "" };
     this.modelMod = data;
     if ((this.modelMod.name !== this.nametoMod) && (this.ckContact(this.modelMod.name))) {
       this.showMessage("This contact name already exists. Try again.");
@@ -98,11 +102,11 @@ export class ContactsComponent implements OnInit {
         this.contactlistService.modifyContact(this.modelMod.id, this.modelMod.name, this.modelMod.public_address);
         this.contactList$ = this.contactlistService.getContactList();
         this.contacts = this.contactList$.getValue();
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
     this.showmodModal = false;
   }
-
 
   delContactPick(id: number): void {
     this.idtoDel = id;
@@ -110,13 +114,21 @@ export class ContactsComponent implements OnInit {
     this.showdelModal = true;
   }
 
-  delContact(data: any): void {
+  async delContact(data: any) {
     this.modelDel = data;
     if (this.modelDel.confirmflag) {
       this.databaseService.deleteContacts(this.modelDel.id);
       this.contactlistService.removeContact(this.modelDel.id);
       this.contactList$ = this.contactlistService.getContactList();
       this.contacts = this.contactList$.getValue();
+      this.hidetrans = true;
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.destroy();
+      });
+      this.dtTrigger.next(this.contacts);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      this.changePageLength(7);
+      this.hidetrans = false;
       if (this.contacts.length === 0) {
         this.noContacts = true;
       }
@@ -147,6 +159,32 @@ export class ContactsComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
+  }
+
+
+  changePageLength(newLength: number): void {
+    // I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
+    const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.page.len(newLength).draw();
+    });
+    $('div.dataTables_length').find('select, label').remove();
+    var newDropdown = $('<select></select>');
+    newDropdown.append('<option value="7">7</option>');
+    newDropdown.append('<option value="10">10</option>');
+    newDropdown.append('<option value="25">25</option>');
+    newDropdown.append('<option value="50">50</option>');
+    newDropdown.append('<option value="100">100</option>');
+    $('div.dataTables_length').append(newDropdown);
+    var table = $('#myTable').DataTable();
+    $('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
+    newDropdown.on('change', () => {
+      this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
+        const val = newDropdown.val();
+        if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
+          dtInstance.page.len(+val).draw();
+        }
+      });
+    });
   }
 
 }

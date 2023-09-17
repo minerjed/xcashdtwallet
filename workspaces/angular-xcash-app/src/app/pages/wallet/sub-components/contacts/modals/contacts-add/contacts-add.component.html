@@ -2,7 +2,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Create New Contact</p>
+            <p class="modal-card-title">Create Contact</p>
         </header>
         <form #contactaddfrom="ngForm">
             <section class="modal-card-body">
@@ -38,7 +38,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button type="button" class="button is-primary" [disabled]="contactaddfrom.invalid"
+                <button id="addcontact" type="submit" class="button is-primary" [disabled]="contactaddfrom.invalid"
                     (click)="selectAdd()">Add</button>
                 <button type="button" class="button" (click)="cancelAdd()">Cancel</button>
             </footer>

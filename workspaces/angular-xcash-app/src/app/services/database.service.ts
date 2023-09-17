@@ -44,28 +44,27 @@ export class DatabaseService {
   }
 
   public async getContacts(): Promise<Contact[]> {
-    return new Promise(async(resolve, reject) => {
-    try
-    {
-      // Constants
-      const DATABASE_DATA:any = JSON.parse(fs.readFileSync(this.dbfile,"utf8"));
-    
-      // variables
-      let Contact: Contact[] = [];
-      let count = 0;
-      DATABASE_DATA.contact_data.forEach((item: any) => { 
-        Contact.push({
-          id: count,
-          name: item.name,
-          address: item.public_address,
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Constants
+        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+
+        // variables
+        let Contact: Contact[] = [];
+        let count = 0;
+        DATABASE_DATA.contact_data.forEach((item: any) => {
+          Contact.push({
+            id: count,
+            name: item.name,
+            address: item.public_address,
+          });
+          count++;
         });
-        count++;
-     }); 
-      resolve(Contact);
-    } catch (error) {
-      reject(error);
-    }
-   });
+        resolve(Contact);
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   public async addContacts(data: any): Promise<void> {
@@ -103,13 +102,58 @@ export class DatabaseService {
   public async deleteContacts(id: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        // Variables
         let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
         database_data.contact_data.splice(id, 1);
         fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  }
+
+  public async getSubAddressCount(public_address: string): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+        resolve(DATABASE_DATA.wallet_data[WALLET_COUNT].sub_address_count);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  public async updateSubAddressCount(public_address: string, addressIndex: number): Promise<boolean> {
+    try {
+      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      database_data.wallet_data[WALLET_COUNT].sub_address_count = addressIndex;
+      fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
+      return (true);
+    } catch (error) {
+      return (false);
+    }
+  }
+
+  private async getCurrentWallet(public_address: string): Promise<number> {
+    return new Promise(async (resolve) => {
+      try {
+        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        let wallet_count: number = 0;
+        for (wallet_count = 0; wallet_count < DATABASE_DATA.wallet_data.length; wallet_count++) {
+          if (DATABASE_DATA.wallet_data[wallet_count].public_address === public_address) {
+            break;
+          }
+        }
+        if (wallet_count === DATABASE_DATA.wallet_data.length) {
+          resolve(0);
+        }
+        else {
+          resolve(wallet_count);
+        }
+      } catch (error) {
+        resolve(0);
       }
     });
   }

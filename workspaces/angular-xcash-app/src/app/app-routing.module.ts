@@ -7,6 +7,7 @@ import { WalletTransComponent } from './pages/wallet/sub-components/wallet-trans
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
 import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { WalletSubaddressComponent } from './pages/wallet/sub-components/wallet-subaddress/wallet-subaddress.component';
 
 const routes: Routes = [
   { path: '', 
@@ -16,7 +17,9 @@ const routes: Routes = [
     {path: 'wallettrans', component: WalletTransComponent },
     {path: 'walletsend', component: WalletSendComponent },
     {path: 'walletprivatekeys', component: WalletPrivateKeysComponent},
-    {path: 'contacts', component: ContactsComponent}
+    {path: 'contacts', component: ContactsComponent},
+    {path: 'walletSubaddress', component: WalletSubaddressComponent}
+
   ]},
   { path: 'settings', component: SettingsComponent}
 ];

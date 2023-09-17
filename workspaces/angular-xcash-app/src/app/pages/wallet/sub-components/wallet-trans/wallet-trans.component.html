@@ -4,29 +4,30 @@
   </div>
 </div>
 <div id="transactions" [ngClass]="{ 'is-hidden' : hidetrans || notrans }">
-  <!--table-hover-->
-  <div class="container">
-    <table id="transtable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
-      [dtTrigger]="dtTrigger">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Amount</th>
-          <th>Transaction ID</th>
-          <th>Type</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let transaction of transactions">
-          <td>{{ transaction.id}}</td>
-          <td>{{ transaction.amount | xcash:'1.0-2'}}</td>
-          <td><a (click)="showdetails(transaction.id)">{{ transaction.txid | xcashPublicAddress:8 }}</a></td>
-          <td>{{ transaction.transactionType}}</td>
-          <td class="is-nowrap">{{ transaction.date | date:'MM/dd/yyyy, h:mm a'}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="!notrans">
+    <div class="container">
+      <table id="transtable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Transaction ID</th>
+            <th>Type</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions">
+            <td>{{ transaction.id}}</td>
+            <td>{{ transaction.amount | xcash:'1.0-2'}}</td>
+            <td><a (click)="showdetails(transaction.id)">{{ transaction.txid | xcashPublicAddress:8 }}</a></td>
+            <td>{{ transaction.transactionType}}</td>
+            <td class="is-nowrap">{{ transaction.date | date:'MM/dd/yyyy, h:mm a'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"

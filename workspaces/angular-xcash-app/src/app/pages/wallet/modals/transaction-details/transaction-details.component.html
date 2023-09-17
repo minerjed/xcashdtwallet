@@ -6,8 +6,13 @@
     </header>
     <section class="modal-card-body">
       <div>
-        <label>Address: </label>
-        <span [class.has-text-danger]="faddress.slice(0,5) === 'Trans'" class="has-text-weight-semibold is-small">{{ faddress }}&nbsp;</span>
+        <label class="label">Address:</label>
+        <div class="control">
+          <span [class.has-text-danger]="faddress.slice(0,5) === 'Trans'" class="has-text-weight-semibold">
+            <textarea class="textarea has-text-weight-semibold is-hovered" rows="2" [(ngModel)]="faddress"
+              readonly></textarea>
+          </span>
+        </div>
       </div>
       <div *ngIf="famount !== 0">
         <label>Amount: </label>

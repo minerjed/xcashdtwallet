@@ -1,0 +1,29 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Modify SubAddress</p>
+        </header>
+        <form #labelmodfrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">New SubAddress label:</label>
+                    <div>
+                        <input type="text" name="newlabel" class="input is-hovered" [(ngModel)]="newLabel"
+                            #newlabelinput="ngModel" [pattern]="labelCk" required>
+                        <div class="help"
+                            *ngIf="newlabelinput.invalid && (newlabelinput.touched || newlabelinput.dirty)">
+                            New label must be between {{ minlen }} and {{ maxlen }} characters and only contain
+                            numbers and letters.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="submit" class="button is-primary" [disabled]="labelmodfrom.invalid"
+                    (click)="selectMod()">Update</button>
+                <button type="button" class="button" (click)="cancelMod()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

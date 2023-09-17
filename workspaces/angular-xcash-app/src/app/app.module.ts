@@ -41,6 +41,9 @@ import { ContactsModifyComponent } from './pages/wallet/sub-components/contacts/
 import { ContactsAddComponent } from './pages/wallet/sub-components/contacts/modals/contacts-add/contacts-add.component';
 import { ContactsDeleteComponent } from './pages/wallet/sub-components/contacts/modals/contacts-delete/contacts-delete.component';
 import { GetAddressComponent } from './pages/wallet/modals/get-address/get-address.component';
+import { WalletSubaddressComponent } from './pages/wallet/sub-components/wallet-subaddress/wallet-subaddress.component';
+import { WalletSubaddressAddComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-add/wallet-subaddress-add.component';
+import { WalletSubaddressModComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-mod/wallet-subaddress-mod.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +73,10 @@ import { GetAddressComponent } from './pages/wallet/modals/get-address/get-addre
     ContactsModifyComponent,
     ContactsAddComponent,
     ContactsDeleteComponent,
-    GetAddressComponent
+    GetAddressComponent,
+    WalletSubaddressComponent,
+    WalletSubaddressAddComponent,
+    WalletSubaddressModComponent
   ],
   imports: [
     BrowserModule,

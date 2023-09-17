@@ -83,6 +83,8 @@ export class WalletComponent implements OnInit {
 
 	onTabClickAdv(tab: number): void {
 		this.showAdvTab = tab;
+		this.showtab = tab;
+
 	}
 
 	showMessage(message: string): void {

@@ -1,0 +1,60 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+	<button class="delete" (click)="showMessage('');"></button>
+	<p class="is-centered">{{ message }}</p>
+</div>
+<div class="container is-fluid">
+	<div class="buttons is-justify-content-flex-end mb-0 mt-1">
+		<button type="submit" class="button is-info is-small" (click)="showaddContact()">Add</button>
+	</div>
+	<div id="nocontact" [ngClass]="{ 'is-hidden' : !noSubaddress }">
+		<p>No Sub Addresses have been created. Click the ADD button to add your first Sub Address.</p>
+	</div>
+	<div id="subaddress" [ngClass]="{ 'is-hidden' : hidetrans || noSubaddress }">
+		<div calss="container">
+			<form>
+				<div id="subaddress">
+					<div class="container">
+						<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+							class="table is-striped mx-auto is-hoverable" id="subaddid">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Label</th>
+									<th>Sub Address</th>
+									<th>Balance</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let subaddress of subAddresses">
+									<td>{{ subaddress.id }}</td>
+									<td>{{ subaddress.label }}</td>
+									<td>{{ subaddress.address | xcashPublicAddress:17 }}</td>
+									<td>{{ subaddress.balance }}</td>
+									<td>
+										<div>
+											<span class="is-small is-right is-clickable mr-4"
+												(click)="copyAddress(subaddress.id-1)">
+												<fa-icon [icon]="faCopy"></fa-icon>
+											</span>
+											<span class="icon is-small is-right is-clickable mr-4"
+												(click)="modSubaddressPick(subaddress.id)">
+												<fa-icon [icon]="faEdit"></fa-icon>
+											</span>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<app-wallet-subaddress-add *ngIf="showaddModal" (onClose)="addsubAddress($event)"></app-wallet-subaddress-add>
+<app-wallet-subaddress-mod [modId]="inId" *ngIf="showmodModal"
+	(onClose)="modsubAddress($event)"></app-wallet-subaddress-mod>
+<div class="spinner-container" *ngIf="showspinner">
+	<div class="spinner"></div>
+</div>

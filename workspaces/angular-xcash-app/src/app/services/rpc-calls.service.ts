@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConstantsService } from './constants.service';
 import { WindowApiConst } from 'shared-lib';
-
+import { SubAddress } from 'src/app/models/subaddress';
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
 
@@ -324,6 +324,71 @@ export class RpcCallsService {
       return { 'result': publicaddress, 'balance': xcashbalance };
     } catch (error) {
       return { 'result': 'failure', 'balance': 0 };
+    }
+  }
+
+  public async getSubAddresses(subAddressCount: number): Promise<SubAddress[]> {
+    return new Promise(async (resolve, reject) => {
+      let subAddressList = "";
+      let count;
+      for (count = 1; count <= subAddressCount; count++) {
+        subAddressList += `${count},`;
+      }
+      subAddressList = subAddressList.slice(0, -1);
+      const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[${subAddressList}]}}`;
+      let subAddresses: SubAddress[] = [];
+      let data: any;
+      try {
+        data = await this.getPostRequestData(intrans);
+        data.result.per_subaddress.forEach((item: { address_index: any; label: any; address: any; balance: number; }) => {
+          subAddresses.push({
+            id: item.address_index,
+            label: item.label,
+            address: item.address,
+            balance: item.balance / this.constantsService.xcash_decimal_places,
+          });
+        });
+        resolve(subAddresses);
+      }
+      catch (error) {
+        let subAddresses: SubAddress[] = [];
+        reject(subAddresses);
+      }
+    });
+  }
+
+  public async createSubAddress(label: string): Promise<{ newaddress: string, addressIndex: number }> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"create_address","params":{"account_index":0,"label":"${label}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return { newaddress: 'failure', addressIndex: 0 };
+      } else {
+        return {
+          newaddress: ckdata.result.address,
+          addressIndex: ckdata.result.address_index
+        };
+      }
+    }
+    catch (error) {
+      return { newaddress: 'failure', addressIndex: 0 };
+    }
+  }
+
+  public async updateaddressLabel(addressId: number, newLabel: string): Promise<boolean> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"label_address",
+      "params":{"index":{"major":0,"minor":${addressId}},"label":"${newLabel}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckerror: any = result;
+      if (ckerror.hasOwnProperty('error')) {
+        return (false);
+      } else {
+        return (true);
+      }
+    } catch (error) {
+      return (false);
     }
   }
 
