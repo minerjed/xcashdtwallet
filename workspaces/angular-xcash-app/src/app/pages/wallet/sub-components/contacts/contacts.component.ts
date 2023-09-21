@@ -37,6 +37,15 @@ export class ContactsComponent implements OnInit {
   showmodModal: boolean = false;
   idtoMod: number = 0;
   modelMod = { id: 0, name: "", public_address: "" };
+  tippyOptions = {
+    trigger: 'click',
+    hideOnClick: false,
+    onShow: (instance: any) => {
+      setTimeout(() => {
+        instance.hide();
+      }, 700);
+    }
+  };
 
   constructor(
     private contactlistService: ContactListService,
@@ -140,7 +149,7 @@ export class ContactsComponent implements OnInit {
     navigator.clipboard.writeText(this.contacts[contactID].address)
       .then(() => { })
       .catch(err => {
-        console.error('Failed to copy text: ', err);
+        this.showMessage('Failed to copy text: ' + err);
       });
   }
 

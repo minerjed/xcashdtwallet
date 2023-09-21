@@ -392,4 +392,25 @@ export class RpcCallsService {
     }
   }
 
+  public async createIntegratedAddress(paymentid: string): Promise<any> {
+    let intrans: string = '';
+    if (paymentid === undefined) {
+      intrans = `{"jsonrpc":"2.0","id":"0","method":"make_integrated_address"}`;
+    } else {
+      intrans = `{"jsonrpc":"2.0","id":"0","method":"make_integrated_address",
+        "params":{"payment_id":"${paymentid}"}}`;
+    }
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return ({ "status": false, "payment_id": '', "integrated_address": '' });
+      } else {
+        return ({ "status": true, "payment_id": ckdata.result.payment_id, "integrated_address": ckdata.result.integrated_address });
+      }
+    } catch (error) {
+      return ({ "status": false, "payment_id": '', "integrated_address": '' });
+    }
+  }
+
 }

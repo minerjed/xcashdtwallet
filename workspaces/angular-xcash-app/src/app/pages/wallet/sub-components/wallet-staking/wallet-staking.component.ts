@@ -7,6 +7,8 @@ import { Delegate } from 'src/app/models/delegates';
 import { faRefresh, faBroom } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
+import { DataTableDirective } from 'angular-datatables';
+declare var $: any;
 
 @Component({
 	selector: 'app-wallet-staking',
@@ -14,6 +16,8 @@ import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
 	styleUrls: ['./wallet-staking.component.sass']
 })
 export class WalletStakingComponent implements OnInit, AfterViewInit {
+	@ViewChild(DataTableDirective, { static: false })
+	dtElement!: DataTableDirective;
 	@ViewChild('stakingForm', { static: false }) stakingForm!: NgForm;
 	faRefresh = faRefresh;
 	faBroom = faBroom;
@@ -73,6 +77,7 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 		this.showspinnerGetDel = false;
 	}
 
+
 	async getDelegates(): Promise<void> {
 		const data = await this.xcashdelegatesservice.getDelegates();
 		if (Array.isArray(data)) {
@@ -94,6 +99,8 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 				}
 			}
 			this.dtTrigger.next(this.displayDelegates);
+			await new Promise(resolve => setTimeout(resolve, 500));
+			this.changePageLength(3);
 		} else {
 			this.displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: ""}];
 		}
@@ -153,5 +160,30 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	ngOnDestroy(): void {
 		this.dtTrigger.unsubscribe();
 	}
+
+	changePageLength(newLength: number): void {
+		// I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
+		const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+		  dtInstance.page.len(newLength).draw();
+		});
+		$('div.dataTables_length').find('select, label').remove();
+		var newDropdown = $('<select></select>');
+		newDropdown.append('<option value="3">3</option>');
+		newDropdown.append('<option value="10">10</option>');
+		newDropdown.append('<option value="25">25</option>');
+		newDropdown.append('<option value="50">50</option>');
+		newDropdown.append('<option value="100">100</option>');
+		$('div.dataTables_length').append(newDropdown);
+		var table = $('#myTable').DataTable();
+		$('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
+		newDropdown.on('change', () => {
+		  this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
+			const val = newDropdown.val();
+			if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
+			  dtInstance.page.len(+val).draw();
+			}
+		  });
+		});
+	  }
 
 }

@@ -19,7 +19,17 @@ export class WalletPrivateKeysComponent {
   modalmessage: string = '';
   showLoginModal: boolean = true;
   showSpinner: boolean = false;
+  message: string = '';
   @Output() onClose = new EventEmitter();
+  tippyOptions = {
+    trigger: 'click',
+    hideOnClick: false,
+    onShow: (instance: any) => {
+      setTimeout(() => {
+        instance.hide();
+      }, 700);
+    }
+  };
 
   constructor(
     private rpcCallsService: RpcCallsService,
@@ -55,7 +65,7 @@ export class WalletPrivateKeysComponent {
 		navigator.clipboard.writeText(value)
 			.then(() => { })
 			.catch(err => {
-				console.error('Failed to copy text: ', err);
+        this.showMessage('Failed to copy text: ' + err);
 			});
 	}
 
@@ -63,6 +73,10 @@ export class WalletPrivateKeysComponent {
     this.elementRef.nativeElement.classList.add('print-mode'); // Add a CSS class to the component's native element for print styling
     window.print(); // Trigger the print functionality
     this.elementRef.nativeElement.classList.remove('print-mode'); // Remove the CSS class after printing
+  }
+
+  showMessage(message: string): void {
+    this.message = message;
   }
 
 }

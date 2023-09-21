@@ -35,6 +35,16 @@ export class WalletSubaddressComponent implements OnInit {
   showmodModal: boolean = false;
   inId: number = 0;
   modelMod = { outId: 0, newLabel: "" };
+  initArray: boolean = false;
+  tippyOptions = {
+    trigger: 'click',
+    hideOnClick: false,
+    onShow: (instance: any) => {
+      setTimeout(() => {
+        instance.hide();
+      }, 700);
+    }
+  };
 
   constructor(
     private databaseService: DatabaseService,
@@ -49,6 +59,7 @@ export class WalletSubaddressComponent implements OnInit {
       this.noSubaddress = false;
       this.subAddresses = await this.rpcCallsService.getSubAddresses(this.subcount);
       if (this.subAddresses.length > 0) {
+        this.initArray = true;
         this.dtTrigger.next(this.subAddresses);
         await new Promise(resolve => setTimeout(resolve, 500));
         this.changePageLength(5);
@@ -78,11 +89,14 @@ export class WalletSubaddressComponent implements OnInit {
         this.ckupdate = await this.databaseService.updateSubAddressCount(this.walletaddress, addressIndex);
         if (this.ckupdate) {
           this.hidetrans = true;
-          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-            dtInstance.destroy();
-          });
-          this.subAddresses = [];
-          this.subAddresses.length = 0;
+          if (this.initArray) {
+            this.initArray = true;
+            this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+              dtInstance.destroy();
+            });
+            this.subAddresses = [];
+            this.subAddresses.length = 0;
+          }
           this.subAddresses = await this.rpcCallsService.getSubAddresses(addressIndex);
           if (this.subAddresses.length > 0) {
             this.dtTrigger.next(this.subAddresses)
@@ -137,7 +151,7 @@ export class WalletSubaddressComponent implements OnInit {
     navigator.clipboard.writeText(this.subAddresses[id].address)
       .then(() => { })
       .catch(err => {
-        console.error('Failed to copy text: ', err);
+        this.showMessage('Failed to copy text: ' + err);
       });
   }
 

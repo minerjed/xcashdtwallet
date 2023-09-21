@@ -12,33 +12,31 @@
             <button type="button" class="button is-primary" (click)="importKey()">Private Key</button>
           </div>
         </div>
-<!--
+        <!--
     Using Seed Initial Form
 -->
         <div *ngIf="usingSeed">
           <div class="field mt-3">
-            <label class="label is-flex is-align-items-center">Mnemonic Seed:</label>
+            <label class="label is-flex is-align-items-center">Mnemonic Seed:&nbsp;
+              <span class="icon is-small is-clickable is-fullwidth" (click)="onPaste($event,'walletMnemonicseed')">
+                <fa-icon [icon]="faPaste"></fa-icon>
+              </span>
+            </label>
             <div class="field-body">
               <div class="field">
-                <div class="control has-icons-right">
-                  <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
-                    [(ngModel)]="walletMnemonicseed" required [pattern]="mnemonicwordsCk" #mnemonicInput="ngModel"
-                    placeholder="Enter the 25 words for your Mnemonic Seed seprated by spaces." rows="2"></textarea>
-                  <span class="icon is-small is-right is-clickable is-fullwidth"
-                    (click)="onPaste($event,'walletMnemonicseed')">
-                    <fa-icon [icon]="faPaste"></fa-icon>
-                  </span>
-                  <div *ngIf="mnemonicInput.invalid && mnemonicInput.touched">
-                    <div *ngIf="mnemonicInput.errors?.required">This field is required.</div>
-                    <div *ngIf="mnemonicInput.errors?.pattern">You did not enter {{ wordlength }} words with no trailing
-                      spaces.</div>
-                  </div>
+                <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
+                  [(ngModel)]="walletMnemonicseed" required [pattern]="mnemonicwordsCk" #mnemonicInput="ngModel"
+                  placeholder="Enter the 25 words for your Mnemonic Seed seprated by spaces." rows="2"></textarea>
+                <div *ngIf="mnemonicInput.invalid && mnemonicInput.touched">
+                  <div *ngIf="mnemonicInput.errors?.required">This field is required.</div>
+                  <div *ngIf="mnemonicInput.errors?.pattern">You did not enter {{ wordlength }} words with no trailing
+                    spaces.</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-<!--
+        <!--
     Using Key Initial Form
 -->
         <div *ngIf="usingKey">
@@ -107,7 +105,7 @@
             <p class="is-centered">{{ message }}</p>
           </div>
         </div>
-<!--
+        <!--
     Get Name and Password, second form
 -->
         <div *ngIf="getwalletName">

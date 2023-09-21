@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WindowApiConst } from 'shared-lib';
 import { Contact } from '../models/contact.model';
+import { integratedAddress } from '../models/integratedaddress';
 
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
@@ -70,7 +71,6 @@ export class DatabaseService {
   public async addContacts(data: any): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        // Variables
         let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
         database_data.contact_data.push({
           name: data.name,
@@ -157,5 +157,45 @@ export class DatabaseService {
       }
     });
   }
+
+  public async getIntegratedAddresses(public_address: string): Promise<integratedAddress[]> {
+    let IntegratedAddress: integratedAddress[] = [];
+    try {
+      const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      let count = 0;
+      DATABASE_DATA.wallet_data[WALLET_COUNT].integrated_addresses.forEach((item: {
+        label: string; payment_id: string; integrated_address: string;
+      }) => {
+        count++;
+        IntegratedAddress.push({
+          id: count,
+          label: item.label,
+          paymentid: item.payment_id,
+          address: item.integrated_address,
+        });
+      });
+      return (IntegratedAddress);
+    } catch (error) {
+      return (IntegratedAddress);
+    }
+  }
+
+  public async saveIntegratedAddresses(data: any, public_address: string): Promise<boolean> {
+    try {
+      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      database_data.wallet_data[WALLET_COUNT].integrated_addresses.push({
+        label: data.label,
+        payment_id: data.payment_id,
+        integrated_address: data.integrated_address,
+      });
+      fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
+      return (true);
+    } catch (error) {
+      return (false);
+    }
+  }
+
 
 }

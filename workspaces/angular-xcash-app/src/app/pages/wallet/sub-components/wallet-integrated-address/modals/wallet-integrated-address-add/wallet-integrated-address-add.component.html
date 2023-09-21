@@ -1,0 +1,41 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create Integrated Address</p>
+        </header>
+        <form #intlabelfrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Enter a label for the integrated address:</label>
+                    <div>
+                        <input type="text" name="intlabel" class="input is-hovered" [(ngModel)]="intlabel"
+                            #intlabelinput="ngModel" [pattern]="nameCk" required>
+                        <div class="help"
+                            *ngIf="intlabelinput.invalid && (intlabelinput.touched || intlabelinput.dirty)">
+                            Label must be between {{ minlen }} and {{ maxlen }} characters and only contain
+                            numbers and letter
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="name">Enter an encrypted payment Id (optional):</label>
+                    <div>
+                        <input type="text" name="intpaymentId" class="input is-hovered" [(ngModel)]="intpaymentId"
+                            #intpaymentinput="ngModel" [pattern]="idCk">
+                        <div class="help"
+                            *ngIf="intpaymentinput.invalid && (intpaymentinput.touched || intpaymentinput.dirty)">
+                            Encrypted payment id must be {{ lenEncry }} characters long and only contain
+                            numbers and letters.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button id="addbutton" type="submit" class="button is-primary" [disabled]="intlabelfrom.invalid"
+                    (click)="selectAdd()">Add</button>
+                <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

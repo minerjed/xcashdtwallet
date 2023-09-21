@@ -13,6 +13,7 @@ export class ValidatorsRegexService {
   public readonly password_format: string = '';
   public readonly mnemonic_seed: string = '';
   public readonly private_key: string = '';
+  public readonly encrypted_payment_id: string = '';
  
   constructor(private constantsService: ConstantsService) { 
 
@@ -24,10 +25,11 @@ export class ValidatorsRegexService {
     this.password_format = `^[a-zA-Z0-9~!@#$%^&*_+=?]*`;
     this.mnemonic_seed = `^(\\b[a-z]+\\b[ ]*){${this.constantsService.mnemonic_seed_word_length}}`;
     this.private_key = `^([0-9a-f]{${this.constantsService.private_key_length}})$`;
+    this.encrypted_payment_id = `^([0-9a-f]{${this.constantsService.encrypted_payment_id_length}}|)$`;
+  
   }
 
   //mnemonic_seed_or_private_key:RegExp = new RegExp(`^((?:\\b[a-z]+\\b[ ]*){${this.constantsService.mnemonic_seed_word_length}}|(?:[0-9a-f]{${this.constantsService.private_key_length}}))$`);
-  //encrypted_payment_id:RegExp = new RegExp(`^([0-9a-f]{${this.constantsService.encrypted_payment_id_length}}|)$`);
   //xcash_reserve_proof_amount:RegExp = new RegExp(`\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply}|^ALL$)\\b$`);
   //reserve_proof:RegExp = new RegExp("^ReserveProofV1[a-zA-Z0-9]+$");
   //signature:RegExp = new RegExp(`^${this.constantsService.signature_prefix}[a-zA-Z0-9]{${this.constantsService.signature_length_settings}}$`);

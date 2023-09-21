@@ -1,3 +1,7 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+  <button class="delete" (click)="showMessage('');"></button>
+  <p class="is-centered">{{ message }}</p>
+</div>
 <div class="container is-fluid">
   <div class="buttons is-justify-content-flex-end mb-0">
     <button type="submit" class="button is-info is-small" (click)="showaddContact()">Add</button>
@@ -28,7 +32,8 @@
                   <td>{{ contact.address | xcashPublicAddress:17 }}</td>
                   <td>
                     <div>
-                      <span class="icon is-small is-right is-clickable mr-4" (click)="copyAddress(contact.id)">
+                      <span id="button" class="is-small is-right is-clickable mr-4" (click)="copyAddress(contact.id)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
                         <fa-icon [icon]="faCopy"></fa-icon>
                       </span>
                       <span class="icon is-small is-right is-clickable mr-4" (click)="modContactPick(contact.id)">
@@ -53,7 +58,3 @@
   (onClose)="modifyContact($event)"></app-contacts-modify>
 <app-contacts-delete [inId]="idtoDel" [inName]="nametoDel" *ngIf="showdelModal"
   (onClose)="delContact($event)"></app-contacts-delete>
-<div class="notification is-warning mt-1" *ngIf="message">
-  <button class="delete" (click)="showMessage('');"></button>
-  <p class="is-centered">{{ message }}</p>
-</div>

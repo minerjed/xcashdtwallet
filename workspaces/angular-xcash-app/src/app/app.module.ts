@@ -44,6 +44,9 @@ import { GetAddressComponent } from './pages/wallet/modals/get-address/get-addre
 import { WalletSubaddressComponent } from './pages/wallet/sub-components/wallet-subaddress/wallet-subaddress.component';
 import { WalletSubaddressAddComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-add/wallet-subaddress-add.component';
 import { WalletSubaddressModComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-mod/wallet-subaddress-mod.component';
+import { WalletIntegratedAddressComponent } from './pages/wallet/sub-components/wallet-integrated-address/wallet-integrated-address.component';
+import { WalletIntegratedAddressAddComponent } from './pages/wallet/sub-components/wallet-integrated-address/modals/wallet-integrated-address-add/wallet-integrated-address-add.component';
+import { NgxTippyModule } from 'ngx-tippy-wrapper';
 
 @NgModule({
   declarations: [
@@ -76,7 +79,9 @@ import { WalletSubaddressModComponent } from './pages/wallet/sub-components/wall
     GetAddressComponent,
     WalletSubaddressComponent,
     WalletSubaddressAddComponent,
-    WalletSubaddressModComponent
+    WalletSubaddressModComponent,
+    WalletIntegratedAddressComponent,
+    WalletIntegratedAddressAddComponent
   ],
   imports: [
     BrowserModule,
@@ -84,7 +89,8 @@ import { WalletSubaddressModComponent } from './pages/wallet/sub-components/wall
     FontAwesomeModule,
     HttpClientModule,
     FormsModule,
-    DataTablesModule
+    DataTablesModule,
+    NgxTippyModule
   ],
   providers: [
     ConstantsService,

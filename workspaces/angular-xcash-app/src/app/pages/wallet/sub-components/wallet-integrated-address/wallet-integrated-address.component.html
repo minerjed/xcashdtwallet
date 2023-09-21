@@ -1,0 +1,58 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+	<button class="delete" (click)="showMessage('');"></button>
+	<p class="is-centered">{{ message }}</p>
+</div>
+<div class="container is-fluid">
+	<div class="buttons is-justify-content-flex-end mb-0 mt-1">
+		<button type="submit" class="button is-info is-small" (click)="showaddContact()">Add</button>
+	</div>
+	<div id="nocontact" [ngClass]="{ 'is-hidden' : !nointAddress }">
+		<p>No Integrated Addresses have been created. Click the ADD button to add your first Integrated Address.</p>
+	</div>
+	<div id="intAddress" [ngClass]="{ 'is-hidden' : hidetrans || nointAddress }">
+		<div calss="container">
+			<form>
+				<div id="intAddress">
+					<div class="container">
+						<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+							class="table is-striped mx-auto is-hoverable" id="subaddid">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Label</th>
+									<th>Payment ID</th>
+									<th>Integrated Address</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let intAddress of intAddresses">
+									<td>{{ intAddress.id }}</td>
+									<td>{{ intAddress.label }}</td>
+									<td>{{ intAddress.paymentid }}</td>
+									<td>{{ intAddress.address | xcashPublicAddress:17 }}</td>
+									<td>
+										<div>
+											<div>
+												<span id="button" class="is-small is-right is-clickable mr-4"
+													(click)="copyAddress(intAddress.id-1)" [ngxTippy]="'Text Coppied'"
+													[tippyProps]="tippyOptions">
+													<fa-icon [icon]="faCopy"></fa-icon>
+												</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<app-wallet-integrated-address-add *ngIf="showaddModal" (onClose)="addintAddress($event)">
+</app-wallet-integrated-address-add>
+<div class="spinner-container" *ngIf="showspinner">
+	<div class="spinner"></div>
+</div>

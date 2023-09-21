@@ -36,9 +36,12 @@
   <div class="control has-icons-right">
     <input class="input is-static has-background-info is-fullwidth has-text-white" type="text" value="{{walletaddress}}"
       readonly #copyInput>
-    <span class="icon is-small is-right is-clickable is-fullwidth" (click)="copyToClipboard(copyInput.value)">
+      <span id="button" class="icon is-small is-right is-clickable is-fullwidth"
+      (click)="copyToClipboard(copyInput.value)"
+      [ngxTippy]="'Text Coppied'"
+      [tippyProps]="tippyOptions">
       <fa-icon [icon]="faCopy"></fa-icon>
-    </span>
+      </span>
   </div>
 </div>
 <div class="tabs is-boxed mb-3">
@@ -83,22 +86,22 @@
 <div *ngIf="showAdvTabs">
  <div class="tabs is-boxed">
     <ul>
-      <li (click)="onTabClickAdv(10)" [ngClass]="{ 'is-active' : showAdvTab === 10 }">
+      <li (click)="onTabClickAdv(10)" [ngClass]="{ 'is-active' : showtab === 10 }">
         <a>
           <span>Integrated Address</span>
         </a>
       </li>
-      <li (click)="onTabClickAdv(11)" [ngClass]="{ 'is-active' : showAdvTab === 11 }">
+      <li (click)="onTabClickAdv(11)" [ngClass]="{ 'is-active' : showtab === 11 }">
         <a>
           <span>Sub Address</span>
         </a>
       </li>
-      <li (click)="onTabClickAdv(12)" [ngClass]="{ 'is-active' : showAdvTab === 12 }">
+      <li (click)="onTabClickAdv(12)" [ngClass]="{ 'is-active' : showtab === 12 }">
         <a>
           <span>Sign Data</span>
         </a>
       </li>
-      <li (click)="onTabClickAdv(13)" [ngClass]="{ 'is-active' : showAdvTab === 13 }">
+      <li (click)="onTabClickAdv(13)" [ngClass]="{ 'is-active' : showtab === 13 }">
         <a>
           <span>Reserve Proof</span>
         </a>
@@ -131,7 +134,7 @@
     <p>Option not implemented.</p>
   </ng-container>
   <ng-container *ngSwitchCase="10">
-    <p>Option not implemented.</p>
+    <app-wallet-integrated-address></app-wallet-integrated-address>
   </ng-container>
   <ng-container *ngSwitchCase="11">
     <app-wallet-subaddress></app-wallet-subaddress>

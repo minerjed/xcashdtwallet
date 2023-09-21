@@ -1,3 +1,7 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+    <button class="delete" (click)="showMessage('');"></button>
+    <p class="is-centered">{{ message }}</p>
+</div>
 <div class="container is-fluid">
     <div container>
         <div class="has-text-weight-semibold mb-3">Be sure to store your Private Keys data in a safe place. They are
@@ -9,8 +13,9 @@
                     <div class="control has-icons-right">
                         <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
                             [(ngModel)]="walletViewkey" readonly #walletspendkeyInput>
-                        <span class="icon is-small is-right is-clickable"
-                            (click)="copyToClipboard(walletspendkeyInput.value)">
+                        <span id="button" class="icon is-small is-right is-clickable"
+                            (click)="copyToClipboard(walletspendkeyInput.value)" [ngxTippy]="'Text Coppied'"
+                            [tippyProps]="tippyOptions">
                             <fa-icon [icon]="faCopy"></fa-icon>
                         </span>
                     </div>
@@ -24,8 +29,9 @@
                     <div class="control has-icons-right">
                         <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
                             [(ngModel)]="walletSpendkey" readonly #walletviewkeyInput>
-                        <span class="icon is-small is-right is-clickable"
-                            (click)="copyToClipboard(walletviewkeyInput.value)">
+                        <span id="button" class="icon is-small is-right is-clickable"
+                            (click)="copyToClipboard(walletviewkeyInput.value)" [ngxTippy]="'Text Coppied'"
+                            [tippyProps]="tippyOptions">
                             <fa-icon [icon]="faCopy"></fa-icon>
                         </span>
                     </div>
@@ -34,9 +40,11 @@
         </div>
         <div class="field">
             <label class="label is-flex is-align-items-center">Public Address:&nbsp;
-                <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(publicaddressInput.value)">
-                    <fa-icon [icon]="faCopy"></fa-icon>
-                </span>
+                <span id="button" class="icon is-small is-right is-clickable"
+                (click)="copyToClipboard(publicaddressInput.value)" [ngxTippy]="'Text Coppied'"
+                [tippyProps]="tippyOptions">
+                <fa-icon [icon]="faCopy"></fa-icon>
+            </span>
             </label>
             <div class="field-body">
                 <div class="field">
@@ -47,7 +55,9 @@
         </div>
         <div class="field">
             <label class="label is-flex is-align-items-center">Mnemonic Seed:&nbsp;
-                <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(mnemonicInput.value)">
+                <span id="button" class="icon is-small is-right is-clickable"
+                    (click)="copyToClipboard(mnemonicInput.value)" [ngxTippy]="'Text Coppied'"
+                    [tippyProps]="tippyOptions">
                     <fa-icon [icon]="faCopy"></fa-icon>
                 </span>
             </label>

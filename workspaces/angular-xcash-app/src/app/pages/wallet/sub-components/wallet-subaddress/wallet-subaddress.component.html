@@ -33,8 +33,9 @@
 									<td>{{ subaddress.balance }}</td>
 									<td>
 										<div>
-											<span class="is-small is-right is-clickable mr-4"
-												(click)="copyAddress(subaddress.id-1)">
+											<span id="button" class="is-small is-right is-clickable mr-4"
+												(click)="copyAddress(subaddress.id-1)" [ngxTippy]="'Text Coppied'"
+												[tippyProps]="tippyOptions">
 												<fa-icon [icon]="faCopy"></fa-icon>
 											</span>
 											<span class="icon is-small is-right is-clickable mr-4"

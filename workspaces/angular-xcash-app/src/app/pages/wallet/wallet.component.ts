@@ -33,7 +33,6 @@ export class WalletComponent implements OnInit {
 	modalmessage: string = '';
 	showLoginModal: boolean = true;
 	showtab: number = 0;
-	showAdvTab: number = 0;
 	showAdvTabs: boolean = false;
 	xcashbalance: number = 0;
 	toXCASH: number = 0;
@@ -43,6 +42,15 @@ export class WalletComponent implements OnInit {
 	currencySymbol: string = '';
 	displayValue: any = '';
 	walletOpen: boolean = false;
+	tippyOptions = {
+		trigger: 'click',
+		hideOnClick: false,
+		onShow: (instance: any) => {
+			setTimeout(() => {
+				instance.hide();
+			}, 700);
+		}
+	};
 
 	constructor(
 		private activatedroute: ActivatedRoute,
@@ -75,14 +83,13 @@ export class WalletComponent implements OnInit {
 		this.showtab = tab;
 		if (tab === 7) {
 			this.showAdvTabs = true;
-			this.showAdvTab = 10;
+			this.showtab = 10;
 		} else {
 			this.showAdvTabs = false;
 		}
 	}
 
 	onTabClickAdv(tab: number): void {
-		this.showAdvTab = tab;
 		this.showtab = tab;
 
 	}
@@ -118,7 +125,7 @@ export class WalletComponent implements OnInit {
 		navigator.clipboard.writeText(value)
 			.then(() => { })
 			.catch(err => {
-				console.error('Failed to copy text: ', err);
+				this.showMessage('Failed to copy text: ' + err);
 			});
 	}
 
@@ -156,5 +163,5 @@ export class WalletComponent implements OnInit {
 			return;
 		}
 	}
-	
+
 }
