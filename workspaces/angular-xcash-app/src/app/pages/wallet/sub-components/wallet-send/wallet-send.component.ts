@@ -190,7 +190,7 @@ export class WalletSendComponent implements OnInit {
 	searchAddress() {
 		const foundContact = this.contacts.find(contact => contact.address === this.toAddress);
 		if (foundContact?.address) {
-			this.contactName = "[" + foundContact?.name + "]";
+			this.contactName = foundContact?.name;
 		} else {
 			this.contactName = "";
 		}

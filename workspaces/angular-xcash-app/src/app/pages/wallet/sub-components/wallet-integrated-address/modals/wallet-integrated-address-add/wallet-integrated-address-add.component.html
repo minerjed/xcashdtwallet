@@ -7,26 +7,38 @@
         <form #intlabelfrom="ngForm">
             <section class="modal-card-body">
                 <div class="field">
-                    <label for="name">Enter a label for the integrated address:</label>
+                    <label for="name">Label:</label>
                     <div>
-                        <input type="text" name="intlabel" class="input is-hovered" [(ngModel)]="intlabel"
-                            #intlabelinput="ngModel" [pattern]="nameCk" required>
-                        <div class="help"
-                            *ngIf="intlabelinput.invalid && (intlabelinput.touched || intlabelinput.dirty)">
-                            Label must be between {{ minlen }} and {{ maxlen }} characters and only contain
-                            numbers and letter
+                        <div class="control has-icons-right">
+                            <input type="text" name="intlabel" class="input is-hovered" [(ngModel)]="intlabel"
+                                #intlabelinput="ngModel" [pattern]="nameCk"
+                                placeholder="Enter the label for the integrated address" required>
+                            <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'label')">
+                                <fa-icon [icon]="faPaste"></fa-icon>
+                            </span>
+                            <div class="help"
+                                *ngIf="intlabelinput.invalid && (intlabelinput.touched || intlabelinput.dirty)">
+                                Label must be between {{ minlen }} and {{ maxlen }} characters and only contain
+                                numbers and letters.
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="field">
-                    <label for="name">Enter an encrypted payment Id (optional):</label>
+                    <label for="name">Payment Id:</label>
                     <div>
-                        <input type="text" name="intpaymentId" class="input is-hovered" [(ngModel)]="intpaymentId"
-                            #intpaymentinput="ngModel" [pattern]="idCk">
-                        <div class="help"
-                            *ngIf="intpaymentinput.invalid && (intpaymentinput.touched || intpaymentinput.dirty)">
-                            Encrypted payment id must be {{ lenEncry }} characters long and only contain
-                            numbers and letters.
+                        <div class="control has-icons-right">
+                            <input type="text" name="intpaymentId" class="input is-hovered" [(ngModel)]="intpaymentId"
+                                #intpaymentinput="ngModel" [pattern]="idCk"
+                                placeholder="Enter optional encrypted payment id">
+                            <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'paymt')">
+                                <fa-icon [icon]="faPaste"></fa-icon>
+                            </span>
+                            <div class="help"
+                                *ngIf="intpaymentinput.invalid && (intpaymentinput.touched || intpaymentinput.dirty)">
+                                Encrypted payment id must be {{ lenEncry }} characters long and only contain
+                                numbers and letters.
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -9,8 +9,6 @@ import { ConstantsService } from 'src/app/services/constants.service';
   styleUrls: ['./wallet-integrated-address-add.component.sass']
 })
 export class WalletIntegratedAddressAddComponent implements OnInit {
-  faContact = faContactCard;
-  faWallet = faWallet;
   faPaste = faPaste;
   intlabel: string = '';
   intpaymentId: string = '';
@@ -37,5 +35,20 @@ export class WalletIntegratedAddressAddComponent implements OnInit {
 
   cancelAdd() { this.onClose.emit({ outlabel: 'skip', outencryptedId: ''}); }
   selectAdd() { this.onClose.emit({ outlabel: this.intlabel, outencryptedId: this.intpaymentId}); }
+
+  async onPaste(event: Event, infield: string): Promise<void> {
+    event.preventDefault(); // prevent default paste behavior
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (infield === 'label') {
+        this.intlabel = clipboardText;
+      } else {
+          this.intpaymentId = clipboardText;
+        } 
+    }
+    catch (err) {
+      console.error('Failed to read clipboard contents: ', err);
+    }
+  }
 
 }

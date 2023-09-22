@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { faContactCard, faWallet, faPaste } from '@fortawesome/free-solid-svg-icons';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-contacts-modify',
@@ -22,8 +21,7 @@ export class ContactsModifyComponent implements OnInit{
   @Output() onClose = new EventEmitter<{id: number, name : string, public_address : string}>();
 
   constructor(private validatorsRegexService: ValidatorsRegexService,
-    private constantsService: ConstantsService,
-    private changeDetectorRef: ChangeDetectorRef) { }
+    private constantsService: ConstantsService) { }
 
   nameCk: string = '';
   minlen: number = 0;
@@ -39,13 +37,16 @@ export class ContactsModifyComponent implements OnInit{
     this.contactaddress = this.inAddress;
    }
 
-   async onPaste(event: Event): Promise<void> {
+   async onPaste(event: Event, infield: string): Promise<void> {
 		event.preventDefault(); // prevent default paste behavior
 		try {
 			const clipboardText = await navigator.clipboard.readText();
-			this.contactaddress = clipboardText;
-			this.changeDetectorRef.detectChanges()
-		} catch (err) {
+      if (infield === 'name') {
+        this.contactname = clipboardText; 
+      } else {
+        this.contactaddress = clipboardText; 
+      }
+    } catch (err) {
 			console.error('Failed to read clipboard contents: ', err);
 		}
 	}

@@ -7,10 +7,15 @@
         <form #sublabelfrom="ngForm">
             <section class="modal-card-body">
                 <div class="field">
-                    <label for="name">Enter a label for the sub address (optional):</label>
-                    <div>
+                    <label for="name">Label:</label>
+                    <div class="control has-icons-right">
                         <input type="text" name="sublabel" class="input is-hovered" [(ngModel)]="sublabel"
-                            #sublabelinput="ngModel" [pattern]="nameCk">
+                            #sublabelinput="ngModel" [pattern]="nameCk"
+                            placeholder="Enter optional label for the sub address">
+                            <span class="icon is-small is-right is-clickable is-fullwidth"
+                            (click)="onPaste($event)">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
                         <div class="help"
                             *ngIf="sublabelinput.invalid && (sublabelinput.touched || sublabelinput.dirty)">
                             Label must be between {{ minlen }} and {{ maxlen }} characters and only contain

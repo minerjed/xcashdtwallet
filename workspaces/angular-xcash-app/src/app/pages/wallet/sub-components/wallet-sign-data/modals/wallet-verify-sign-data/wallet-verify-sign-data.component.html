@@ -1,0 +1,71 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Verify Signed Data</p>
+        </header>
+        <form #datafrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Data:
+                        &nbsp;&nbsp;<span class="icon is-small is-right is-clickable"
+                            (click)="onPaste($event, 'data')">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                    </label>
+                    <div>
+                        <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="signData"
+                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required rows="3"></textarea>
+                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
+                            Data can contan letters and number with no embeded spaces.
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="name">Signatory Address:
+                        &nbsp;&nbsp;<span class="icon is-small is-right is-clickable"
+                            (click)="onPaste($event, 'addr')">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                    </label>
+                    <div>
+                        <textarea type="text" name="signAddress" class="textarea input is-hovered"
+                            [(ngModel)]="signAddress" #signAddressinput="ngModel" [pattern]="addressCk" required
+                            placeholder="Enter the signatory address to verify" rows="2"></textarea>
+                        <div class="help"
+                            *ngIf="signAddressinput.invalid && (signAddressinput.touched || signAddressinput.dirty)">
+                            Invalid fomat, please enter a valid xCash address.
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="name">Signature:
+                        &nbsp;&nbsp;<span class="icon is-small is-right is-clickable is is-fullwidth"
+                            (click)="onPaste($event, 'sign')">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                    </label>
+                    <div>
+                        <textarea type="text" name="signature" class="textarea input is-hovered" [(ngModel)]="signature"
+                            #signatueinput="ngModel" [pattern]="signatureCk" required
+                            placeholder="Enter the signature to verify" rows="2"></textarea>
+                        <div class="help"
+                            *ngIf="signatueinput.invalid && (signatueinput.touched || signatueinput.dirty)">
+                            Invalid format, please enter a valid signature address.
+                        </div>
+                    </div>
+                </div>
+                <div class="notification {{ messageType }} mt-1" *ngIf="message">
+                    <button class="delete" (click)="showMessage('');"></button>
+                    <p class="is-centered">{{ message }}</p>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
+                    (click)="selectVerify()">Verify</button>
+                <button type="button" class="button is-hovered" (click)="cancelVerify
+                ()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

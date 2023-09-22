@@ -7,12 +7,17 @@
         <form #contactaddfrom="ngForm">
             <section class="modal-card-body">
                 <div class="field">
-                    <label for="name">Enter the contact name:</label>
-                    <div class="control has-icons-left">
+                    <label for="name">Contact Name:</label>
+                    <div class="control has-icons-left has-icons-right">
                         <input type="text" name="contactname" class="input is-hovered" [(ngModel)]="contactname"
-                            #contactnameinput="ngModel" [pattern]="nameCk" required>
+                            placeholder="Enter the contact name" #contactnameinput="ngModel" [pattern]="nameCk"
+                            required>
                         <span class="icon is-small is-left">
                             <i><fa-icon [icon]="faContact"></fa-icon></i>
+                        </span>
+                        <span class="icon is-small is-right is-clickable"
+                            (click)="onPaste($event, 'name')">
+                            <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                         <div class="help"
                             *ngIf="contactnameinput.invalid && (contactnameinput.touched || contactnameinput.dirty)">
@@ -22,14 +27,16 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label for="address">Enter the wallet address:&nbsp;
-                        <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
+                    <label for="address">Wallet Address:&nbsp;
+                        <span class="icon is-small is-right is-clickable"
+                            (click)="onPaste($event, 'addr')">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                     </label>
                     <div>
-                        <textarea type="text" name="contactaddress" class="textarea is-hovered" [(ngModel)]="contactaddress"
-                            #contactaddressinput="ngModel" [pattern]="addressCk" required rows="2"></textarea>
+                        <textarea type="text" name="contactaddress" class="textarea is-hovered"
+                            [(ngModel)]="contactaddress" #contactaddressinput="ngModel" [pattern]="addressCk" required
+                            rows="2" placeholder="Enter the wallet address for contact"></textarea>
                         <div class="help"
                             *ngIf="contactaddressinput.invalid && (contactaddressinput.touched || contactaddressinput.dirty)">
                             Wallet address must be a vaild xCash address.

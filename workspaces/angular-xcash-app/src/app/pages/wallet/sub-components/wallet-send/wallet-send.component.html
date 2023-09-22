@@ -1,3 +1,7 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+  <button class="delete" (click)="showMessage('');"></button>
+  <p class="is-centered">{{ message }}</p>
+</div>
 <div class="container is-fluid">
   <div container>
     <div *ngIf="showmain">
@@ -34,24 +38,25 @@
         </div>
         <div class="field">
           <label class="label">Recipient:
-            <span [ngClass]="{ 'is-hidden' : noContacts }">
-              &nbsp;<span class="icon is-small is-right is-clickable is is-fullwidth" (click)="useContacts()">
-                <fa-icon [icon]="faContactCard"></fa-icon>
-              </span>
-              &nbsp;{{contactName}}
-            </span>
-          </label>
-          <div class="control has-icons-right">
-            <input class="input is-hovered" type="text" placeholder="Enter recipient address" id="toAddress"
-              name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
-              autofocus placeholder="Enter recipient xcash address or click contacts icon" (blur)="searchAddress()">
-            <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
+            &nbsp;&nbsp;<span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
               <fa-icon [icon]="faPaste"></fa-icon>
             </span>
-            <div *ngIf="toAddressInput.invalid && toAddressInput.touched">
-              <div *ngIf="toAddressInput.errors?.required">This field is required.</div>
-              <div *ngIf="toAddressInput.errors?.pattern">Enter a valid XCASH address.</div>
-            </div>
+            <span [ngClass]="{ 'is-hidden' : noContacts }">
+              &nbsp;&nbsp;<span class="icon is-small is-right is-clickable is is-fullwidth" (click)="useContacts()">
+                <fa-icon [icon]="faContactCard"></fa-icon>
+              </span>
+            </span>
+            <span [ngClass]="{ 'is-hidden' : contactName === '' }">
+              &nbsp;&nbsp;Contact:&nbsp;{{contactName}}
+            </span>
+          </label>
+          <textarea class="textarea is-hovered" type="text" placeholder="Enter recipient address" id="toAddress"
+            name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
+            autofocus placeholder="Enter recipient xcash address or click contacts icon" (blur)="searchAddress()"
+            rows="2"></textarea>
+          <div *ngIf="toAddressInput.invalid && toAddressInput.touched">
+            <div *ngIf="toAddressInput.errors?.required">This field is required.</div>
+            <div *ngIf="toAddressInput.errors?.pattern">Enter a valid XCASH address.</div>
           </div>
         </div>
         <div class="field">
@@ -147,10 +152,5 @@
 </div>
 <div class="notification is-primary mt-1" *ngIf="infoMessage">
   <p class="has-text-centered">{{ infoMessage }}</p>
-</div>
-<div *ngIf="message">&nbsp;</div>
-<div class="notification is-warning mt-1" *ngIf="message">
-  <button class="delete" (click)="showMessage('');"></button>
-  <p class="is-centered">{{ message }}</p>
 </div>
 <app-get-address *ngIf="contactModal" (onClose)="setsendAddress($event)"></app-get-address>

@@ -36,6 +36,7 @@ export class ContactsComponent implements OnInit {
   addresstoMod: string = "";
   showmodModal: boolean = false;
   idtoMod: number = 0;
+  showspinner: boolean = true;
   modelMod = { id: 0, name: "", public_address: "" };
   tippyOptions = {
     trigger: 'click',
@@ -59,11 +60,12 @@ export class ContactsComponent implements OnInit {
     if (this.contacts.length >= 1) {
       this.dtTrigger.next(this.contacts);
       await new Promise(resolve => setTimeout(resolve, 500));
-      this.changePageLength(7);
+      this.changePageLength(5);
       this.hidetrans = false;
     } else {
       this.noContacts = true;
     }
+    this.showspinner = false;
   };
 
   showaddContact(): void {
@@ -71,27 +73,33 @@ export class ContactsComponent implements OnInit {
   }
 
   async addContact(data: any) {
+    this.showaddModal = false;
+    this.showspinner = true;
     this.modelAdd = data;
-    if (this.ckContact(this.modelAdd.name)) {
-      this.showMessage("This contact name already exists. Try again.");
-    } else {
-      if (this.modelAdd.name != "" && this.modelAdd.public_address != "") {
-        this.databaseService.addContacts(this.modelAdd);
-        this.contactlistService.addContact(this.modelAdd.name, this.modelAdd.public_address);
-        this.contactList$ = this.contactlistService.getContactList();
-        this.contacts = this.contactList$.getValue();
-        this.hidetrans = true;
-        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-          dtInstance.destroy();
-        });
-        this.dtTrigger.next(this.contacts);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        this.changePageLength(7);
-        this.hidetrans = false;
-        this.noContacts = false;
+    if (this.modelAdd.name != "" && this.modelAdd.public_address != "") {
+      if (this.ckContact(this.modelAdd.name)) {
+        this.showMessage("This contact name is already in use. Try again.");
+      } else {
+        if (this.ckAddress(this.modelAdd.public_address)) {
+          this.showMessage("This contact address is already in use. Try again.");
+        } else {
+          this.databaseService.addContacts(this.modelAdd);
+          this.contactlistService.addContact(this.modelAdd.name, this.modelAdd.public_address);
+          this.contactList$ = this.contactlistService.getContactList();
+          this.contacts = this.contactList$.getValue();
+          this.hidetrans = true;
+          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+            dtInstance.destroy();
+          });
+          this.dtTrigger.next(this.contacts);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          this.changePageLength(7);
+          this.hidetrans = false;
+          this.noContacts = false;
+        }
       }
     }
-    this.showaddModal = false;
+    this.showspinner = false;
   }
 
   modContactPick(id: number): void {
@@ -102,19 +110,25 @@ export class ContactsComponent implements OnInit {
   }
 
   async modifyContact(data: any) {
+    this.showmodModal = false;
+    this.showspinner = true;
     this.modelMod = data;
-    if ((this.modelMod.name !== this.nametoMod) && (this.ckContact(this.modelMod.name))) {
-      this.showMessage("This contact name already exists. Try again.");
-    } else {
-      if (this.modelMod.name != "" && this.modelMod.public_address != "") {
-        this.databaseService.editContacts(this.modelMod);
-        this.contactlistService.modifyContact(this.modelMod.id, this.modelMod.name, this.modelMod.public_address);
-        this.contactList$ = this.contactlistService.getContactList();
-        this.contacts = this.contactList$.getValue();
-        await new Promise(resolve => setTimeout(resolve, 500));
+    if (this.modelMod.name != "" && this.modelMod.public_address != "") {
+      if ((this.modelMod.name !== this.nametoMod) && (this.ckContact(this.modelMod.name))) {
+        this.showMessage("This contact name is already in use. Try again.");
+      } else {
+        if ((this.modelMod.public_address !== this.addresstoMod) && (this.ckAddress(this.modelMod.public_address))) {
+          this.showMessage("This contact address is already in use. Try again.");
+        } else {
+          this.databaseService.editContacts(this.modelMod);
+          this.contactlistService.modifyContact(this.modelMod.id, this.modelMod.name, this.modelMod.public_address);
+          this.contactList$ = this.contactlistService.getContactList();
+          this.contacts = this.contactList$.getValue();
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
     }
-    this.showmodModal = false;
+    this.showspinner = false;
   }
 
   delContactPick(id: number): void {
@@ -124,6 +138,8 @@ export class ContactsComponent implements OnInit {
   }
 
   async delContact(data: any) {
+    this.showdelModal = false;
+    this.showspinner = true;
     this.modelDel = data;
     if (this.modelDel.confirmflag) {
       this.databaseService.deleteContacts(this.modelDel.id);
@@ -142,7 +158,7 @@ export class ContactsComponent implements OnInit {
         this.noContacts = true;
       }
     }
-    this.showdelModal = false;
+    this.showspinner = false;
   }
 
   copyAddress(contactID: number): void {
@@ -156,6 +172,15 @@ export class ContactsComponent implements OnInit {
   ckContact(inname: string) {
     const foundContact = this.contacts.find(contact => contact.name === inname);
     if (foundContact?.name) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  ckAddress(inaddress: string) {
+    const foundAddress = this.contacts.find(contact => contact.address === inaddress);
+    if (foundAddress?.name) {
       return true;
     } else {
       return false;
@@ -178,7 +203,7 @@ export class ContactsComponent implements OnInit {
     });
     $('div.dataTables_length').find('select, label').remove();
     var newDropdown = $('<select></select>');
-    newDropdown.append('<option value="7">7</option>');
+    newDropdown.append('<option value="5">5</option>');
     newDropdown.append('<option value="10">10</option>');
     newDropdown.append('<option value="25">25</option>');
     newDropdown.append('<option value="50">50</option>');

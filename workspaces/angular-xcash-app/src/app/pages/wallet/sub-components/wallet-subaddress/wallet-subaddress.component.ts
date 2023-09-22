@@ -34,6 +34,7 @@ export class WalletSubaddressComponent implements OnInit {
   ckupdate: boolean = false;
   showmodModal: boolean = false;
   inId: number = 0;
+  inLab: string = "";
   modelMod = { outId: 0, newLabel: "" };
   initArray: boolean = false;
   tippyOptions = {
@@ -78,6 +79,8 @@ export class WalletSubaddressComponent implements OnInit {
   }
 
   async addsubAddress(data: any) {
+    this.showspinner = true;
+    this.showaddModal = false;
     this.modelAdd = data;
     this.inlabel = this.modelAdd.outlabel;
     if (this.inlabel !== 'skip') {
@@ -111,15 +114,18 @@ export class WalletSubaddressComponent implements OnInit {
         }
       }
     }
-    this.showaddModal = false;
+    this.showspinner = false;
   }
 
   modSubaddressPick(id: number): void {
     this.inId = id;
+    this.inLab = this.subAddresses[id-1].label;
     this.showmodModal = true;
   }
 
   async modsubAddress(data: any) {
+    this.showmodModal = false;
+    this.showspinner = true;
     this.modelMod = data;
     if (this.modelMod.outId !== 0) {
       const ckupdate = await this.rpcCallsService.updateaddressLabel(this.modelMod.outId, this.modelMod.newLabel);
@@ -144,7 +150,7 @@ export class WalletSubaddressComponent implements OnInit {
         this.showMessage("RPC Error occured updating subaddress label.");
       }
     }
-    this.showmodModal = false;
+    this.showspinner = false;
   }
 
   copyAddress(id: number): void {

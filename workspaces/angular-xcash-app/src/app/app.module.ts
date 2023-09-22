@@ -31,7 +31,7 @@ import { DecimalPipe } from '@angular/common';
 
 import { XcashCurrencyPipe } from './pipes/xcash-currency.pipe';
 import { XcashPublicAddressPipe } from './pipes/xcash-public-address.pipe';
-import { TransactionDetailsComponent } from './pages/wallet/modals/transaction-details/transaction-details.component';
+import { TransactionDetailsComponent } from './pages/wallet/sub-components/wallet-trans/modals/transaction-details/transaction-details.component';
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
 import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
 import { WalletChangePasswordComponent } from './pages/wallet/sub-components/wallet-change-password/wallet-change-password.component';
@@ -40,13 +40,16 @@ import { VoteFormatPipe } from './pipes/vote-format.pipe';
 import { ContactsModifyComponent } from './pages/wallet/sub-components/contacts/modals/contacts-modify/contacts-modify.component';
 import { ContactsAddComponent } from './pages/wallet/sub-components/contacts/modals/contacts-add/contacts-add.component';
 import { ContactsDeleteComponent } from './pages/wallet/sub-components/contacts/modals/contacts-delete/contacts-delete.component';
-import { GetAddressComponent } from './pages/wallet/modals/get-address/get-address.component';
+import { GetAddressComponent } from './pages/wallet/sub-components/wallet-send/modals/get-address/get-address.component';
 import { WalletSubaddressComponent } from './pages/wallet/sub-components/wallet-subaddress/wallet-subaddress.component';
 import { WalletSubaddressAddComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-add/wallet-subaddress-add.component';
 import { WalletSubaddressModComponent } from './pages/wallet/sub-components/wallet-subaddress/modals/wallet-subaddress-mod/wallet-subaddress-mod.component';
 import { WalletIntegratedAddressComponent } from './pages/wallet/sub-components/wallet-integrated-address/wallet-integrated-address.component';
 import { WalletIntegratedAddressAddComponent } from './pages/wallet/sub-components/wallet-integrated-address/modals/wallet-integrated-address-add/wallet-integrated-address-add.component';
 import { NgxTippyModule } from 'ngx-tippy-wrapper';
+import { WalletSignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/wallet-sign-data.component';
+import { WalletAddSignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/modals/wallet-add-sign-data/wallet-add-sign-data.component';
+import { WalletVerifySignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/modals/wallet-verify-sign-data/wallet-verify-sign-data.component';
 
 @NgModule({
   declarations: [
@@ -81,7 +84,10 @@ import { NgxTippyModule } from 'ngx-tippy-wrapper';
     WalletSubaddressAddComponent,
     WalletSubaddressModComponent,
     WalletIntegratedAddressComponent,
-    WalletIntegratedAddressAddComponent
+    WalletIntegratedAddressAddComponent,
+    WalletSignDataComponent,
+    WalletAddSignDataComponent,
+    WalletVerifySignDataComponent
   ],
   imports: [
     BrowserModule,

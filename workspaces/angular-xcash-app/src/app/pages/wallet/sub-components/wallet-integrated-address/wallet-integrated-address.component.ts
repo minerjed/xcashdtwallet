@@ -71,6 +71,8 @@ export class WalletIntegratedAddressComponent implements OnInit {
   }
 
   async addintAddress(data: any) {
+    this.showaddModal = false;
+    this.showspinner = true;
     this.modelAdd = data;
     this.inlabel = this.modelAdd.outlabel;
     if (this.inlabel !== 'skip') {
@@ -112,7 +114,7 @@ export class WalletIntegratedAddressComponent implements OnInit {
         }
       }
     }
-    this.showaddModal = false;
+    this.showspinner = false;
   }
 
   ckLabel(inname: string): boolean {

@@ -8,12 +8,16 @@
             <section class="modal-card-body">
                 <div class="field">
                     <label for="name">Modify the contact name:</label>
-                    <div class="control has-icons-left">
+                    <div class="control has-icons-left has-icons-right">
                         <input type="text" name="contactname" class="input is-hovered" [(ngModel)]="contactname"
                             #contactnameinput="ngModel" [pattern]="nameCk" required>
                         <span class="icon is-small is-left">
                             <i><fa-icon [icon]="faContact"></fa-icon></i>
                         </span>
+                        <span class="icon is-small is-right is-clickable"
+                        (click)="onPaste($event, 'name')">
+                        <fa-icon [icon]="faPaste"></fa-icon>
+                    </span>
                         <div class="help"
                             *ngIf="contactnameinput.invalid && (contactnameinput.touched || contactnameinput.dirty)">
                             New wallet name must be between {{ minlen }} and {{ maxlen }} characters and only contain
@@ -23,7 +27,7 @@
                 </div>
                 <div class="field">
                     <label for="address">Modify the wallet address:&nbsp;
-                        <span class="icon is-small is-right is-clickable is is-fullwidth" (click)="onPaste($event)">
+                        <span class="icon is-small is-right is-clickable" (click)="onPaste($event,'addr')">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                     </label>

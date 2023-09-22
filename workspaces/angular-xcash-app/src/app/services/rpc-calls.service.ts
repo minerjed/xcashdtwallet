@@ -406,10 +406,44 @@ export class RpcCallsService {
       if (ckdata.hasOwnProperty('error')) {
         return ({ "status": false, "payment_id": '', "integrated_address": '' });
       } else {
-        return ({ "status": true, "payment_id": ckdata.result.payment_id, "integrated_address": ckdata.result.integrated_address });
+        return ({ "status": true, "payment_id": ckdata.result.payment_id, 
+          "integrated_address": ckdata.result.integrated_address });
       }
     } catch (error) {
       return ({ "status": false, "payment_id": '', "integrated_address": '' });
+    }
+  }
+
+  public async createSignedData(signedData: string): Promise<string> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"sign","params":{"data":"${signedData}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return ('error');
+      } else {
+        return (ckdata.result.signature);
+      }
+    }
+    catch (error) {
+      return ('error');
+    }
+  }
+
+  public async verifySignedData(signedData: any): Promise<boolean> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"verify","params":{"data":"${signedData.data}",
+      "address":"${signedData.public_address}","signature":"${signedData.signature}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return (false);
+      } else {
+        return (ckdata.result.good);
+      }
+    }
+    catch (error) {
+      return (false);
     }
   }
 

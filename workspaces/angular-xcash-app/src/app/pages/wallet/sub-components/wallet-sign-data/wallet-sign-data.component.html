@@ -1,0 +1,63 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+	<button class="delete" (click)="showMessage('');"></button>
+	<p class="is-centered">{{ message }}</p>
+</div>
+<div class="container is-fluid">
+	<div class="columns is-justify-content-flex-end mb-0 mt-1">
+		<div class="column is-narrow">
+		  <div class="buttons">
+			<button type="submit" class="button is-info is-small" (click)="showSign()">Sign</button>
+		  </div>
+		</div>
+		<div class="column is-narrow">
+		  <div class="buttons">
+			<button type="submit" class="button is-info is-small" (click)="showVerify()">Verify</button>
+		  </div>
+		</div>
+	  </div>
+	  	<div id="nocontact" [ngClass]="{ 'is-hidden' : !noSignedData }">
+		<p>No Signed Data entries have been created. Click the Sign button to add your first Signed Data entry.</p>
+	</div>
+	<div id="subaddress" [ngClass]="{ 'is-hidden' : hidetrans || noSignedData }">
+		<div calss="container">
+			<form>
+				<div id="subaddress">
+					<div class="container">
+						<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+							class="table is-striped mx-auto is-hoverable" id="subaddid">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Signed Data</th>
+									<th>Signature</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let signeddata of signedDataArray">
+									<td>{{ signeddata.id }}</td>
+									<td>{{ signeddata.data }}</td>
+									<td>{{ signeddata.signature | xcashPublicAddress:17 }}</td>
+									<td>
+										<div>
+											<span id="button" class="is-small is-right is-clickable mr-4"
+												(click)="copyAddress(signeddata.id-1)" [ngxTippy]="'Text Coppied'"
+												[tippyProps]="tippyOptions">
+												<fa-icon [icon]="faCopy"></fa-icon>
+											</span>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<app-wallet-add-sign-data *ngIf="showSignModal" (onClose)="addSignData($event)"></app-wallet-add-sign-data>
+<app-wallet-verify-sign-data *ngIf="showVerifyModal" (onClose)="exitSignData($event)"></app-wallet-verify-sign-data>
+<div class="spinner-container" *ngIf="showspinner">
+	<div class="spinner"></div>
+</div>

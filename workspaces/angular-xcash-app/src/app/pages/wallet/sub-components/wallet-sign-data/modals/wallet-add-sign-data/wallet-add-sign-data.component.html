@@ -1,0 +1,31 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create Signed Data</p>
+        </header>
+        <form #datafrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Data:</label>
+                    <div class="control has-icons-right">
+                        <input type="text" name="data" class="input is-hovered" [(ngModel)]="signData"
+                            #datainput="ngModel" [pattern]="dataCk" required placeholder="Enter the data you to sign">
+                        <span class="icon is-small is-right is-clickable is-fullwidth"
+                            (click)="onPaste($event)">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
+                            Data can contan letters and number with no embeded spaces.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
+                    (click)="selectAdd()">Add</button>
+                <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

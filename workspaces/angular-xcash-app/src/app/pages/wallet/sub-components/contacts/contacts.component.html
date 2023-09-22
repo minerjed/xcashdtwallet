@@ -58,3 +58,6 @@
   (onClose)="modifyContact($event)"></app-contacts-modify>
 <app-contacts-delete [inId]="idtoDel" [inName]="nametoDel" *ngIf="showdelModal"
   (onClose)="delContact($event)"></app-contacts-delete>
+<div class="spinner-container" *ngIf="showspinner">
+  <div class="spinner"></div>
+</div>

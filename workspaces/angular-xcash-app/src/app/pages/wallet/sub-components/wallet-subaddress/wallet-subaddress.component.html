@@ -54,7 +54,7 @@
 	</div>
 </div>
 <app-wallet-subaddress-add *ngIf="showaddModal" (onClose)="addsubAddress($event)"></app-wallet-subaddress-add>
-<app-wallet-subaddress-mod [modId]="inId" *ngIf="showmodModal"
+<app-wallet-subaddress-mod [modId]="inId" [modLabel]="inLab" *ngIf="showmodModal"
 	(onClose)="modsubAddress($event)"></app-wallet-subaddress-mod>
 <div class="spinner-container" *ngIf="showspinner">
 	<div class="spinner"></div>

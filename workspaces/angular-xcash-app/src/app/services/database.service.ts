@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { WindowApiConst } from 'shared-lib';
 import { Contact } from '../models/contact.model';
 import { integratedAddress } from '../models/integratedaddress';
+import { signedData } from '../models/signeddata';
 
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
@@ -48,12 +49,12 @@ export class DatabaseService {
     return new Promise(async (resolve, reject) => {
       try {
         // Constants
-        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
 
         // variables
         let Contact: Contact[] = [];
         let count = 0;
-        DATABASE_DATA.contact_data.forEach((item: any) => {
+        database_data.contact_data.forEach((item: any) => {
           Contact.push({
             id: count,
             name: item.name,
@@ -115,9 +116,9 @@ export class DatabaseService {
   public async getSubAddressCount(public_address: string): Promise<number> {
     return new Promise(async (resolve, reject) => {
       try {
-        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
-        const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
-        resolve(DATABASE_DATA.wallet_data[WALLET_COUNT].sub_address_count);
+        const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        const wallet_count: number = await this.getCurrentWallet(public_address);
+        resolve(database_data.wallet_data[wallet_count].sub_address_count);
       } catch (error) {
         reject(error);
       }
@@ -126,9 +127,9 @@ export class DatabaseService {
 
   public async updateSubAddressCount(public_address: string, addressIndex: number): Promise<boolean> {
     try {
-      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      const wallet_count: number = await this.getCurrentWallet(public_address);
       let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
-      database_data.wallet_data[WALLET_COUNT].sub_address_count = addressIndex;
+      database_data.wallet_data[wallet_count].sub_address_count = addressIndex;
       fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
       return (true);
     } catch (error) {
@@ -139,14 +140,14 @@ export class DatabaseService {
   private async getCurrentWallet(public_address: string): Promise<number> {
     return new Promise(async (resolve) => {
       try {
-        const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
         let wallet_count: number = 0;
-        for (wallet_count = 0; wallet_count < DATABASE_DATA.wallet_data.length; wallet_count++) {
-          if (DATABASE_DATA.wallet_data[wallet_count].public_address === public_address) {
+        for (wallet_count = 0; wallet_count < database_data.wallet_data.length; wallet_count++) {
+          if (database_data.wallet_data[wallet_count].public_address === public_address) {
             break;
           }
         }
-        if (wallet_count === DATABASE_DATA.wallet_data.length) {
+        if (wallet_count === database_data.wallet_data.length) {
           resolve(0);
         }
         else {
@@ -161,10 +162,10 @@ export class DatabaseService {
   public async getIntegratedAddresses(public_address: string): Promise<integratedAddress[]> {
     let IntegratedAddress: integratedAddress[] = [];
     try {
-      const DATABASE_DATA: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
-      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      const wallet_count: number = await this.getCurrentWallet(public_address);
       let count = 0;
-      DATABASE_DATA.wallet_data[WALLET_COUNT].integrated_addresses.forEach((item: {
+      database_data.wallet_data[wallet_count].integrated_addresses.forEach((item: {
         label: string; payment_id: string; integrated_address: string;
       }) => {
         count++;
@@ -183,9 +184,9 @@ export class DatabaseService {
 
   public async saveIntegratedAddresses(data: any, public_address: string): Promise<boolean> {
     try {
-      const WALLET_COUNT: number = await this.getCurrentWallet(public_address);
+      const wallet_count: number = await this.getCurrentWallet(public_address);
       let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
-      database_data.wallet_data[WALLET_COUNT].integrated_addresses.push({
+      database_data.wallet_data[wallet_count].integrated_addresses.push({
         label: data.label,
         payment_id: data.payment_id,
         integrated_address: data.integrated_address,
@@ -197,5 +198,40 @@ export class DatabaseService {
     }
   }
 
+  public async getSignedData(public_address: string): Promise<signedData[]> {
+    let SignedData:signedData[] = [];
+    try
+    {
+      const database_data:any = JSON.parse(fs.readFileSync(this.dbfile,"utf8"));
+      const wallet_count: number = await this.getCurrentWallet(public_address);
+      let count: number = 0;
+      database_data.wallet_data[wallet_count].signed_data.forEach((item: { data: any; signature: any; }) => {
+         count++;
+         SignedData.push({
+          id: count,
+          data: item.data,
+          signature: item.signature,
+        });
+     }); 
+      return(SignedData);
+    } catch (error) {
+      return(SignedData);
+    }
+  }
+
+  public async saveSignedData(data: any, public_address: string): Promise<boolean> {
+      try {
+        const wallet_count: number = await this.getCurrentWallet(public_address);
+        let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+        database_data.wallet_data[wallet_count].signed_data.push({
+          data: data.data,
+          signature: data.signature,
+        });
+        fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
+        return(true);
+      } catch (error) {
+        return(false);
+      }
+  }
 
 }
