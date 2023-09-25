@@ -1,0 +1,41 @@
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create Signed Data</p>
+        </header>
+        <form #datafrom="ngForm">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label for="name">Amount:</label>
+                    <input type="string" name="amount" class="input is-hovered" [(ngModel)]="amount"
+                        #amountinput="ngModel" [pattern]="amountCk" required
+                        placeholder="Enter the amount for the reserve proof">
+                    <div class="help" *ngIf="amountinput.invalid && (amountinput.touched || amountinput.dirty)">
+                        Amount entered must be a number.
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="name">Message:</label>
+                    <div class="control has-icons-right">
+                        <input type="text" name="rpmessage" class="input is-hovered" [(ngModel)]="rpmessage"
+                            #rpmessageinput="ngModel" [pattern]="rpmessageCk"
+                            placeholder="Enter an optional message to further authenticate the proof">
+                        <span class="icon is-small is-right is-clickable is-fullwidth" (click)="onPaste($event)">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                        <div class="help"
+                            *ngIf="rpmessageinput.invalid && (rpmessageinput.touched || rpmessageinput.dirty)">
+                            Message can contan letters and numbers with a max length of {{ messageLength }}.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
+                    (click)="selectAdd()">Add</button>
+                <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>

@@ -3,39 +3,41 @@ import { DatabaseService } from 'src/app/services/database.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { signedData } from 'src/app/models/signeddata';
+import { ReserveProof } from 'src/app/models/reserveproof';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DataTableDirective } from 'angular-datatables';
 declare var $: any;
 
 @Component({
-  selector: 'app-wallet-sign-data',
-  templateUrl: './wallet-sign-data.component.html',
-  styleUrls: ['./wallet-sign-data.component.sass']
+  selector: 'app-wallet-reserve-proof',
+  templateUrl: './wallet-reserve-proof.component.html',
+  styleUrls: ['./wallet-reserve-proof.component.sass']
 })
-export class WalletSignDataComponent implements OnInit {
+export class WalletReserveProofComponent implements OnInit {
   @ViewChild(DataTableDirective, { static: false })
   dtElement!: DataTableDirective;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
-  signedDataArray: signedData[] = [];
+  reserveProofArray: ReserveProof[] = [];
   faEdit = faEdit;
   faCopy = faCopy;
   hidetrans: boolean = true;
-  modelAdd = { outdata: "" };
-  noSignedData: boolean = true;
+  noreserveProof: boolean = true;
   message: string = "";
   walletaddress: string = "";
   showspinner: boolean = true;
-  showSignModal = false;
+  showAddModal = false;
   showVerifyModal = false;
   initArray: boolean = false;
   createdSignature: string = "";
-  wsdata = { data: "", signature: "" };
-  wsvdata = { outdata: "", outSignAddress: "", outSignature: "" };
-  showDisplayModal = false;
-  passData: string = '';
-  passSignature: string = '';
+  showDisplayModal: boolean = false;
+  passSignature: string = "";
+  passMessage: string = "";
+  passAmount: any = "";
+  passStatus: string = "";
+
+  //  inrpData = { amount: 0, message: '' }
+
   tippyOptions = {
     trigger: 'click',
     hideOnClick: false,
@@ -54,47 +56,45 @@ export class WalletSignDataComponent implements OnInit {
 
   async ngOnInit() {
     this.walletaddress = this.activatedRoute.snapshot.paramMap.get('waddress') ?? '';
-    this.signedDataArray = await this.databaseService.getSignedData(this.walletaddress);
-    if (this.signedDataArray.length > 0) {
-      this.noSignedData = false;
+    this.reserveProofArray = await this.databaseService.getReserveproof(this.walletaddress);
+    if (this.reserveProofArray.length > 0) {
+      this.noreserveProof = false;
       this.initArray = true;
-      this.dtTrigger.next(this.signedDataArray);
+      this.dtTrigger.next(this.reserveProofArray);
       await new Promise(resolve => setTimeout(resolve, 500));
       this.changePageLength(5);
       this.hidetrans = false;
     } else {
-      this.noSignedData = true;
+      this.noreserveProof = true;
     }
     this.showspinner = false;
   };
 
-  showSign(): void {
-    this.showSignModal = true;
+  showCreate(): void {
+    this.showAddModal = true;
   }
 
-  async addSignData(data: any) {
-    this.showSignModal = false;
+  async addreserveProof(data: any) {
+    this.showAddModal = false;
     this.showspinner = true;
-    this.modelAdd = data;
-    if (this.modelAdd.outdata !== "skip") {
-      this.noSignedData = true;
-      this.createdSignature = await this.rpcCallsService.createSignedData(this.modelAdd.outdata);
-      if (this.createdSignature !== 'error') {
-        this.wsdata.data = this.modelAdd.outdata;
-        this.wsdata.signature = this.createdSignature;
-        if (await this.databaseService.saveSignedData(this.wsdata, this.walletaddress)) {
+    if (data.amount !== 0) {
+      const inSignature = await this.rpcCallsService.createReserveproof(data);
+      if (inSignature !== 'error') {
+        console.log('here');
+        console.log(data.amount);
+        const newdata = {balance: data.amount, message: data.message, reserve_proof: inSignature};     
+        if (await this.databaseService.saveReserveproof(newdata, this.walletaddress)) {
+          this.hidetrans = true;
           if (this.initArray) {
             this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
               dtInstance.destroy();
             });
-            this.signedDataArray = [];
-            this.signedDataArray.length = 0;
+            this.reserveProofArray = [];
+            this.reserveProofArray.length = 0;
           }
-          this.signedDataArray = await this.databaseService.getSignedData(this.walletaddress);
-          if (this.signedDataArray.length > 0) {
-            this.hidetrans = true;
-            this.noSignedData = false;
-            this.dtTrigger.next(this.signedDataArray);
+          this.reserveProofArray = await this.databaseService.getReserveproof(this.walletaddress);
+          if (this.reserveProofArray.length > 0) {
+            this.dtTrigger.next(this.reserveProofArray);
             await new Promise(resolve => setTimeout(resolve, 500));
             this.changePageLength(5);
             this.hidetrans = false;
@@ -107,6 +107,7 @@ export class WalletSignDataComponent implements OnInit {
       } else {
         this.message = "Error calling the Wallet RPC process."
       }
+
     }
     this.showspinner = false;
   }
@@ -119,34 +120,29 @@ export class WalletSignDataComponent implements OnInit {
     this.showVerifyModal = false;
   }
 
-  copyData(id: number): void {
-    navigator.clipboard.writeText(this.signedDataArray[id].data)
+  copyAddress(id: number): void {
+    navigator.clipboard.writeText(this.reserveProofArray[id].signature)
       .then(() => { })
       .catch(err => {
         this.showMessage('Failed to copy text: ' + err);
       });
-  }
-
-  copySignature(id: number): void {
-    navigator.clipboard.writeText(this.signedDataArray[id].signature)
-      .then(() => { })
-      .catch(err => {
-        this.showMessage('Failed to copy text: ' + err);
-      });
-  }
-
-  showMessage(message: string): void {
-    this.message = message;
   }
 
   callDisplayModal(id: any): void {
-    this.passData = this.signedDataArray[id].data;
-    this.passSignature = this.signedDataArray[id].signature;
+    console.log (this.passMessage);
+    this.passMessage = this.reserveProofArray[id].message;
+    this.passSignature = this.reserveProofArray[id].signature;
+    this.passAmount = this.reserveProofArray[id].amount;
+    this.passStatus = this.reserveProofArray[id].status;
     this.showDisplayModal = true;
   }
 
   exitDisplayModal(): void {
     this.showDisplayModal = false;
+  }
+
+  showMessage(message: string): void {
+    this.message = message;
   }
 
   ngOnDestroy(): void {

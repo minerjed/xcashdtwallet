@@ -10,13 +10,13 @@
                     <label for="name">Data:</label>
                     <div class="control has-icons-right">
                         <input type="text" name="data" class="input is-hovered" [(ngModel)]="signData"
-                            #datainput="ngModel" [pattern]="dataCk" required placeholder="Enter the data you to sign">
+                            #datainput="ngModel" [pattern]="dataCk" required placeholder="Enter the data string you to sign">
                         <span class="icon is-small is-right is-clickable is-fullwidth"
                             (click)="onPaste($event)">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                         <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
-                            Data can contan letters and number with no embeded spaces.
+                            Data string can contan letters and numbers with a max length of {{ messageLength }}.
                         </div>
                     </div>
                 </div>

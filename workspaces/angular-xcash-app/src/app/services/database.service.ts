@@ -3,6 +3,8 @@ import { WindowApiConst } from 'shared-lib';
 import { Contact } from '../models/contact.model';
 import { integratedAddress } from '../models/integratedaddress';
 import { signedData } from '../models/signeddata';
+import { ReserveProof } from '../models/reserveproof';
+import { RpcCallsService } from './rpc-calls.service';
 
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
@@ -14,7 +16,7 @@ export class DatabaseService {
   wdir = APIs.platform !== "win32" ? `${APIs.homeDir}${WindowApiConst.XCASHOFFICAL}` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
   dbfile: string = `${this.wdir}database.txt`;
 
-  constructor() { }
+  constructor(private rpcallsService: RpcCallsService) { }
 
   public async saveWalletData(walletname: string, publicaddress: string, balance: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
@@ -199,39 +201,97 @@ export class DatabaseService {
   }
 
   public async getSignedData(public_address: string): Promise<signedData[]> {
-    let SignedData:signedData[] = [];
-    try
-    {
-      const database_data:any = JSON.parse(fs.readFileSync(this.dbfile,"utf8"));
+    let SignedData: signedData[] = [];
+    try {
+      const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
       const wallet_count: number = await this.getCurrentWallet(public_address);
       let count: number = 0;
       database_data.wallet_data[wallet_count].signed_data.forEach((item: { data: any; signature: any; }) => {
-         count++;
-         SignedData.push({
+        count++;
+        SignedData.push({
           id: count,
           data: item.data,
           signature: item.signature,
         });
-     }); 
-      return(SignedData);
+      });
+      return (SignedData);
     } catch (error) {
-      return(SignedData);
+      return (SignedData);
     }
   }
 
   public async saveSignedData(data: any, public_address: string): Promise<boolean> {
-      try {
-        const wallet_count: number = await this.getCurrentWallet(public_address);
-        let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
-        database_data.wallet_data[wallet_count].signed_data.push({
-          data: data.data,
-          signature: data.signature,
+    try {
+      const wallet_count: number = await this.getCurrentWallet(public_address);
+      let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      database_data.wallet_data[wallet_count].signed_data.push({
+        data: data.data,
+        signature: data.signature,
+      });
+      fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
+      return (true);
+    } catch (error) {
+      return (false);
+    }
+  }
+
+  public async getReserveproof(public_address: string): Promise<ReserveProof[]> {
+    let reserveProof: ReserveProof[] = [];
+    const wallet_count: number = await this.getCurrentWallet(public_address);
+    let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+    let count: number = 0;
+    let status: string[] = [];
+    let retStatus: string;
+    try {
+      if (database_data.wallet_data[wallet_count].reserve_proofs.length > 0) {
+        database_data.wallet_data[wallet_count].reserve_proofs.forEach(async (item: {
+          message: any; reserve_proof: any;
+        }) => {
+          retStatus = await this.rpcallsService.verifyReserveproof({
+            "public_address": public_address, "message": item.message, "reserveproof": item.reserve_proof
+          });
+          if (retStatus === 'error') {
+            status[count] = 'Error';
+          } else {
+            status[count] = retStatus === 'true' ? "Valid" : "Invalid";
+          }
+          count++;
         });
-        fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
-        return(true);
-      } catch (error) {
-        return(false);
+        while (status[database_data.wallet_data[wallet_count].reserve_proofs.length - 1] == undefined) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        count = 0;
+        database_data.wallet_data[wallet_count].reserve_proofs.forEach((item: { balance: any; reserve_proof: any; message: any; }) => {
+          reserveProof.push({
+            id: count + 1,
+            amount: item.balance,
+            signature: item.reserve_proof,
+            status: status[count],
+            message: item.message
+          });
+          count++;
+        });
       }
+      return (reserveProof);
+    } catch (error) {
+      return (reserveProof);
+    }
+  }
+
+  public async saveReserveproof(data: any, public_address: string): Promise<boolean> {
+    const wallet_count: number = await this.getCurrentWallet(public_address);
+    try {
+      let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      database_data.wallet_data[wallet_count].reserve_proofs.push({
+        reserve_proof: data.reserve_proof,
+        message: data.message,
+        balance: data.balance
+      });
+      fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
+      return (true);
+    } catch (error) {
+      return (false);
+    }
   }
 
 }

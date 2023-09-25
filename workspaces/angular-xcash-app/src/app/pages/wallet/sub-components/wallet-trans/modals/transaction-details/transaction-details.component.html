@@ -14,7 +14,10 @@
           </span>
         </div>
       </div>
-      <div *ngIf="famount !== 0">
+      <div *ngIf="!isNumber(famount)">
+        <label>Amount:</label>
+      </div>
+      <div *ngIf="isNumber(famount)">
         <label>Amount: </label>
         <span class="has-text-weight-semibold">{{ famount | xcash:'1.0-2' }}</span>
       </div>
@@ -26,7 +29,10 @@
         <label>Double Spend Seen: </label>
         <span class="has-text-weight-semibold">{{ fdouble_spend_seen }}</span>
       </div>
-      <div>
+      <div *ngIf="!isNumber(ffee)">
+        <label>Fee:</label>
+      </div>
+      <div *ngIf="isNumber(ffee)">
         <label>Fee: </label><span class="has-text-weight-semibold">{{ ffee | xcash:'1.0-2' }}</span>
       </div>
       <div>
@@ -76,5 +82,8 @@
     <footer class="modal-card-foot">
       <button id="closemodal" type="button" class="button" is-primary (click)="closeModal()">Cancel</button>
     </footer>
+  </div>
+  <div class="spinner-container" *ngIf="showspinner">
+    <div class="spinner"></div>
   </div>
 </div>

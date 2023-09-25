@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
+import { ConstantsService } from 'src/app/services/constants.service';
 import { faPaste } from '@fortawesome/free-solid-svg-icons';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 
@@ -13,6 +14,7 @@ export class WalletVerifySignDataComponent implements OnInit {
   @Output() onClose = new EventEmitter<{}>();
   constructor(private validatorsRegexService: ValidatorsRegexService,
     private rpcCallsService: RpcCallsService,
+    private constantsService: ConstantsService
   ) { }
 
   faPaste = faPaste;
@@ -22,21 +24,23 @@ export class WalletVerifySignDataComponent implements OnInit {
   dataCk: string = '';
   addressCk: string = '';
   signatureCk: string = '';
+  messageLength: number = 0;
   message: string = '';
   messageType: string = 'is-danger'
-
+  showSpinner: boolean = false;
 
   ngOnInit() {
-    this.dataCk = this.validatorsRegexService.data_to_sign;
+    this.dataCk = this.validatorsRegexService.message_settings;
     this.addressCk = this.validatorsRegexService.xcash_address;
     this.signatureCk = this.validatorsRegexService.signature;
+    this.messageLength = this.constantsService.message_settings_length;
   }
 
   cancelVerify() { this.onClose.emit({}); }
 
   async selectVerify() {
-    const passData = { data: this.signData, public_address: this.signAddress, 
-      signature: this.signature }
+    this.showSpinner = true;
+    const passData = { data: this.signData, public_address: this.signAddress, signature: this.signature }
     if (await this.rpcCallsService.verifySignedData(passData)) {
       this.message = 'Signed Data Verifed Successfully'
       this.messageType = 'is-success';
@@ -44,6 +48,7 @@ export class WalletVerifySignDataComponent implements OnInit {
       this.message = 'Signed Data Verification Failed'
       this.messageType = 'is-danger';
     }
+    this.showSpinner = false;
   }
 
   showMessage(message: string): void {

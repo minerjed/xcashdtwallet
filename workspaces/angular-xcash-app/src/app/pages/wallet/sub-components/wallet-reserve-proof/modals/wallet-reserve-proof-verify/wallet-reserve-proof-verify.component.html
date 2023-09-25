@@ -2,36 +2,21 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Verify Signed Data</p>
+            <p class="modal-card-title">Verify Reserve Proof</p>
         </header>
         <form #datafrom="ngForm">
             <section class="modal-card-body">
                 <div class="field">
-                    <label for="name">Signed Data:&nbsp;
-                        <span class="icon is-small is-right is-clickable"
-                            (click)="onPaste($event, 'data')">
-                            <fa-icon [icon]="faPaste"></fa-icon>
-                        </span>
-                    </label>
-                    <div>
-                        <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="signData"
-                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required rows="3"></textarea>
-                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
-                            Data string can contan letters and numbers with a max length of {{ messageLength }}.
-                        </div>
-                    </div>
-                </div>
-                <div class="field">
-                    <label for="name">Signatory Address:&nbsp;
-                        <span class="icon is-small is-right is-clickable"
-                            (click)="onPaste($event, 'addr')">
+                    <label for="name">Reserve Proof Address:&nbsp;
+                        <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'addr')">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                     </label>
                     <div>
                         <textarea type="text" name="signAddress" class="textarea input is-hovered"
-                            [(ngModel)]="signAddress" #signAddressinput="ngModel" [pattern]="addressCk" required
-                            placeholder="Enter the signatory address to verify" rows="2"></textarea>
+                            [(ngModel)]="rpAddress" #signAddressinput="ngModel" [pattern]="addressCk" required
+                            placeholder="Enter the adddress that was used to create the reserve proof"
+                            rows="2"></textarea>
                         <div class="help"
                             *ngIf="signAddressinput.invalid && (signAddressinput.touched || signAddressinput.dirty)">
                             Invalid fomat, please enter a valid xCash address.
@@ -39,19 +24,34 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label for="name">Signature:&nbsp;
+                    <label for="name">Reserve Proof Signature:&nbsp;
                         <span class="icon is-small is-right is-clickable is is-fullwidth"
                             (click)="onPaste($event, 'sign')">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                     </label>
                     <div>
-                        <textarea type="text" name="signature" class="textarea input is-hovered" [(ngModel)]="signature"
-                            #signatueinput="ngModel" [pattern]="signatureCk" required
-                            placeholder="Enter the signature to verify" rows="2"></textarea>
+                        <textarea type="text" name="signature" class="textarea input is-hovered"
+                            [(ngModel)]="rpSignature" #signatueinput="ngModel" [pattern]="rpCk" required
+                            placeholder="Enter the reserve proof signature to verify" rows="5"></textarea>
                         <div class="help"
                             *ngIf="signatueinput.invalid && (signatueinput.touched || signatueinput.dirty)">
                             Invalid format, please enter a valid signature address.
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="name">Reserve Proof Data String:&nbsp;
+                        <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'data')">
+                            <fa-icon [icon]="faPaste"></fa-icon>
+                        </span>
+                    </label>
+                    <div>
+                        <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="rpMessage"
+                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required rows="2"
+                            placeholder="Enter the optional reserve proof message"></textarea>
+                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
+                            Data string can contan letters and numbers with a max length of {{ messageLength }}.
                         </div>
                     </div>
                 </div>

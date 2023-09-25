@@ -1,0 +1,76 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+	<button class="delete" (click)="showMessage('');"></button>
+	<p class="is-centered">{{ message }}</p>
+</div>
+<div class="container is-fluid">
+	<div class="columns is-justify-content-flex-end mb-0 mt-1">
+		<div class="column is-narrow">
+			<div class="buttons">
+				<button type="submit" class="button is-info is-small" (click)="showCreate()">Create</button>
+			</div>
+		</div>
+		<div class="column is-narrow">
+			<div class="buttons">
+				<button type="submit" class="button is-info is-small" (click)="showVerify()">Verify</button>
+			</div>
+		</div>
+	</div>
+	<div [ngClass]="{ 'is-hidden' : showspinner }">
+		<div id="nocontact" [ngClass]="{ 'is-hidden' : !noreserveProof }">
+			<p>No Reserve Proofs have been created. Click the Create button to add your first Reserve Proof.</p>
+		</div>
+		<div id="subaddress" [ngClass]="{ 'is-hidden' : hidetrans || noreserveProof }">
+			<div calss="container">
+				<form>
+					<div id="subaddress">
+						<div class="container">
+							<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+								class="table is-striped mx-auto is-hoverable" id="subaddid">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Message</th>
+										<th>Amount</th>
+										<th>Signature</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let reserveproof of reserveProofArray">
+										<td>{{ reserveproof.id }}</td>
+										<td class="nowrap">
+											<a (click)="callDisplayModal(reserveproof.id-1)">{{ reserveproof.message |
+												xcashDataFormat:15 }}</a>
+										</td>
+										<td>{{ reserveproof.amount }}</td>
+										<td>{{ reserveproof.signature | xcashPublicAddress:12 }}
+										</td>
+										<td>{{ reserveproof.status}}</td>
+										<td>
+											<span id="button" class="is-small is-right is-clickable mr-4"
+												(click)="copyAddress(reserveproof.id-1)" [ngxTippy]="'Text Coppied'"
+												[tippyProps]="tippyOptions">
+												<fa-icon [icon]="faCopy"></fa-icon>
+											</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<app-wallet-reserve-proof-create *ngIf="showAddModal"
+	(onClose)="addreserveProof($event)"></app-wallet-reserve-proof-create>
+<app-wallet-display-reserve-proof [inSignature]="passSignature" [inreserveMessage]="passMessage"
+	[inPubKey]="walletaddress" [inStatus]="passStatus" [inAmount]="passAmount" *ngIf="showDisplayModal"
+	(onClose)="exitDisplayModal()">
+</app-wallet-display-reserve-proof>
+<app-wallet-reserve-proof-verify *ngIf="showVerifyModal" (onClose)="exitSignData($event)"></app-wallet-reserve-proof-verify>
+<div class="spinner-container" *ngIf="showspinner">
+	<div class="spinner"></div>
+</div>

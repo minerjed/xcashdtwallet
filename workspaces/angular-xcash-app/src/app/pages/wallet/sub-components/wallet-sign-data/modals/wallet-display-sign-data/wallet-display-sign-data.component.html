@@ -1,0 +1,59 @@
+<div class="modal is-active is-centered">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Signed Data Details</p>
+        </header>
+        <section class="modal-card-body">
+            <div class="field">
+                <label class="label">Signed Data:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-4" (click)="copyToClipboard(signedData)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <span class="has-text-weight-semibold">
+                        <textarea class="textarea has-text-weight-semibold is-hovered" rows="3" [(ngModel)]="signedData"
+                            readonly></textarea>
+                    </span>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Signatory Address:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-4" (click)="copyToClipboard(pubKey)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <span class="has-text-weight-semibold">
+                        <textarea class="textarea has-text-weight-semibold is-hovered" rows="2" [(ngModel)]="pubKey"
+                            readonly></textarea>
+                    </span>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Signature:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-4" (click)="copyToClipboard(signature)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <span class="has-text-weight-semibold">
+                        <textarea class="textarea has-text-weight-semibold is-hovered" rows="2" [(ngModel)]="signature"
+                            readonly></textarea>
+                    </span>
+                </div>
+            </div>
+            <div class="notification is-warning mt-1" *ngIf="message">
+                <button class="delete" (click)="showMessage('');"></button>
+                <p class="is-centered">{{ message }}</p>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="closemodal" type="button" class="button" is-primary (click)="closeModal()">Cancel</button>
+        </footer>
+    </div>
+</div>

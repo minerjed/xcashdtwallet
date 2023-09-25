@@ -26,6 +26,7 @@ export class ConstantsService {
   public readonly xcash_decimal_places = 1000000;
   public readonly xcash_rpc_url: string = 'http://localhost:18285/json_rpc';
   public readonly xcash_calc_fee: number = 0.0000349692;
-  public readonly text_settings_minlength = 4;
-  public readonly password_length = 8;
+  public readonly text_settings_minlength:number = 4;
+  public readonly password_length: number = 8;
+  public readonly message_settings_length: number = 128;
 }

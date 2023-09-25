@@ -27,6 +27,7 @@ export class TransactionDetailsComponent implements OnInit {
   ftxid: any = '';
   ftype: any = '';
   funlock_time: any = '';
+  showspinner: boolean = true;
 
   constructor(
     private rpcCallsService: RpcCallsService,
@@ -44,7 +45,7 @@ export class TransactionDetailsComponent implements OnInit {
   async gettransactiondetails(txid: string): Promise<void> {
     let transferObj: any = '';
     transferObj = await this.rpcCallsService.getTransactionDetails(txid);
-    if (typeof transferObj !== 'undefined') {
+    if (typeof transferObj !== 'boolean') {
       const transArray = transferObj;
       this.transfer = transArray.transfers;
       this.faddress = this.transfer[0].address;
@@ -69,6 +70,11 @@ export class TransactionDetailsComponent implements OnInit {
       this.famount = 0;
       this.ffee = 0;
     }
+    this.showSpinner = false;
+  }
+
+  isNumber(indata: any): boolean {
+    return typeof indata === 'number';
   }
 
   closeModal() {

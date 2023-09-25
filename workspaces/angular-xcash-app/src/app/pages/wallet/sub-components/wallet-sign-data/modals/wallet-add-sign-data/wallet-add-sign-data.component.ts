@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
+import { ConstantsService } from 'src/app/services/constants.service';
 import { faPaste } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -11,12 +12,15 @@ export class WalletAddSignDataComponent implements OnInit {
   faPaste = faPaste;
   signData: string = '';
   @Output() onClose = new EventEmitter<{ outdata: string }>();
-  constructor(private validatorsRegexService: ValidatorsRegexService) { }
+  constructor(private validatorsRegexService: ValidatorsRegexService,
+    private constantsService: ConstantsService) { }
 
   dataCk: string = '';
+  messageLength: number = 0;
 
   ngOnInit() {
-    this.dataCk = this.validatorsRegexService.data_to_sign;
+    this.dataCk = this.validatorsRegexService.message_settings;
+    this.messageLength = this.constantsService.message_settings_length;
   }
 
   cancelAdd() { this.onClose.emit({ outdata: 'skip' }); }

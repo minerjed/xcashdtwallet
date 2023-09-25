@@ -22,7 +22,9 @@ export class RpcCallsService {
       return await res.json();
     } catch (error) {
       console.log('received error:', JSON.stringify(error));
-      throw error;
+      const ret =
+        { "error": { "code": -1, "message": "Failed to connect to daemon" }, "id": "0", "jsonrpc": "2.0" };
+      return(ret);
     }
   }
 
@@ -89,13 +91,17 @@ export class RpcCallsService {
   }
 
   public async getTransactionDetails(txid: string): Promise<any> {
-    const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_transfer_by_txid","params":{"txid": "${txid}"}}`;
-    let result: string = await this.getPostRequestData(intrans);
-    if (result === undefined) {
-      return [];
-    } else {
-      const data: any = result;
-      return data.result;
+    try {
+      const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_transfer_by_txid","params":{"txid": "${txid}"}}`;
+      let result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return (false);
+      } else {
+        return (ckdata.result);
+      }
+    } catch (error) {
+      return 'false';
     }
   }
 
@@ -406,8 +412,10 @@ export class RpcCallsService {
       if (ckdata.hasOwnProperty('error')) {
         return ({ "status": false, "payment_id": '', "integrated_address": '' });
       } else {
-        return ({ "status": true, "payment_id": ckdata.result.payment_id, 
-          "integrated_address": ckdata.result.integrated_address });
+        return ({
+          "status": true, "payment_id": ckdata.result.payment_id,
+          "integrated_address": ckdata.result.integrated_address
+        });
       }
     } catch (error) {
       return ({ "status": false, "payment_id": '', "integrated_address": '' });
@@ -444,6 +452,43 @@ export class RpcCallsService {
     }
     catch (error) {
       return (false);
+    }
+  }
+
+  public async createReserveproof(reserveproofData: any): Promise<string> {
+    const newAmmount = reserveproofData.amount * this.constantsService.xcash_decimal_places;
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_reserve_proof",
+      "params":{"all":false,"account_index":0,"amount":${newAmmount},"message":"${reserveproofData.message}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return ('error');
+      } else {
+        return (ckdata.result.signature);
+      }
+    }
+    catch (error) {
+      return ('error');
+    }
+  }
+
+  public async verifyReserveproof(reserveproofData: any): Promise<string> {
+    reserveproofData.message = reserveproofData.message == null ? "" : reserveproofData.message;
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"check_reserve_proof",
+      "params":{"address":"${reserveproofData.public_address}","message":"${reserveproofData.message}",
+      "signature":"${reserveproofData.reserveproof}"}}`;
+    try {
+      const result: string = await this.getPostRequestData(intrans);
+      const ckdata: any = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return ('error');
+      } else {
+        return (ckdata.result.good === true && ckdata.result.spent === 0 ? 'true' : 'false');
+      }
+    }
+    catch (error) {
+      return ('error');
     }
   }
 

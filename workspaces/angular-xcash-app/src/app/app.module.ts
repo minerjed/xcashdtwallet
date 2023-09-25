@@ -31,6 +31,7 @@ import { DecimalPipe } from '@angular/common';
 
 import { XcashCurrencyPipe } from './pipes/xcash-currency.pipe';
 import { XcashPublicAddressPipe } from './pipes/xcash-public-address.pipe';
+import { XcashDataFormatPipe } from './pipes/xcash-data-format.pipe';
 import { TransactionDetailsComponent } from './pages/wallet/sub-components/wallet-trans/modals/transaction-details/transaction-details.component';
 import { WalletSendComponent } from './pages/wallet/sub-components/wallet-send/wallet-send.component';
 import { WalletPrivateKeysComponent } from './pages/wallet/sub-components/wallet-private-keys/wallet-private-keys.component';
@@ -50,6 +51,11 @@ import { NgxTippyModule } from 'ngx-tippy-wrapper';
 import { WalletSignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/wallet-sign-data.component';
 import { WalletAddSignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/modals/wallet-add-sign-data/wallet-add-sign-data.component';
 import { WalletVerifySignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/modals/wallet-verify-sign-data/wallet-verify-sign-data.component';
+import { WalletReserveProofComponent } from './pages/wallet/sub-components/wallet-reserve-proof/wallet-reserve-proof.component';
+import { WalletReserveProofCreateComponent } from './pages/wallet/sub-components/wallet-reserve-proof/modals/wallet-reserve-proof-create/wallet-reserve-proof-create.component';
+import { WalletReserveProofVerifyComponent } from './pages/wallet/sub-components/wallet-reserve-proof/modals/wallet-reserve-proof-verify/wallet-reserve-proof-verify.component';
+import { WalletDisplaySignDataComponent } from './pages/wallet/sub-components/wallet-sign-data/modals/wallet-display-sign-data/wallet-display-sign-data.component';
+import { WalletDisplayReserveProofComponent } from './pages/wallet/sub-components/wallet-reserve-proof/modals/wallet-display-reserve-proof/wallet-display-reserve-proof.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +93,13 @@ import { WalletVerifySignDataComponent } from './pages/wallet/sub-components/wal
     WalletIntegratedAddressAddComponent,
     WalletSignDataComponent,
     WalletAddSignDataComponent,
-    WalletVerifySignDataComponent
+    WalletVerifySignDataComponent,
+    WalletReserveProofComponent,
+    WalletReserveProofCreateComponent,
+    WalletReserveProofVerifyComponent,
+    XcashDataFormatPipe,
+    WalletDisplaySignDataComponent,
+    WalletDisplayReserveProofComponent
   ],
   imports: [
     BrowserModule,
@@ -103,7 +115,10 @@ import { WalletVerifySignDataComponent } from './pages/wallet/sub-components/wal
     ValidatorsRegexService,
     WalletsListService,
     DecimalPipe,
-    XcashCurrencyPipe
+    XcashCurrencyPipe,
+    XcashPublicAddressPipe,
+    XcashDataFormatPipe,
+    VoteFormatPipe
   ],
   bootstrap: [AppComponent]
 })

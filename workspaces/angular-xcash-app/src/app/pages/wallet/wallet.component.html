@@ -101,7 +101,7 @@
           <span>Sign Data</span>
         </a>
       </li>
-      <li (click)="onTabClickAdv(13)" [ngClass]="{ 'is-active' : showtab === 13 }">
+      <li (click)="onTabClickAdv(14)" [ngClass]="{ 'is-active' : showtab === 14 }">
         <a>
           <span>Reserve Proof</span>
         </a>
@@ -142,8 +142,8 @@
   <ng-container *ngSwitchCase="12">
     <app-wallet-sign-data></app-wallet-sign-data>
   </ng-container>
-  <ng-container *ngSwitchCase="13">
-    <p>Option not implemented.</p>
+  <ng-container *ngSwitchCase="14">
+    <app-wallet-reserve-proof></app-wallet-reserve-proof>
   </ng-container>
   <ng-container *ngSwitchDefault>
     <div class="container is-fluid">

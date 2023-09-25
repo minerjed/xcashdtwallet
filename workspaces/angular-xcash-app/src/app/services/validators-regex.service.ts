@@ -14,9 +14,11 @@ export class ValidatorsRegexService {
   public readonly mnemonic_seed: string = '';
   public readonly private_key: string = '';
   public readonly encrypted_payment_id: string = '';
-  public readonly data_to_sign: string = '';
   public readonly signature: string = '';
- 
+  public readonly xcash_reserve_proof_amount: string = '';
+  public readonly reserve_proof: string = '';
+  public readonly message_settings: string = '';
+  
   constructor(private constantsService: ConstantsService) { 
 
     this.xcash_address = `^(${this.constantsService.xcash_public_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_public_address_length_settings}}|${this.constantsService.xcash_integrated_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_integrated_address_length_settings}}|${this.constantsService.xcash_sub_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_sub_address_length_settings}})$`;
@@ -28,14 +30,9 @@ export class ValidatorsRegexService {
     this.mnemonic_seed = `^(\\b[a-z]+\\b[ ]*){${this.constantsService.mnemonic_seed_word_length}}`;
     this.private_key = `^([0-9a-f]{${this.constantsService.private_key_length}})$`;
     this.encrypted_payment_id = `^([0-9a-f]{${this.constantsService.encrypted_payment_id_length}}|)$`;
-    this.data_to_sign = `^[a-zA-Z0-9]+$`;
     this.signature = `^${this.constantsService.signature_prefix}[a-zA-Z0-9]{${this.constantsService.signature_length_settings}}$`;
-
+    this.xcash_reserve_proof_amount = `\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply}|^ALL$)\\b$`;
+    this.reserve_proof = `^ReserveProofV1[a-zA-Z0-9]+$`;
+    this.message_settings = `^([a-zA-Z0-9 ]{1,${this.constantsService.message_settings_length}})$`
   }
-
-  //xcash_reserve_proof_amount:RegExp = new RegExp(`\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply}|^ALL$)\\b$`);
-  //reserve_proof:RegExp = new RegExp("^ReserveProofV1[a-zA-Z0-9]+$");
-  
-  //delegate_name:RegExp = new RegExp(`^[a-zA-Z0-9._-]+$`);
-  //delegate_item:RegExp = new RegExp(`\\b(IP_address|about|website|team|shared_delegate_status|delegate_fee|server_specs)\\b`);
 }

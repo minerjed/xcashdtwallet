@@ -1,0 +1,78 @@
+<div class="modal is-active is-centered">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Reserve Proof Details</p>
+        </header>
+        <section class="modal-card-body">
+            <div class="field">
+                <label class="label">Reserve Proof Message:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-4"
+                        (click)="copyToClipboard(inreserveMessage)" [ngxTippy]="'Text Coppied'"
+                        [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <textarea class="textarea has-text-weight-semibold is-hovered" rows="2"
+                        [(ngModel)]="inreserveMessage" readonly></textarea>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Reserve Proof Address:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-4" (click)="copyToClipboard(inPubKey)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <span class="has-text-weight-semibold">
+                        <textarea class="textarea has-text-weight-semibold is-hovered" rows="2" [(ngModel)]="inPubKey"
+                            readonly></textarea>
+                    </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="columns mb-0 mt-1">
+                    <div class="column">
+                        <label class="label">Amount:</label>
+                        <div class="control">
+                            <input class="input is-hovered" type="text" id="amount" name="amount" [(ngModel)]="inAmount"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <label class="label">Status:</label>
+                        <div class="control">
+                            <input class="input is-hovered" type="any" id="amount" name="amount" [(ngModel)]="inStatus"
+                                readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Reserve Proof Signature:&nbsp;
+                    <span id="button" class="is-small is-right is-clickable mr-5" (click)="copyToClipboard(inSignature)"
+                        [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                    </span>
+                </label>
+                <div class="control">
+                    <span class="has-text-weight-semibold">
+                        <textarea class="textarea has-text-weight-semibold is-hovered" rows="10"
+                            [(ngModel)]="inSignature" readonly></textarea>
+                    </span>
+                </div>
+            </div>
+
+            <div class="notification is-warning mt-1" *ngIf="message">
+                <button class="delete" (click)="showMessage('');"></button>
+                <p class="is-centered">{{ message }}</p>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="closemodal" type="button" class="button" is-primary (click)="closeModal()">Cancel</button>
+        </footer>
+    </div>
+</div>

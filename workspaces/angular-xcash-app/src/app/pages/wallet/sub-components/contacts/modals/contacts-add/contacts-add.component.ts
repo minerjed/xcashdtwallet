@@ -2,7 +2,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { faContactCard, faWallet, faPaste } from '@fortawesome/free-solid-svg-icons';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
-import { Sticky } from 'tippy.js';
 
 @Component({
   selector: 'app-contacts-add',
