@@ -8,8 +8,7 @@ const { electronFs: fs, electronAPIs: APIs } = window;
   providedIn: 'root'
 })
 export class SettingsService {
-  private dbfile = `${APIs.platform !== "win32" ? `${APIs.homeDir}${WindowApiConst.XCASHOFFICAL}` : `${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`.replace(/\\/g, "\\\\")}database.txt`;
-
+  private dbfile = `${APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICAL}/database.txt` : `${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`.replace(/\\/g, "\\\\")}database.txt`;
   private readDatabase(): any {
     try {
       const data = fs.readFileSync(this.dbfile, "utf8");
