@@ -6,6 +6,7 @@ import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { SubAddress } from 'src/app/models/subaddress';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -58,15 +59,20 @@ export class WalletSubaddressComponent implements OnInit {
     this.subcount = await this.databaseService.getSubAddressCount(this.walletaddress);
     if (this.subcount > 0) {
       this.noSubaddress = false;
-      this.subAddresses = await this.rpcCallsService.getSubAddresses(this.subcount);
-      if (this.subAddresses.length > 0) {
-        this.initArray = true;
-        this.dtTrigger.next(this.subAddresses);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        this.changePageLength(5);
-        this.hidetrans = false;
+      const response: rpcReturn = await this.rpcCallsService.getSubAddresses(this.subcount);
+      if (response.status) {
+        this.subAddresses = response.data;
+        if (this.subAddresses.length > 0) {
+          this.initArray = true;
+          this.dtTrigger.next(this.subAddresses);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          this.changePageLength(5);
+          this.hidetrans = false;
+        } else {
+          this.noSubaddress = true;
+        }
       } else {
-        this.showMessage("Error occured retrieving Sub Accounts.");
+        this.message = response.message;
       }
     } else {
       this.noSubaddress = true;
@@ -84,12 +90,13 @@ export class WalletSubaddressComponent implements OnInit {
     this.modelAdd = data;
     this.inlabel = this.modelAdd.outlabel;
     if (this.inlabel !== 'skip') {
-      const { newaddress, addressIndex } = await this.rpcCallsService.createSubAddress(this.inlabel);
-      if (newaddress === "failure") {
-        this.showMessage("Error occured creating sub address.")
+      const response: rpcReturn = await this.rpcCallsService.createSubAddress(this.inlabel);
+      if(!response.status) {
+        this.showMessage(response.message)
       } else {
         // The index of the address created is returned so use it to update the dbfile
-        this.ckupdate = await this.databaseService.updateSubAddressCount(this.walletaddress, addressIndex);
+        this.ckupdate = await this.databaseService.updateSubAddressCount(this.walletaddress, response.data.addressIndex);
+        const addressIndex = response.data.addressIndex;
         if (this.ckupdate) {
           this.hidetrans = true;
           if (this.initArray) {
@@ -100,7 +107,49 @@ export class WalletSubaddressComponent implements OnInit {
             this.subAddresses = [];
             this.subAddresses.length = 0;
           }
-          this.subAddresses = await this.rpcCallsService.getSubAddresses(addressIndex);
+          const response: rpcReturn = await this.rpcCallsService.getSubAddresses(addressIndex);
+          if (response.status) {
+            this.subAddresses = response.data;
+            if (this.subAddresses.length > 0) {
+              this.dtTrigger.next(this.subAddresses)
+            } else {
+              this.noSubaddress = true;
+            }
+            await new Promise(resolve => setTimeout(resolve, 500));
+            this.changePageLength(5);
+            this.hidetrans = false;
+          } else {
+            this.showMessage(response.message);
+          }
+        }
+      }
+    }
+    this.showspinner = false;
+  }
+
+  modSubaddressPick(id: number): void {
+    this.inId = id;
+    this.inLab = this.subAddresses[id - 1].label;
+    this.showmodModal = true;
+  }
+
+  async modsubAddress(data: any) {
+    this.showmodModal = false;
+    this.showspinner = true;
+    this.modelMod = data;
+    if (this.modelMod.outId !== 0) {
+      const response: rpcReturn = await this.rpcCallsService.updateaddressLabel(this.modelMod.outId, this.modelMod.newLabel);
+      if (response.status) {
+        this.hidetrans = true;
+        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+          dtInstance.destroy();
+        });
+        const addressIndex = this.subAddresses.length;
+        this.subAddresses = [];
+        this.subAddresses.length = 0;
+        const response: rpcReturn = await this.rpcCallsService.getSubAddresses(addressIndex);
+        if (response.status) {
+          this.subAddresses = response.data;
           if (this.subAddresses.length > 0) {
             this.dtTrigger.next(this.subAddresses)
           } else {
@@ -110,44 +159,10 @@ export class WalletSubaddressComponent implements OnInit {
           this.changePageLength(5);
           this.hidetrans = false;
         } else {
-          this.showMessage("Error occured updating wallet file.");
+          this.showMessage(response.message);
         }
-      }
-    }
-    this.showspinner = false;
-  }
-
-  modSubaddressPick(id: number): void {
-    this.inId = id;
-    this.inLab = this.subAddresses[id-1].label;
-    this.showmodModal = true;
-  }
-
-  async modsubAddress(data: any) {
-    this.showmodModal = false;
-    this.showspinner = true;
-    this.modelMod = data;
-    if (this.modelMod.outId !== 0) {
-      const ckupdate = await this.rpcCallsService.updateaddressLabel(this.modelMod.outId, this.modelMod.newLabel);
-      if (ckupdate) {
-        this.hidetrans = true;
-        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-          dtInstance.destroy();
-        });
-        const addressIndex = this.subAddresses.length;
-        this.subAddresses = [];
-        this.subAddresses.length = 0;
-        this.subAddresses = await this.rpcCallsService.getSubAddresses(addressIndex);
-        if (this.subAddresses.length > 0) {
-          this.dtTrigger.next(this.subAddresses)
-        } else {
-          this.noSubaddress = true;
-        }
-        await new Promise(resolve => setTimeout(resolve, 500));
-        this.changePageLength(5);
-        this.hidetrans = false;
       } else {
-        this.showMessage("RPC Error occured updating subaddress label.");
+        this.showMessage(response.message);
       }
     }
     this.showspinner = false;

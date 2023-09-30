@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-vote',
@@ -31,15 +32,15 @@ export class WalletVoteComponent {
     this.showspinner = true;
     this.buttonDisabled = true;
     this.modalText = 'Waiting until three minutes after the top of the hour.  Please leave the Delegate Selection window open and wait for a confirmation message.'
-    const data = await this.rpcCallsService.delegateVote(this.delegateVote);
+    const response: rpcReturn = await this.rpcCallsService.delegateVote(this.delegateVote);
+    if (response.status) {
+      this.modalText = `You have successfully voted for delegate ${this.delegateVote}.  You may close this Delegate Selection window.`
+    } else {
+      this.modalText = response.message;
+    }
     this.buttonDisabled = false;
     this.showExit = true;
     this.showspinner = false;
-    if (data === 'success') {
-      this.modalText = `You have successfully voted for delegate ${this.delegateVote}.  You may close this Delegate Selection window.`
-    } else {
-      this.modalText = data;
-    }
   }
 
   cancelVote(): void {

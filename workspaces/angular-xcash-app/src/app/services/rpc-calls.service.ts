@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConstantsService } from './constants.service';
 import { WindowApiConst } from 'shared-lib';
 import { SubAddress } from 'src/app/models/subaddress';
+import { rpcReturn } from 'src/app/models/rpc-return';
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
 
@@ -24,28 +25,24 @@ export class RpcCallsService {
       console.log('received error:', JSON.stringify(error));
       const ret =
         { "error": { "code": -1, "message": "Failed to connect to daemon" }, "id": "0", "jsonrpc": "2.0" };
-      return(ret);
+      return (ret);
     }
   }
 
-  public async openWallet(wallet: string, password: string): Promise<any> {
+  public async openWallet(wallet: string, password: string): Promise<rpcReturn> {
     // make sure no wallets are open
-    try {
-      this.closeWallet();
-      const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
-      const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        if (ckerror.error.code === -1) {
-          return ('Invalid password. Please try again.');
-        } else {
-          return ckerror.error.message;
-        }
+    this.closeWallet();
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckerror: any = result;
+    if (ckerror.hasOwnProperty('error')) {
+      if (ckerror.error.code === -1) {
+        return { status: false, message: 'Invalid password. Please try again.', data: null };
       } else {
-        return '';
+        return { status: false, message: 'RPC error, ' + ckerror.error.message, data: null };
       }
-    } catch (error) {
-      return 'Errror occured openning wallet.'
+    } else {
+      return { status: true, message: '', data: null };
     }
   }
 
@@ -54,216 +51,221 @@ export class RpcCallsService {
     await this.getPostRequestData(intrans);
   }
 
-  public async getTransactions(): Promise<any> {
+  public async getTransactions(): Promise<rpcReturn> {
     const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_transfers","params":{"in":true,"out":true}}';
-    let { result: { in: incomingTransactions, out: outgoingTransactions } } = await this.getPostRequestData(intrans);
-    // No transactions found
-    if (incomingTransactions === undefined && outgoingTransactions === undefined) {
-      return [{ id: 0, amount: "", txid: "", date: "", transactionType: "" }];
-    } else if (outgoingTransactions === undefined) {
-      outgoingTransactions = [];
+    const fresult = await this.getPostRequestData(intrans);
+    const ckdata: any = fresult;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      let { result: { in: incomingTransactions, out: outgoingTransactions } } = fresult;
+      // No transactions found
+      if (incomingTransactions === undefined && outgoingTransactions === undefined) {
+        return { status: true, message: 'No transactions found.', data: [{ id: 0, amount: "", txid: "", date: "", transactionType: "" }] };
+      } else if (outgoingTransactions === undefined) {
+        outgoingTransactions = [];
+      }
+      // Filter out transactions with an amount of zero
+      const filteredIncomingTransactions = incomingTransactions.filter((item: any) => item.amount !== 0);
+      const filteredOutgoingTransactions = outgoingTransactions.filter((item: any) => item.amount !== 0);
+      const transactions = filteredIncomingTransactions.concat(filteredOutgoingTransactions).map((item: any, index: any) => ({
+        id: index + 1,
+        amount: item.amount / this.constantsService.xcash_decimal_places,
+        txid: item.txid,
+        date: new Date(item.timestamp * 1000),
+        transactionType: (item.type === 'block' || item.type === 'in') ? 'in' : 'out'
+      }));
+      // Sort the transactions by date in descending order
+      transactions.sort((a: any, b: any) => b.date - a.date);
+      // Reassign IDs to each transaction
+      const transactionsWithIds = transactions.map((transaction: any, index: number) => ({
+        ...transaction,
+        id: index + 1,
+      }));
+      return { status: true, message: 'Success.', data: transactionsWithIds };
     }
-    // Filter out transactions with an amount of zero
-    const filteredIncomingTransactions = incomingTransactions.filter((item: any) => item.amount !== 0);
-    const filteredOutgoingTransactions = outgoingTransactions.filter((item: any) => item.amount !== 0);
-    const transactions = filteredIncomingTransactions.concat(filteredOutgoingTransactions).map((item: any, index: any) => ({
-      id: index + 1,
-      amount: item.amount / this.constantsService.xcash_decimal_places,
-      txid: item.txid,
-      date: new Date(item.timestamp * 1000),
-      transactionType: (item.type === 'block' || item.type === 'in') ? 'in' : 'out'
-    }));
-    // Sort the transactions by date in descending order
-    transactions.sort((a: any, b: any) => b.date - a.date);
-    // Reassign IDs to each transaction
-    const transactionsWithIds = transactions.map((transaction: any, index: number) => ({
-      ...transaction,
-      id: index + 1,
-    }));
-    return transactionsWithIds;
   }
 
-  public async getBalance(): Promise<number> {
+  public async getBalance(): Promise<rpcReturn> {
     const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_balance"}';
     const result: string = await this.getPostRequestData(intrans);
-    const data: any = result;
-    return (data.result.balance / this.constantsService.xcash_decimal_places);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: (ckdata.result.balance / this.constantsService.xcash_decimal_places) };
+    }
   }
 
-  public async getTransactionDetails(txid: string): Promise<any> {
-    try {
-      const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_transfer_by_txid","params":{"txid": "${txid}"}}`;
-      let result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return (false);
-      } else {
-        return (ckdata.result);
-      }
-    } catch (error) {
-      return 'false';
+  public async getTransactionDetails(txid: string): Promise<rpcReturn> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_transfer_by_txid","params":{"txid": "${txid}"}}`;
+    let result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result };
     }
   }
 
   public async sendPayment(toAddress: string, toPaymentId: string, toAmount: number, toPrivacy: string,
-    settings: boolean): Promise<Record<string, unknown>> {
+    settings: boolean): Promise<rpcReturn> {
     const decimal_places = this.constantsService.xcash_decimal_places;
     const intrans: string = `{"jsonrpc":"2.0","id":"0","method":"transfer_split","params":{"destinations":[{"amount":${toAmount * decimal_places}, "address":"${toAddress}"}],
     "priority":0,"ring_size":21,"get_tx_keys": true, "payment_id":"${toPaymentId}", "tx_privacy_settings":"${toPrivacy}", 
     "do_not_relay":${settings}}}`;
     let result: string = await this.getPostRequestData(intrans);
-    const data: any = result;
-    if (data.error === undefined) {
-      return {
-        "status": "success", "txid": data.result.tx_hash_list[0], "txkey": data.result.tx_key_list[0], "fee": data.result.fee_list[0] / decimal_places,
-        "total": (data.result.fee_list[0] + data.result.amount_list[0]) / decimal_places
-      };
-    } else {
-      if (data.error.code === -17) {
-        return { "status": "error", "message": "Not enough XCASH for this transaction." }
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      if (ckdata.error.code === -17) {
+        return { status: false, message: 'Not enough XCASH for this transaction.', data: null };
       } else {
-        return { "status": "error", "message": "RPC error, ${data.error.message}" };
+        return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+      }
+    } else {
+      const wsdata = {
+        "status": true, "txid": ckdata.result.tx_hash_list[0], "txkey": ckdata.result.tx_key_list[0],
+        "fee": ckdata.result.fee_list[0] / decimal_places,
+        "total": (ckdata.result.fee_list[0] + ckdata.result.amount_list[0]) / decimal_places
+      };
+      return { status: true, message: 'Success.', data: ckdata.result };
+    }
+  }
+
+  public async getPrivateKeys(): Promise<rpcReturn> {
+    const privatekeys = { "seed": "", "viewkey": "", "spendkey": "" };
+    const result = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}');
+    let ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      privatekeys.seed = ckdata.result.key;
+      const result = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}');
+      ckdata = result;
+      if (ckdata.hasOwnProperty('error')) {
+        return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+      } else {
+        privatekeys.viewkey = ckdata.result.key;
+        const result = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}');
+        ckdata = result;
+        if (ckdata.hasOwnProperty('error')) {
+          return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+        } else {
+          privatekeys.spendkey = ckdata.result.key;
+          return { status: true, message: 'Success.', data: privatekeys };
+        }
       }
     }
   }
 
-  public async getPrivateKeys(): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      const privatekeys = { "seed": "", "viewkey": "", "spendkey": "" };
-      let data: any;
-      try {
-        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}');
-        privatekeys.seed = data.result.key;
-        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}');
-        privatekeys.viewkey = data.result.key;
-        data = await this.getPostRequestData('{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}');
-        privatekeys.spendkey = data.result.key;
-        resolve(privatekeys);
-      }
-      catch (error) {
-        reject();
-      }
-    });
-  }
-
-  public async changePassword(currentpassword: string, newpassword: string): Promise<string> {
+  public async changePassword(currentpassword: string, newpassword: string): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"change_wallet_password","params":{"old_password":"${currentpassword}","new_password":"${newpassword}"}}`;
     const result: string = await this.getPostRequestData(intrans);
-    const ckerror: any = result;
-    if (ckerror.hasOwnProperty('error')) {
-      if (ckerror.error.code === -22) {
-        return ('Current password is invalid. Please try again.');
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      if (ckdata.error.code === -22) {
+        return { status: false, message: 'Current password is invalid. Please try again.', data: null };
       } else {
-        return ckerror.error.message;
+        return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
       }
     } else {
-      return 'success';
+      return { status: true, message: 'Success.', data: null };
     }
   }
 
-  public async delegateVote(delegateData: any): Promise<string> {
+  public async delegateVote(delegateData: any): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote","params":{"delegate_data":"${delegateData}"}}`;
     const result: string = await this.getPostRequestData(intrans);
-    const ckerror: any = result;
-    if (ckerror.hasOwnProperty('error')) {
-      return (ckerror.error.message);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
-      return ('success');
+      return { status: true, message: 'Success.', data: null };
     }
   }
 
-  public async revote(): Promise<string> {
+  public async revote(): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"revote"}`;
     const result: string = await this.getPostRequestData(intrans);
-    const ckerror: any = result;
-    if (ckerror.hasOwnProperty('error')) {
-      return (ckerror.error.message);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
-      return ('success');
+      return { status: true, message: 'Success.', data: null };
     }
   }
 
-  public async sweep_all_vote(inpublicAddress: string): Promise<any> {
-    // Lets validate the public address just to make sure we have the correct one.
-    const public_address = await this.getPublicAddress();
-    if (public_address === 'failure') {
-      return ('RPC error retriving public address')
-    } else {
-      const intrans = `{"jsonrpc":"2.0","id":"0","method":"sweep_all","params":{"address":"${inpublicAddress}","ring_size":21}}`;
+  public async sweep_all_vote(inpublicAddress: string): Promise<rpcReturn> {
+    // Lets validate the public address just to make sure we have this correct.
+    const response: rpcReturn = await this.getPublicAddress();
+    if (response.status) {
+      const public_address = response.data;
       if (public_address !== inpublicAddress) {
-        return ('Error matching pubilc address.');
-      }
-      const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        return (ckerror.error.message);
+        return { status: false, message: 'Error matching pubilc address.', data: null };
       } else {
-        return ('success');
-      }
-    }
-  }
-
-  public async check_vote_status(): Promise<any> {
-    const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote_status"}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const data: any = result;
-      if (data.hasOwnProperty('error')) {
-        if (data.error.code === -1) {
-          return ('novote');
+        const intrans = `{"jsonrpc":"2.0","id":"0","method":"sweep_all","params":{"address":"${inpublicAddress}","ring_size":21}}`;
+        const result: string = await this.getPostRequestData(intrans);
+        const ckdata: any = result;
+        if (ckdata.hasOwnProperty('error')) {
+          return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
         } else {
-          return (data);
+          return { status: true, message: 'Success.', data: null };
         }
-      } else {
-        return (data.result.status);
       }
-    } catch (error) {
-      return ('error');
+    } else {
+      return { status: false, message: 'RPC error, ' + response.message, data: null };
     }
   }
 
-  public async createWallet(walletName: string, walletPassword: string): Promise<any> {
+  public async check_vote_status(): Promise<rpcReturn> {
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"vote_status"}`;
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      if (ckdata.error.code === -1) {
+        return { status: false, message: 'RPC error, ' + ckdata.error.message, data: 'novote' };
+      } else {
+        return { status: false, message: 'RPC error, ' + ckdata.error.message, data: '' };
+      }
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.status };
+    }
+  }
+
+  public async createWallet(walletName: string, walletPassword: string): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"create_wallet","params":{"filename":"${walletName}","password":"${walletPassword}","language":"English"}}`;
     const result: string = await this.getPostRequestData(intrans);
-    const ckerror: any = result;
-    if (ckerror.hasOwnProperty('error')) {
-      return (ckerror.error.message);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
-      return ('success');
+      return { status: true, message: 'Success.', data: null };
     }
   }
 
-  public async getPublicAddress(): Promise<string> {
+  public async getPublicAddress(): Promise<rpcReturn> {
     const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_address"}';
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        return 'failure';
-      } else {
-        return (ckerror.result.address);
-      }
-    } catch (error) {
-      return 'failure';
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.address };
     }
   }
 
-  public async getCurrentBlockHeight(): Promise<any> {
+  public async getCurrentBlockHeight(): Promise<rpcReturn> {
     const intrans = '{"jsonrpc":"2.0","id":"0","method":"get_height"}';
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        return 'failure';
-      } else {
-        return (ckerror.result.height);
-      }
-    } catch (error) {
-      return 'failure';
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.heights };
     }
   }
 
-  public async importWallet(walletData: any): Promise<Record<any, any>> {
+  public async importWallet(walletData: any): Promise<rpcReturn> {
     try {
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
@@ -309,16 +311,32 @@ export class RpcCallsService {
       let block_height: number = 0;
       let current_block_height: number = 0;
       for (; ;) {
-        block_height = await this.getCurrentBlockHeight();
+        const response1: rpcReturn = await this.getCurrentBlockHeight();
+        if (response1.status) {
+          block_height = response1.data;
+        } else {
+          return { status: false, message: 'RPC error, ' + response1.message, data: null };
+        }
         await new Promise(resolve => setTimeout(resolve, 60000));
-        current_block_height = await this.getCurrentBlockHeight();
+        const response2: rpcReturn = await this.getCurrentBlockHeight();
+        if (response2.status) {
+          current_block_height = response2.data;
+        } else {
+          return { status: false, message: 'RPC error, ' + response2.message, data: null };
+        }
         if (block_height === current_block_height && block_height !== 0) {
           break;
         } else {
           await new Promise(resolve => setTimeout(resolve, 60000));
         }
       }
-      const xcashbalance: number = await this.getBalance();
+      let xcashbalance = 0;
+      const response: rpcReturn = await this.getBalance();
+      if (response.status) {
+        xcashbalance = response.data
+      } else {
+        return { status: false, message: 'RPC error, ' + response.message, data: null };
+      }
       await this.closeWallet();
       await new Promise(resolve => setTimeout(resolve, 10000));
       if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-1`)) {
@@ -327,78 +345,62 @@ export class RpcCallsService {
       if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-2`)) {
         fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-2`);
       }
-      return { 'result': publicaddress, 'balance': xcashbalance };
+      return { status: true, message: 'Success.', data: { 'result': publicaddress, 'balance': xcashbalance } };
     } catch (error) {
-      return { 'result': 'failure', 'balance': 0 };
+      return { status: false, message: 'Failed to import wallet, ' + error, data: null };
     }
   }
 
-  public async getSubAddresses(subAddressCount: number): Promise<SubAddress[]> {
-    return new Promise(async (resolve, reject) => {
-      let subAddressList = "";
-      let count;
-      for (count = 1; count <= subAddressCount; count++) {
-        subAddressList += `${count},`;
-      }
-      subAddressList = subAddressList.slice(0, -1);
-      const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[${subAddressList}]}}`;
-      let subAddresses: SubAddress[] = [];
-      let data: any;
-      try {
-        data = await this.getPostRequestData(intrans);
-        data.result.per_subaddress.forEach((item: { address_index: any; label: any; address: any; balance: number; }) => {
-          subAddresses.push({
-            id: item.address_index,
-            label: item.label,
-            address: item.address,
-            balance: item.balance / this.constantsService.xcash_decimal_places,
-          });
+  public async getSubAddresses(subAddressCount: number): Promise<rpcReturn> {
+    let subAddressList = "";
+    let count;
+    for (count = 1; count <= subAddressCount; count++) {
+      subAddressList += `${count},`;
+    }
+    subAddressList = subAddressList.slice(0, -1);
+    const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[${subAddressList}]}}`;
+    let subAddresses: SubAddress[] = [];
+    const result = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      ckdata.result.per_subaddress.forEach((item: { address_index: any; label: any; address: any; balance: number; }) => {
+        subAddresses.push({
+          id: item.address_index,
+          label: item.label,
+          address: item.address,
+          balance: item.balance / this.constantsService.xcash_decimal_places,
         });
-        resolve(subAddresses);
-      }
-      catch (error) {
-        let subAddresses: SubAddress[] = [];
-        reject(subAddresses);
-      }
-    });
+      });
+      return { status: true, message: 'Success.', data: subAddresses };
+    }
   }
 
-  public async createSubAddress(label: string): Promise<{ newaddress: string, addressIndex: number }> {
+  public async createSubAddress(label: string): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"create_address","params":{"account_index":0,"label":"${label}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return { newaddress: 'failure', addressIndex: 0 };
-      } else {
-        return {
-          newaddress: ckdata.result.address,
-          addressIndex: ckdata.result.address_index
-        };
-      }
-    }
-    catch (error) {
-      return { newaddress: 'failure', addressIndex: 0 };
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: { newaddress: ckdata.result.address, addressIndex: ckdata.result.address_index } };
     }
   }
 
-  public async updateaddressLabel(addressId: number, newLabel: string): Promise<boolean> {
+  public async updateaddressLabel(addressId: number, newLabel: string): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"label_address",
       "params":{"index":{"major":0,"minor":${addressId}},"label":"${newLabel}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckerror: any = result;
-      if (ckerror.hasOwnProperty('error')) {
-        return (false);
-      } else {
-        return (true);
-      }
-    } catch (error) {
-      return (false);
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: null };
     }
   }
 
-  public async createIntegratedAddress(paymentid: string): Promise<any> {
+  public async createIntegratedAddress(paymentid: string): Promise<rpcReturn> {
     let intrans: string = '';
     if (paymentid === undefined) {
       intrans = `{"jsonrpc":"2.0","id":"0","method":"make_integrated_address"}`;
@@ -406,89 +408,68 @@ export class RpcCallsService {
       intrans = `{"jsonrpc":"2.0","id":"0","method":"make_integrated_address",
         "params":{"payment_id":"${paymentid}"}}`;
     }
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return ({ "status": false, "payment_id": '', "integrated_address": '' });
-      } else {
-        return ({
-          "status": true, "payment_id": ckdata.result.payment_id,
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return {
+        status: true, message: 'Success.', data: {
+          "payment_id": ckdata.result.payment_id,
           "integrated_address": ckdata.result.integrated_address
-        });
-      }
-    } catch (error) {
-      return ({ "status": false, "payment_id": '', "integrated_address": '' });
+        }
+      };
     }
   }
 
-  public async createSignedData(signedData: string): Promise<string> {
+  public async createSignedData(signedData: string): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"sign","params":{"data":"${signedData}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return ('error');
-      } else {
-        return (ckdata.result.signature);
-      }
-    }
-    catch (error) {
-      return ('error');
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.signature };
     }
   }
 
-  public async verifySignedData(signedData: any): Promise<boolean> {
+  public async verifySignedData(signedData: any): Promise<rpcReturn> {
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"verify","params":{"data":"${signedData.data}",
       "address":"${signedData.public_address}","signature":"${signedData.signature}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return (false);
-      } else {
-        return (ckdata.result.good);
-      }
-    }
-    catch (error) {
-      return (false);
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.good };
     }
   }
 
-  public async createReserveproof(reserveproofData: any): Promise<string> {
+  public async createReserveproof(reserveproofData: any): Promise<rpcReturn> {
     const newAmmount = reserveproofData.amount * this.constantsService.xcash_decimal_places;
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_reserve_proof",
       "params":{"all":false,"account_index":0,"amount":${newAmmount},"message":"${reserveproofData.message}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return ('error');
-      } else {
-        return (ckdata.result.signature);
-      }
-    }
-    catch (error) {
-      return ('error');
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      return { status: true, message: 'Success.', data: ckdata.result.signature };
     }
   }
 
-  public async verifyReserveproof(reserveproofData: any): Promise<string> {
+  public async verifyReserveproof(reserveproofData: any): Promise<rpcReturn> {
     reserveproofData.message = reserveproofData.message == null ? "" : reserveproofData.message;
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"check_reserve_proof",
       "params":{"address":"${reserveproofData.public_address}","message":"${reserveproofData.message}",
       "signature":"${reserveproofData.reserveproof}"}}`;
-    try {
-      const result: string = await this.getPostRequestData(intrans);
-      const ckdata: any = result;
-      if (ckdata.hasOwnProperty('error')) {
-        return ('error');
-      } else {
-        return (ckdata.result.good === true && ckdata.result.spent === 0 ? 'true' : 'false');
-      }
-    }
-    catch (error) {
-      return ('error');
+    const result: string = await this.getPostRequestData(intrans);
+    const ckdata: any = result;
+    if (ckdata.hasOwnProperty('error')) {
+      return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
+    } else {
+      ckdata.result.good === true && ckdata.result.spent === 0 ? 'true' : 'false';
+      return { status: true, message: 'Success.', data: ckdata.result.good };
     }
   }
 

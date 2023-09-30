@@ -3,6 +3,7 @@ import { ValidatorsRegexService } from 'src/app/services/validators-regex.servic
 import { ConstantsService } from 'src/app/services/constants.service';
 import { faPaste } from '@fortawesome/free-solid-svg-icons';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-verify-sign-data',
@@ -41,11 +42,17 @@ export class WalletVerifySignDataComponent implements OnInit {
   async selectVerify() {
     this.showSpinner = true;
     const passData = { data: this.signData, public_address: this.signAddress, signature: this.signature }
-    if (await this.rpcCallsService.verifySignedData(passData)) {
-      this.message = 'Signed Data Verifed Successfully'
-      this.messageType = 'is-success';
+    const response: rpcReturn = await this.rpcCallsService.verifySignedData(passData);
+    if (response.status) {
+      if (response.data) {
+        this.message = 'Signed Data Verifed Successfully'
+        this.messageType = 'is-success';
+      } else {
+        this.message = 'Signed Data Verification Failed'
+        this.messageType = 'is-danger';
+      }
     } else {
-      this.message = 'Signed Data Verification Failed'
+      this.message = 'Signed Data Verification Failed ' + response.message;
       this.messageType = 'is-danger';
     }
     this.showSpinner = false;

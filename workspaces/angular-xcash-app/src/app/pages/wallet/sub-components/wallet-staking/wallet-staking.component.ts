@@ -8,6 +8,7 @@ import { faRefresh, faBroom } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -25,7 +26,7 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	dtTrigger: Subject<any> = new Subject<any>();
 	walletaddress: string = '';
 	delegates: Delegate[] = [];
-	message: string = ''; 
+	message: string = '';
 	showspinner: boolean = true;
 	showspinnerGetDel: boolean = true;
 	notrans: boolean = true;
@@ -58,25 +59,23 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	}
 
 	async getVoteStatus(): Promise<void> {
-		const data = await this.rpcCallsService.check_vote_status();
-		if (Array.isArray(data)) {
-			const ckerror: any = data;
-			this.showMessage(ckerror.error.message);
-		} else if (data === 'novote') {
-			this.currentDelegate = 'This wallet has not staked to a delegate.';
-		} else if (data === 'error') {
-			this.currentDelegate = 'Error occured checking delegate status.';
-		} else {
+		const response: rpcReturn = await this.rpcCallsService.check_vote_status();
+		if (response.status) {
 			this.delegated = true;
-			let splitData = data.split(', ');
+			let splitData = response.data.split(', ');
 			let delegateName = splitData[0];
 			let totalValue = splitData[1].split(': ')[1];
 			let transformedTotalValue = this.xcashCurrencyPipe.transform(totalValue, '1.0-2');
-			this.currentDelegate = delegateName + ' amount staked: ' + transformedTotalValue;
+			this.currentDelegate = delegateName + ' amount staked: ' + transformedTotalValue
+		} else {
+			if (response.data == 'novote') {
+				this.currentDelegate = 'This wallet has not staked to a delegate.';
+			} else {
+				this.showMessage(response.message);
+			}
 		}
 		this.showspinnerGetDel = false;
 	}
-
 
 	async getDelegates(): Promise<void> {
 		const data = await this.xcashdelegatesservice.getDelegates();
@@ -102,7 +101,7 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 			await new Promise(resolve => setTimeout(resolve, 500));
 			this.changePageLength(3);
 		} else {
-			this.displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: ""}];
+			this.displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: "" }];
 		}
 	}
 
@@ -136,7 +135,8 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	castVote(delegate: string): void {;
+	castVote(delegate: string): void {
+		;
 		this.delegateVote = delegate;
 		this.showVoteModal = true;
 	}
@@ -164,7 +164,7 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	changePageLength(newLength: number): void {
 		// I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
 		const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-		  dtInstance.page.len(newLength).draw();
+			dtInstance.page.len(newLength).draw();
 		});
 		$('div.dataTables_length').find('select, label').remove();
 		var newDropdown = $('<select></select>');
@@ -177,13 +177,13 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 		var table = $('#myTable').DataTable();
 		$('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
 		newDropdown.on('change', () => {
-		  this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
-			const val = newDropdown.val();
-			if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
-			  dtInstance.page.len(+val).draw();
-			}
-		  });
+			this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
+				const val = newDropdown.val();
+				if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
+					dtInstance.page.len(+val).draw();
+				}
+			});
 		});
-	  }
+	}
 
 }

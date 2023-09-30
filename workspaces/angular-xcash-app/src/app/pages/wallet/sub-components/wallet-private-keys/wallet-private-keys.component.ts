@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, ElementRef } from '@angular/core';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ActivatedRoute } from '@angular/router';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-private-keys',
@@ -54,20 +55,25 @@ export class WalletPrivateKeysComponent {
 
   async viewprivatekeys() {
     this.showSpinner = true;
-    this.privatekeys = await this.rpcCallsService.getPrivateKeys();
-    this.showSpinner = false;
-    this.walletSpendkey = this.privatekeys.spendkey;
-    this.walletViewkey = this.privatekeys.viewkey;
-    this.walletMnemonicseed = this.privatekeys.seed;
+    const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
+    if (response.status) {
+      this.privatekeys = response.data;
+      this.showSpinner = false;
+      this.walletSpendkey = this.privatekeys.spendkey;
+      this.walletViewkey = this.privatekeys.viewkey;
+      this.walletMnemonicseed = this.privatekeys.seed;
+    } else {
+      this.showMessage(response.message);
+    }
   }
 
   copyToClipboard(value: string) {
-		navigator.clipboard.writeText(value)
-			.then(() => { })
-			.catch(err => {
+    navigator.clipboard.writeText(value)
+      .then(() => { })
+      .catch(err => {
         this.showMessage('Failed to copy text: ' + err);
-			});
-	}
+      });
+  }
 
   printCreate(): void {
     this.elementRef.nativeElement.classList.add('print-mode'); // Add a CSS class to the component's native element for print styling

@@ -3,6 +3,7 @@ import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
 import { faEye, faKey } from '@fortawesome/free-solid-svg-icons';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-change-password',
@@ -42,14 +43,13 @@ export class WalletChangePasswordComponent {
       this.newfielddisabled = true;
       this.fielddisabled = true;
       this.showSpinner = true;
-      const message: string = await this.rpcCallsService.changePassword(this.oldpassword, this.newpassword);
-      this.showSpinner = false;
-      if (message === 'success') {
+      const response: rpcReturn = await this.rpcCallsService.changePassword(this.oldpassword, this.newpassword);
+      if (response.status) {
         this.showInfoMessage();
       } else {
-        this.message = message;
-        console.log(this.message);
+        this.message = response.message;
       }
+      this.showSpinner = false;
     }
   }
 
@@ -77,14 +77,14 @@ export class WalletChangePasswordComponent {
     }
   }
 
-	async showInfoMessage() {
-		this.infoMessage = 'Passwords changed Successfully';
-		await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
-		this.infoMessage = '';
+  async showInfoMessage() {
+    this.infoMessage = 'Passwords changed Successfully';
+    await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
+    this.infoMessage = '';
     this.oldpassword = '';
     this.newpassword = '';
     this.newfielddisabled = false;
     this.fielddisabled = false;
-	}
+  }
 
 }

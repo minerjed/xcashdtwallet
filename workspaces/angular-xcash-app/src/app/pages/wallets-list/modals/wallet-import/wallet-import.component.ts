@@ -6,6 +6,7 @@ import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { WalletsListService } from 'src/app/services/wallets-list.service';
 import { faKey, faEye, faWallet } from '@fortawesome/free-solid-svg-icons';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-import',
@@ -127,10 +128,11 @@ export class WalletImportComponent {
         this.Walletdata.walletName = this.walletname;
         this.Walletdata.password = this.walletpassword;
         let data: any = { 'result': '', 'balance': 0 };
-        data = await this.rpcCallsService.importWallet(this.Walletdata);
-        if (data.result === 'failure') {
-          this.textMessage = 'Wallet Import failed.';
+        const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata);
+        if (!response.status) { 
+          this.textMessage = response.message;
         } else {
+          data = response.data;
           await this.databaseService.saveWalletData(this.walletname, data.result, data.balance);
           this.walletsListService.addWallet(this.walletname, data.result, data.balance);
           this.textMessage = 'Wallet import complete.'

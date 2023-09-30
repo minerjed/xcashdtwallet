@@ -5,7 +5,7 @@ import { integratedAddress } from '../models/integratedaddress';
 import { signedData } from '../models/signeddata';
 import { ReserveProof } from '../models/reserveproof';
 import { RpcCallsService } from './rpc-calls.service';
-
+import { rpcReturn } from 'src/app/models/rpc-return';
 const fs: any = window['electronFs'];
 const APIs: any = window['electronAPIs'];
 
@@ -247,13 +247,13 @@ export class DatabaseService {
         database_data.wallet_data[wallet_count].reserve_proofs.forEach(async (item: {
           message: any; reserve_proof: any;
         }) => {
-          retStatus = await this.rpcallsService.verifyReserveproof({
+          const response: rpcReturn = await this.rpcallsService.verifyReserveproof({
             "public_address": public_address, "message": item.message, "reserveproof": item.reserve_proof
           });
-          if (retStatus === 'error') {
-            status[count] = 'Error';
+          if (response.status) {
+            status[count] = response.data === 'true' ? "Valid" : "Invalid";
           } else {
-            status[count] = retStatus === 'true' ? "Valid" : "Invalid";
+            status[count] = 'Error';
           }
           count++;
         });

@@ -6,6 +6,7 @@ import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { ReserveProof } from 'src/app/models/reserveproof';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -78,11 +79,9 @@ export class WalletReserveProofComponent implements OnInit {
     this.showAddModal = false;
     this.showspinner = true;
     if (data.amount !== 0) {
-      const inSignature = await this.rpcCallsService.createReserveproof(data);
-      if (inSignature !== 'error') {
-        console.log('here');
-        console.log(data.amount);
-        const newdata = {balance: data.amount, message: data.message, reserve_proof: inSignature};     
+      const response: rpcReturn = await this.rpcCallsService.createReserveproof(data);
+      if (response.status) {
+        const newdata = { balance: data.amount, message: data.message, reserve_proof: response.data };
         if (await this.databaseService.saveReserveproof(newdata, this.walletaddress)) {
           this.hidetrans = true;
           if (this.initArray) {
@@ -105,9 +104,8 @@ export class WalletReserveProofComponent implements OnInit {
           this.message = "Error updating the Wallet db file.";
         }
       } else {
-        this.message = "Error calling the Wallet RPC process."
+        this.message = response.message;
       }
-
     }
     this.showspinner = false;
   }
@@ -129,7 +127,7 @@ export class WalletReserveProofComponent implements OnInit {
   }
 
   callDisplayModal(id: any): void {
-    console.log (this.passMessage);
+    console.log(this.passMessage);
     this.passMessage = this.reserveProofArray[id].message;
     this.passSignature = this.reserveProofArray[id].signature;
     this.passAmount = this.reserveProofArray[id].amount;

@@ -1,3 +1,7 @@
+<div class="notification is-warning mt-1" *ngIf="message">
+	<button class="delete" (click)="showMessage('');"></button>
+	<p class="is-centered">{{ message }}</p>
+</div>
 <div *ngIf="notrans">
   <div class="container is-fluid">
     <p><strong>There are no transacations to display.</strong></p>
@@ -32,6 +36,6 @@
 </div>
 <app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
   *ngIf="showTransModal"></app-transaction-details>
-<div class="spinner-container" *ngIf="hidetrans">
+<div class="spinner-container" *ngIf="showSpinner">
   <div class="spinner"></div>
 </div>

@@ -4,6 +4,7 @@ import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Subject } from 'rxjs';
 import { Transaction } from 'src/app/models/transaction';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -25,6 +26,7 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 	notrans: boolean = false;
 	showTransModal: boolean = false;
 	txid: string = '';
+	showSpinner = true;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -32,12 +34,13 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 	) { };
 
 	async getTransactions(): Promise<void> {
-		try {
-			this.transactions = await this.rpcCallsService.getTransactions();
-		} catch (error) {
-			console.log(error);
-			throw error;
+		const response: rpcReturn = await this.rpcCallsService.getTransactions();
+		if (response.status) {
+			this.transactions = response.data;
+		} else {
+			this.message = response.message;
 		}
+		this.showSpinner = false;
 	}
 
 	ngOnInit(): void {
@@ -85,7 +88,7 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 	changePageLength(newLength: number): void {
 		// I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
 		const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-		  dtInstance.page.len(newLength).draw();
+			dtInstance.page.len(newLength).draw();
 		});
 		$('div.dataTables_length').find('select, label').remove();
 		var newDropdown = $('<select></select>');
@@ -98,13 +101,16 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 		var table = $('#myTable').DataTable();
 		$('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
 		newDropdown.on('change', () => {
-		  this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
-			const val = newDropdown.val();
-			if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
-			  dtInstance.page.len(+val).draw();
-			}
-		  });
+			this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
+				const val = newDropdown.val();
+				if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
+					dtInstance.page.len(+val).draw();
+				}
+			});
 		});
-	  }
+	}
 
+	showMessage(message: string): void {
+		this.message = message;
+	}
 }

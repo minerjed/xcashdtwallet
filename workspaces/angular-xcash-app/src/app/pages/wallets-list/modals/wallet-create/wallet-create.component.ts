@@ -5,6 +5,7 @@ import { ValidatorsRegexService } from 'src/app/services/validators-regex.servic
 import { ConstantsService } from 'src/app/services/constants.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { faKey, faEye, faWallet, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-create',
@@ -72,11 +73,12 @@ export class WalletCreateComponent {
       if (checkfile) {
         this.showMessage('The wallet name is already exists. Try again.');
       } else {
-        const data = await this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
-        if (data === 'success') {
-          const publicaddress: string = await this.rpcCallsService.getPublicAddress();
-          if (publicaddress === 'failure') {
-            this.showMessage('An error occurred while retriving the public address for the new wallet.');
+        const response: rpcReturn = await  this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
+        if (response.status) {
+          const response: rpcReturn = await this.rpcCallsService.getPublicAddress();
+          let publicaddress = response.data;
+          if (!response.status) {
+            this.showMessage(response.message);
           } else {
             try {
               await this.databaseService.saveWalletData(this.walletname, publicaddress, 0);
@@ -85,11 +87,11 @@ export class WalletCreateComponent {
               this.showCreate = true;
               this.buttonDisabled = false;
             } catch (error) {
-              this.showMessage('An error occurred while saving wallet data: ' + error);
+              this.showMessage('An error occurred while saving wallet data ' + error);
             }
           }
         } else {
-          this.showMessage(data);
+          this.showMessage(response.message);
         }
       }
       this.showspinner = false;

@@ -7,6 +7,7 @@ import { Observable, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WindowApiConst } from 'shared-lib';
 import { CurrencyService } from 'src/app/services/currency.service';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 interface XCashPriceData {
 	[key: string]: {
@@ -60,9 +61,14 @@ export class WalletComponent implements OnInit {
 		public currencyService: CurrencyService
 	) { };
 
-	closeLogin(status: string): void {
+	async closeLogin(status: string) {
 		if (status === 'success') {
-			this.getbalance();
+			const response: rpcReturn = await this.rpcCallsService.getBalance();
+			if (response.status) {
+				this.xcashbalance = response.data;
+			} else {
+				this.message = response.message;
+			}
 			this.showtab = 1;
 			this.showLoginModal = false;
 			this.walletOpen = true;
@@ -73,10 +79,6 @@ export class WalletComponent implements OnInit {
 
 	closeTab(): void {
 		this.showtab = 1;
-	}
-
-	async getbalance(): Promise<void> {
-		this.xcashbalance = await this.rpcCallsService.getBalance();
 	}
 
 	onTabClick(tab: number): void {
@@ -143,8 +145,13 @@ export class WalletComponent implements OnInit {
 	}
 
 	async refreshBalance(): Promise<void> {
-		this.xcashbalance = await this.rpcCallsService.getBalance();
-		this.updateWalletBalance(this.xcashbalance);
+		const response: rpcReturn = await this.rpcCallsService.getBalance();
+		if (response.status) {
+			this.xcashbalance = response.data;
+			this.updateWalletBalance(this.xcashbalance);
+		} else {
+			this.message = response.message;
+		}
 	}
 
 	async updateWalletBalance(balance: number): Promise<void> {

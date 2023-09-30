@@ -9,6 +9,7 @@ import { CurrencyService } from 'src/app/services/currency.service';
 import { Router } from '@angular/router';
 import { DatabaseService } from 'src/app/services/database.service';
 import { Contact } from 'src/app/models/contact.model';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
 	selector: 'app-wallet-send',
@@ -124,10 +125,10 @@ export class WalletSendComponent implements OnInit {
 
 	async confirmSend() {
 		this.showspinner = true;
-		let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
+		const response: rpcReturn = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
 			this.toAmount, this.toPrivacy, false);
 		this.showspinner = false;
-		if (data.status === 'success') {
+		if (response.status) {
 			this.showInfoMessage();
 			this.toAddress = '';
 			this.toPaymentId = '';
@@ -137,7 +138,7 @@ export class WalletSendComponent implements OnInit {
 			this.showmain = true;
 			this.showconfirm = false;
 		} else {
-			this.message = data.message;
+			this.message = response.message;
 		}
 	}
 
@@ -181,9 +182,9 @@ export class WalletSendComponent implements OnInit {
 	setsendAddress(data: any) {
 		this.modelData = data;
 		if (this.modelData.address != "") {
-		  this.toAddress = this.modelData.address;
-		  this.searchAddress();
-		} 
+			this.toAddress = this.modelData.address;
+			this.searchAddress();
+		}
 		this.contactModal = false;
 	}
 

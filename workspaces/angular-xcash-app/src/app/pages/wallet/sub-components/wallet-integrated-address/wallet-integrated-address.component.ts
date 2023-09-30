@@ -6,6 +6,7 @@ import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { integratedAddress } from 'src/app/models/integratedaddress'
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -83,9 +84,10 @@ export class WalletIntegratedAddressComponent implements OnInit {
         if (this.ckpaymentId(this.inintpaymentid)) {
           this.showMessage("This Payment Id already exists. Try again.");
         } else {
-          const iadata: any = await this.rpcCallsService.createIntegratedAddress(this.inintpaymentid);
-          if (iadata.status) {
-            let indata = { label: this.inlabel, payment_id: iadata.payment_id, integrated_address: iadata.integrated_address };
+          const response: rpcReturn = await this.rpcCallsService.createIntegratedAddress(this.inintpaymentid);
+          if (response.status) {
+            let indata = { label: this.inlabel, payment_id: response.data.payment_id, 
+              integrated_address: response.data.integrated_address };
             if (await this.databaseService.saveIntegratedAddresses(indata, this.walletaddress)) {
               this.hidetrans = true;
               if (this.initArray) {
@@ -109,7 +111,7 @@ export class WalletIntegratedAddressComponent implements OnInit {
               this.showMessage("Error occured updating wallet file.");
             }
           } else {
-            this.showMessage("Error calling the Wallet RPC process.");
+            this.showMessage(response.message);
           }
         }
       }

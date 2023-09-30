@@ -4,6 +4,7 @@ import { faKey, faEye } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ConstantsService } from 'src/app/services/constants.service';
+import { rpcReturn } from 'src/app/models/rpc-return';
 
 @Component({
   selector: 'app-wallet-login',
@@ -48,11 +49,12 @@ export class WalletLoginComponent implements OnInit {
   }
 
 	async openwallet(): Promise<void> {
-		this.modalmessage = await this.rpcCallsService.openWallet(this.walletname, this.walletpass);
-		if (this.modalmessage) {
-			this.walletpass = '';
-    } else {
+		const response: rpcReturn = await this.rpcCallsService.openWallet(this.walletname, this.walletpass);
+    if (response.status) {
       this.onClose.emit('success');
+    } else {
+      this.modalmessage = response.message;
+      this.walletpass = '';
     }
 	}
 

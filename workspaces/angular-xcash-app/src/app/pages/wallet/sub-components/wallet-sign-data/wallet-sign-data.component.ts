@@ -6,6 +6,7 @@ import { faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { signedData } from 'src/app/models/signeddata';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { DataTableDirective } from 'angular-datatables';
+import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
 @Component({
@@ -30,7 +31,7 @@ export class WalletSignDataComponent implements OnInit {
   showSignModal = false;
   showVerifyModal = false;
   initArray: boolean = false;
-  createdSignature: string = "";
+//  createdSignature: string = "";
   wsdata = { data: "", signature: "" };
   wsvdata = { outdata: "", outSignAddress: "", outSignature: "" };
   showDisplayModal = false;
@@ -78,10 +79,10 @@ export class WalletSignDataComponent implements OnInit {
     this.modelAdd = data;
     if (this.modelAdd.outdata !== "skip") {
       this.noSignedData = true;
-      this.createdSignature = await this.rpcCallsService.createSignedData(this.modelAdd.outdata);
-      if (this.createdSignature !== 'error') {
+      const response: rpcReturn = await this.rpcCallsService.createSignedData(this.modelAdd.outdata);
+      if (response.status) {
         this.wsdata.data = this.modelAdd.outdata;
-        this.wsdata.signature = this.createdSignature;
+        this.wsdata.signature = response.data;
         if (await this.databaseService.saveSignedData(this.wsdata, this.walletaddress)) {
           if (this.initArray) {
             this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -105,7 +106,7 @@ export class WalletSignDataComponent implements OnInit {
           this.message = "Error updating the Wallet db file.";
         }
       } else {
-        this.message = "Error calling the Wallet RPC process."
+        this.message = response.message;
       }
     }
     this.showspinner = false;
