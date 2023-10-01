@@ -83,6 +83,8 @@ export class WalletsListComponent implements OnInit {
 	}
 
 	selectedDelWallet(idConfirmed: number) {
+// 	renameSync: fs.renameSync
+
 		this.showDelModal = false;
 		if (idConfirmed) {
 			this.walletslistService.removeWallet(idConfirmed);
@@ -93,9 +95,10 @@ export class WalletsListComponent implements OnInit {
 			try {
 				fs.writeFileSync(this.dbfile, upddbjson);
 				try {
-					fs.unlinkSync(`${this.wdir}${wallet_name}`);
+
+					fs.renameSync(`${this.wdir}${wallet_name}`, `${this.wdir}${wallet_name}-Deleted`);
 					try {
-						fs.unlinkSync(`${this.wdir}${wallet_name}.keys`);
+						fs.renameSync(`${this.wdir}${wallet_name}.keys`, `${this.wdir}${wallet_name}.keys-Deleted`);
 						this.dbjson = upddbjson;
 						this.wcount = JSON.parse(this.dbjson).wallet_data.length;
 					} catch (err: any) {
@@ -105,7 +108,7 @@ export class WalletsListComponent implements OnInit {
 					this.showMessage('Error deleting wallet file. ' + err.code);
 				}
 			} catch (err: any) {
-				this.showMessage('Error reading wallet db file. ' + err.code);
+				this.showMessage('Error updating wallet db file. ' + err.code);
 			}
 		}
 	}
