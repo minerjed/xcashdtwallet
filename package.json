@@ -49,7 +49,7 @@
 	"config": {
 		"forge": {
 			"packagerConfig": {
-				"name": "Electron Angular App",
+				"name": "Electron-Angular-App",
 				"executableName": "electron-angular-xcash-app",
 				"icon": "./workspaces/electron-xcash-app/main/assets/icons/icon",
 				"extraResource": [
