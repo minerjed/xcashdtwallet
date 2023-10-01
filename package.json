@@ -50,7 +50,7 @@
 		"forge": {
 			"packagerConfig": {
 				"name": "Electron-Angular-App",
-				"executableName": "electron-angular-xcash-app",
+				"executableName": "xcashdtwallet",
 				"icon": "./workspaces/electron-xcash-app/main/assets/icons/icon",
 				"extraResource": [
 					"./extraResources/xcash-wallet-rpc-win.exe",
@@ -64,7 +64,6 @@
 				},
 				{
 					"name": "@electron-forge/maker-deb",
-					"executableName": "my-electron-app",
 					"config": {}
 				},
 				{
