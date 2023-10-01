@@ -14,7 +14,7 @@ const APIs: any = window['electronAPIs'];
 	styleUrls: ['./wallets-list.component.sass']
 })
 export class WalletsListComponent implements OnInit {
-	wdir = APIs.platform !== "win32" ? `${APIs.homeDir}${WindowApiConst.XCASHOFFICAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
+	wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
     dbfile: string = `${this.wdir}database.txt`;
 	faWallet = faWallet;
 	faTrashCan = faTrashCan;
