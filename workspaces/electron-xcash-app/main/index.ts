@@ -27,7 +27,7 @@ global.appConfig =
 // Housekeeping stuff
 const dbrec = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 125,"remote_node": "seed1.xcash.tech:18281","currency": "USD"}}';
 const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
-const rpcexe = process.platform !== "win32" ? `${process.env.NODE_ENV}/xcash-wallet-rpc-linux` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
+const rpcexe = process.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
 const dbfile = `${wdir}database.txt`;
 const rpclog = `${wdir}xcash-wallet-rpc.log`;

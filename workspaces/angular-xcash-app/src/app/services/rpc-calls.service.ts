@@ -274,7 +274,7 @@ export class RpcCallsService {
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
       const wdir = APIs.platform !== "win32" ? `${APIs.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
-      const rpcexe = APIs.platform !== "win32" ? `${APIs.env.NODE_ENV}/xxxxx.exe` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
+      const rpcexe = APIs.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
       const rpclog = `${wdir}xcash-wallet-rpc.log`;
       const dbfile = `${wdir}database.txt`;
       const data = fs.readFileSync(dbfile, "utf8");
