@@ -29,7 +29,8 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="currency">Currency Conversion (After saving, restart or reload for this setting to take effect)</label>
+          <label class="label" for="currency">Currency Conversion (After saving, restart or reload for this setting to
+            take effect)</label>
           <div class="control">
             <div class="select is-fullwidth">
               <select class="input is-hovered" name="currency" id="currency" [(ngModel)]="currency" required>
@@ -39,10 +40,11 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="autolock">Auto-Shutdown (After saving, restart or reload for this setting to take effect)</label>
+          <label class="label" for="autolock">Auto-Shutdown (After saving, restart or reload for this setting to take
+            effect)</label>
           <div class="control">
             <div class="select is-fullwidth">
-<!-- Added 5 mins on each to allow staking to complete -->
+              <!-- Added 5 mins on each to allow staking to complete -->
               <select name="autolock" id="autolock" class="is-hovered" [(ngModel)]="autolock" required>
                 <option value="125">2 hours</option>
                 <option value="245">4 hours</option>
@@ -53,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div class="field">
+        <div class="field mt-5">
           <div class="control">
             <button class="button is-primary" class="button is-primary" (click)="updateSettings()"
               [disabled]="!settingsForm.valid">Save</button>
@@ -69,4 +71,4 @@
   <div class="notification is-information" *ngIf="infoMessage">
     <p class="is-centered">{{ infoMessage }}</p>
   </div>
-  </form>
+</form>

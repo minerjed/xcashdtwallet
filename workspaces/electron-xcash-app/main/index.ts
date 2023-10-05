@@ -5,7 +5,7 @@ import { AppConfig } from 'shared-lib';
 import { App } from './components/app';
 import * as crypto from "crypto";
 import { exec } from 'child_process';
-import { WindowApiConst } from 'shared-lib';
+import { WindowApiConst } from 'shared-lib'; 
 
 declare const global: Global;
 
@@ -26,7 +26,7 @@ global.appConfig =
 		: _.merge(defaultConfig, currentConfig);
 // Housekeeping stuff
 const dbrec = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 1493,"remote_node": "seed1.xcash.tech:18281","currency": "USD"}}';
-const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
+const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICIAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
 const rpcexe = process.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
 const dbfile = `${wdir}database.txt`;
@@ -34,6 +34,26 @@ const rpclog = `${wdir}xcash-wallet-rpc.log`;
 // create xcash directroy
 if (!fs.existsSync(wdir)) {
 	fs.mkdirSync(wdir);
+	const wdirOld = process.platform !== "win32" ? `${process.env.HOME}/xcash-official/` : (`${process.env.USERPROFILE}\\xcash-official\\`).replace(/\\/g, "\\\\");
+	if (fs.existsSync(wdirOld)) {
+		const files = fs.readdirSync(wdirOld);
+		for (const file of files) {
+			const srcFile = path.join(wdirOld, file);
+			const destFile = path.join(wdir, file);
+			if (!fs.statSync(srcFile).isDirectory()) {
+				fs.copyFileSync(srcFile, destFile);
+			}
+		}
+		const wsrec = fs.readFileSync(dbfile, "utf8");
+		const wsdbrec = JSON.parse(wsrec);
+		wsdbrec.wallet_settings = { "autolock": 1493,"remote_node": "seed1.xcash.tech:18281","currency": "USD" };
+		fs.writeFileSync(dbfile, JSON.stringify(wsdbrec));
+	}
+	if (process.platform === "win32") {
+		const shortCut = `${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+		const dtshortCut = `${process.env.USERPROFILE}\\Desktop\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+		fs.copyFileSync(shortCut, dtshortCut);
+	}
 }
 // create rpc file
 const rpcUserAgent = crypto.randomBytes(100).toString('hex');
@@ -46,7 +66,7 @@ if (!fs.existsSync(dbfile)) {
 } else {
 	const data = fs.readFileSync(dbfile, "utf8");
 	const dbdata = JSON.parse(data);
-    rnode = dbdata.wallet_settings.remote_node;
+	rnode = dbdata.wallet_settings.remote_node;
 }
 if (fs.existsSync(`{rpcexe}`)) {
 	console.error(`Can not find RPC image.  Shutting down...`);

@@ -5,7 +5,7 @@ import { Logger } from '../utils/logger';
 import * as fs from 'fs-extra';
 import { WindowApiConst } from 'shared-lib';
 
-const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICAL}\\`).replace(/\\/g, "\\\\");
+const wdir = process.platform !== "win32" ? `${process.env.HOME}/${WindowApiConst.XCASHOFFICIAL}/` : (`${process.env.USERPROFILE}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
 const rpcfile = `${wdir}useragent.txt`;
 
 declare const global: Global;
@@ -83,7 +83,7 @@ export class Window {
 		let iconObject;
 		if (global.appConfig.isIconAvailable) {
 			const iconPath = path.join(__dirname, 'icons/icon.png');
-			Logger.debug('Icon Path', iconPath);
+//			Logger.debug('Icon Path', iconPath);
 			iconObject = nativeImage.createFromPath(iconPath);
 			// Change dock icon on MacOS
 			if (iconObject && process.platform === 'darwin') {
