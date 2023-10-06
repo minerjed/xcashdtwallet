@@ -21,6 +21,9 @@ export class App {
 	}
 
 	private static start() {
+		if (process.platform !== "win32") {
+			app.disableHardwareAcceleration();
+		}
 		// On MacOS it is common to re-create a window from app even after all windows have been closed
 		if (!App.electronWindow) {
 			App._wrapper = new Window();
