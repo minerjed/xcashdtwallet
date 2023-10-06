@@ -5,7 +5,7 @@ import { AppConfig } from 'shared-lib';
 import { App } from './components/app';
 import * as crypto from "crypto";
 import { exec } from 'child_process';
-import { WindowApiConst } from 'shared-lib'; 
+import { WindowApiConst } from 'shared-lib';
 
 declare const global: Global;
 
@@ -46,13 +46,15 @@ if (!fs.existsSync(wdir)) {
 		}
 		const wsrec = fs.readFileSync(dbfile, "utf8");
 		const wsdbrec = JSON.parse(wsrec);
-		wsdbrec.wallet_settings = { "autolock": 1493,"remote_node": "seed1.xcash.tech:18281","currency": "USD" };
+		wsdbrec.wallet_settings = { "autolock": 1493, "remote_node": "seed1.xcash.tech:18281", "currency": "USD" };
 		fs.writeFileSync(dbfile, JSON.stringify(wsdbrec));
 	}
 	if (process.platform === "win32") {
 		const shortCut = `${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
 		const dtshortCut = `${process.env.USERPROFILE}\\Desktop\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
-		fs.copyFileSync(shortCut, dtshortCut);
+		setTimeout(() => {
+			fs.copyFileSync(shortCut, dtshortCut);
+		}, 5000);
 	}
 }
 // create rpc file
