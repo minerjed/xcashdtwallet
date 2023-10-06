@@ -8,10 +8,12 @@ export class App {
 	private static _wrapper: Window;
 
 	public static launch(): void {
+		if (process.platform !== "win32") {
+			app.disableHardwareAcceleration();
+		}
 		app.on('window-all-closed', App.quit);
 		app.on('activate', App.start);
 		app.on('ready', App.start);
-
 		// Limit navigation and open external links in default browser
 		app.on('web-contents-created', App.openExternalLinksInDefaultBrowser);
 	}
@@ -21,9 +23,6 @@ export class App {
 	}
 
 	private static start() {
-		if (process.platform !== "win32") {
-			app.disableHardwareAcceleration();
-		}
 		// On MacOS it is common to re-create a window from app even after all windows have been closed
 		if (!App.electronWindow) {
 			App._wrapper = new Window();
