@@ -49,11 +49,12 @@
 	"config": {
 		"forge": {
 			"packagerConfig": {
-				"name": "Electron-Angular-App",
+				"name": "xCash-Desktop-Wallet",
 				"executableName": "xcashdtwallet",
 				"icon": "./workspaces/electron-xcash-app/main/assets/icons/icon",
 				"extraResource": [
 					"./extraResources/xcash-wallet-rpc-win.exe",
+					"./extraResources/xcashwallet.lnk",
 					"./extraResources/xcash-wallet-rpc-linux"
 				]
 			},

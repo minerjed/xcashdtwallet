@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron';
 import { Window } from './window';
+import { exec } from 'child_process';
 
 declare const global: Global;
 
@@ -29,6 +30,11 @@ export class App {
 	private static quit() {
 		// On MacOS it is common for applications to stay open until the user explicitly quits
 		// But WebDriverIO Test Runner does handle that behaviour yet
+		if (process.platform === "win32") {
+			exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+		} else {
+			exec("killall -9 'xcash-wallet-rpc-win.exe'");
+		}
 		if (
 			process.platform !== 'darwin' ||
 			global.appConfig.configId === 'e2e-test'
