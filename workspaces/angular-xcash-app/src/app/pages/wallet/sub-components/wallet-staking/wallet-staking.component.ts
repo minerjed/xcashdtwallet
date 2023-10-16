@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { XcashDelegatesService } from 'src/app/services/xcash-delegates.service';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Delegate } from 'src/app/models/delegates';
-import { faRefresh, faBroom } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faBroom, faPaste } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
 import { DataTableDirective } from 'angular-datatables';
 import { rpcReturn } from 'src/app/models/rpc-return';
+import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 declare var $: any;
 
 @Component({
@@ -16,12 +17,13 @@ declare var $: any;
 	templateUrl: './wallet-staking.component.html',
 	styleUrls: ['./wallet-staking.component.sass']
 })
-export class WalletStakingComponent implements OnInit, AfterViewInit {
+export class WalletStakingComponent implements OnInit {
 	@ViewChild(DataTableDirective, { static: false })
 	dtElement!: DataTableDirective;
 	@ViewChild('stakingForm', { static: false }) stakingForm!: NgForm;
 	faRefresh = faRefresh;
 	faBroom = faBroom;
+	faPaste = faPaste;
 	dtOptions: DataTables.Settings = { "deferRender": true };
 	dtTrigger: Subject<any> = new Subject<any>();
 	walletaddress: string = '';
@@ -29,7 +31,7 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	message: string = '';
 	showspinner: boolean = true;
 	showspinnerGetDel: boolean = true;
-	notrans: boolean = true;
+	displayMessage: boolean = true;
 	showVoteModal: boolean = false;
 	showRevoteModal: boolean = false;
 	showSweepModal: boolean = false;
@@ -37,6 +39,9 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	delegateVote: string = '';
 	delegated: boolean = false;
 	walletname: string = '';
+	delegateList: boolean = false;
+	delegateName: string = '';
+	nameCk: string = '';
 	initMessage: string = 'Connecting to Delegates Explorer...';
 	displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: "" }];
 
@@ -47,12 +52,14 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 		private route: ActivatedRoute,
 		private xcashdelegatesservice: XcashDelegatesService,
 		private rpcCallsService: RpcCallsService,
-		private xcashCurrencyPipe: XcashCurrencyPipe
+		private xcashCurrencyPipe: XcashCurrencyPipe,
+		private validatorsRegexService: ValidatorsRegexService,
 	) { };
 
 	ngOnInit(): void {
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
 		this.walletaddress = this.route.snapshot.paramMap.get('waddress') ?? '';
+		this.nameCk = this.validatorsRegexService.delegate_name;
 		this.displayDelegates = [];
 		this.getVoteStatus();
 		this.getDelegates();
@@ -78,9 +85,13 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	}
 
 	async getDelegates(): Promise<void> {
-		const data = await this.xcashdelegatesservice.getDelegates();
+		let data: any = "";
+		try {
+			data = await this.xcashdelegatesservice.getDelegates();
+		} catch (error) { }
 		if (Array.isArray(data)) {
-			this.notrans = false;
+			this.displayMessage = false;
+			this.delegateList = true;
 			this.delegates = data;
 			let indx = 1;
 			for (const delegate of this.delegates) {
@@ -101,26 +112,11 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 			await new Promise(resolve => setTimeout(resolve, 500));
 			this.changePageLength(3);
 		} else {
-			this.displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: "" }];
-		}
-	}
-
-	async waitForArray() {
-		while (this.displayDelegates.length < 1) {
-			// Wait for a short time before checking again
-			await new Promise(resolve => setTimeout(resolve, 1000));
-		}
-		if (this.notrans) {
 			this.showspinner = false;
-			this.initMessage = 'The Delegates Exporer site is not responding. Please check back in a few minutes.';
-			await new Promise(resolve => setTimeout(resolve, 3700));
-			this.onClose.emit();
+			this.initMessage = 'The Delegates Explorer site is not responding. So you will need to enter the Delegate name manually.';
+			await new Promise(resolve => setTimeout(resolve, 5000));
+			this.displayMessage = false;
 		}
-		this.showspinner = false;
-	}
-
-	ngAfterViewInit(): void {
-		this.waitForArray();
 	}
 
 	async sweepTrans() {
@@ -136,7 +132,6 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 	}
 
 	castVote(delegate: string): void {
-		;
 		this.delegateVote = delegate;
 		this.showVoteModal = true;
 	}
@@ -159,6 +154,20 @@ export class WalletStakingComponent implements OnInit, AfterViewInit {
 
 	ngOnDestroy(): void {
 		this.dtTrigger.unsubscribe();
+	}
+
+	async onPaste(event: Event, infield: string): Promise<void> {
+		event.preventDefault(); // prevent default paste behavior
+		try {
+			const clipboardText = await navigator.clipboard.readText();
+			if (infield === 'name') {
+				this.delegateName = clipboardText;
+			} else {
+				this.delegateName = clipboardText;
+			}
+		} catch (err) {
+			console.error('Failed to read clipboard contents: ', err);
+		}
 	}
 
 	changePageLength(newLength: number): void {

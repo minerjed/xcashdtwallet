@@ -28,7 +28,6 @@ export class TransactionDetailsComponent implements OnInit {
   ftxid: any = '';
   ftype: any = '';
   funlock_time: any = '';
-  showspinner: boolean = true;
   message: string = '';
 
   constructor(

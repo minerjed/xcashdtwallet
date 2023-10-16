@@ -241,7 +241,7 @@ export class DatabaseService {
     let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
     let count: number = 0;
     let status: string[] = [];
-    let retStatus: string;
+//    let retStatus: string;
     try {
       if (database_data.wallet_data[wallet_count].reserve_proofs.length > 0) {
         database_data.wallet_data[wallet_count].reserve_proofs.forEach(async (item: {
@@ -250,8 +250,9 @@ export class DatabaseService {
           const response: rpcReturn = await this.rpcallsService.verifyReserveproof({
             "public_address": public_address, "message": item.message, "reserveproof": item.reserve_proof
           });
+          console.log(response);
           if (response.status) {
-            status[count] = response.data === 'true' ? "Valid" : "Invalid";
+            status[count] = response.data === true ? "Valid" : "Invalid";
           } else {
             status[count] = 'Error';
           }

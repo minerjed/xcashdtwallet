@@ -20,11 +20,10 @@ export class WalletLoginComponent implements OnInit {
   passwordCk: string = '';
   pwlengthCk: number = 0;
   walletname: string = '';
+  showspinner: boolean = false;
   @ViewChild('walletpassinput', { static: false }) walletpassinput: any;
-
   @Input() modalmessage: string = '';
   @Input() callfrom: string = '';
-
   @Output() onClose: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private validatorsRegexService: ValidatorsRegexService,
@@ -49,6 +48,7 @@ export class WalletLoginComponent implements OnInit {
   }
 
 	async openwallet(): Promise<void> {
+    this.showspinner = true;
 		const response: rpcReturn = await this.rpcCallsService.openWallet(this.walletname, this.walletpass);
     if (response.status) {
       this.onClose.emit('success');
@@ -56,6 +56,7 @@ export class WalletLoginComponent implements OnInit {
       this.modalmessage = response.message;
       this.walletpass = '';
     }
+    this.showspinner = false;
 	}
 
   cancelLogin() {

@@ -19,6 +19,7 @@ export class WalletImportComponent {
   faEye = faEye;
   faWallet = faWallet;
   faPaste = faPaste;
+  messageType: string = '';
   showspinner: boolean = false;
   walletMnemonicseed: string = '';
   usingSeed: boolean = true;
@@ -127,15 +128,15 @@ export class WalletImportComponent {
         this.buttonDisabled = true;
         this.Walletdata.walletName = this.walletname;
         this.Walletdata.password = this.walletpassword;
-        let data: any = { 'result': '', 'balance': 0 };
         const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata);
         if (!response.status) { 
+          this.messageType = 'is-danger';
           this.textMessage = response.message;
         } else {
-          data = response.data;
-          await this.databaseService.saveWalletData(this.walletname, data.result, data.balance);
-          this.walletsListService.addWallet(this.walletname, data.result, data.balance);
-          this.textMessage = 'Wallet import complete.'
+          this.messageType = 'is-success';
+          await this.databaseService.saveWalletData(this.walletname, response.data.publicaddress, response.data.balance);
+          this.walletsListService.addWallet(this.walletname, response.data.publicaddress, response.data.balance);
+          this.textMessage = 'Success. Wallet import complete.';
         }
         this.buttonDisabled = false;
       }

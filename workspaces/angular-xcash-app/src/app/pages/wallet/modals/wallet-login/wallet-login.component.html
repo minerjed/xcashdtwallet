@@ -36,5 +36,8 @@
         <button type="button" class="button is-hovered" (click)="cancelLogin()" [disabled]="fielddisabled">Cancel</button>
       </footer>
     </form>
+    <div class="spinner-container" *ngIf="showspinner">
+      <div class="spinner"></div>
+    </div>
   </div> 
 </div>

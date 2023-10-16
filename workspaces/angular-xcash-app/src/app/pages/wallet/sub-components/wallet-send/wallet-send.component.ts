@@ -80,22 +80,22 @@ export class WalletSendComponent implements OnInit {
 	async submitSend(isInvalid: any) {
 		if (!isInvalid) {
 			this.showspinner = true;
-			let data: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
+			const retdata: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
 				this.toAmount, this.toPrivacy, true);
-			this.showspinner = false;
-			if (data.status === 'success') {
+			if (retdata.status) {
 				this.showmain = false;
 				this.showconfirm = true;
-				this.txFee = data.fee;
-				this.txAmount = data.total;
+				this.txFee = retdata.data.fee;
+				this.txAmount = retdata.data.total;
 				if (this.toPrivacy === 'private') {
 					this.txPrivacy = 'Private';
 				} else {
 					this.txPrivacy = 'Public';
 				}
 			} else {
-				this.message = data.message;
+				this.message = retdata.message;
 			}
+			this.showspinner = false;
 		} else {
 			this.toAddressInput.control.markAsTouched();
 			this.toPaymentIdInput.control.markAsTouched();
@@ -173,7 +173,6 @@ export class WalletSendComponent implements OnInit {
 		this.toAmount = '';
 		this.router.navigate(['']);
 	}
-
 
 	useContacts() {
 		this.contactModal = true;

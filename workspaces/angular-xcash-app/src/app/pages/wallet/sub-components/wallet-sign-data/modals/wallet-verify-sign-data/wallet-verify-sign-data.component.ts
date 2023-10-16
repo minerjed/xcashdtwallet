@@ -27,7 +27,7 @@ export class WalletVerifySignDataComponent implements OnInit {
   signatureCk: string = '';
   messageLength: number = 0;
   message: string = '';
-  messageType: string = 'is-danger'
+  messageType: string = 'is-danger';
   showSpinner: boolean = false;
 
   ngOnInit() {

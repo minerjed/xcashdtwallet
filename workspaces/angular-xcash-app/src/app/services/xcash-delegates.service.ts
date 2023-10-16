@@ -10,7 +10,7 @@ export class XcashDelegatesService {
   constructor(private http: HttpClient) { }
   
   async getDelegates(): Promise<any> {
-    const url = 'http://delegates.xcash.foundation/getdelegates';
+    const url = 'http://delegates.xcash.network/getdelegates';
     try {
       const response = this.http.get(url, { responseType: 'json' });
       return firstValueFrom(response.pipe(
@@ -19,7 +19,7 @@ export class XcashDelegatesService {
         })
       ));
     } catch (error) {
-      return [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: "" }];
+      return 'error';
     }
   }
 }

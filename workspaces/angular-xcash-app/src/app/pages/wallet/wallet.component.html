@@ -48,7 +48,8 @@
   <ul>
     <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
       <a>
-        <span>Transactions</span>
+        <span>Transactions</span><span class="icon is-small is-clickable" (click)="refreshTrans()">&nbsp;&nbsp;<fa-icon
+          [icon]="faRefresh"></fa-icon></span>
       </a>
     </li>
     <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">

@@ -59,6 +59,7 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 			this.notrans = true;
 			this.hidetrans = false;
 		} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
+			await new Promise(resolve => setTimeout(resolve, 1000));
 			this.dtTrigger.next(this.transactions);
 			await new Promise(resolve => setTimeout(resolve, 500));
 			this.changePageLength(7);

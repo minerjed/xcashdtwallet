@@ -15,7 +15,7 @@ const APIs: any = window['electronAPIs'];
 })
 export class WalletsListComponent implements OnInit {
 	wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
-    dbfile: string = `${this.wdir}database.txt`;
+	dbfile: string = `${this.wdir}database.txt`;
 	faWallet = faWallet;
 	faTrashCan = faTrashCan;
 	faEdit = faEdit;
@@ -31,6 +31,8 @@ export class WalletsListComponent implements OnInit {
 	idForRename: number = 0;
 	nameForRename: string = '';
 	message: string = '';
+	emessage: string = '';
+	buttonSwitch: boolean = false;
 	model = { id: 0, newname: "" };
 
 	constructor(
@@ -83,8 +85,6 @@ export class WalletsListComponent implements OnInit {
 	}
 
 	selectedDelWallet(idConfirmed: number) {
-// 	renameSync: fs.renameSync
-
 		this.showDelModal = false;
 		if (idConfirmed) {
 			this.walletslistService.removeWallet(idConfirmed);
@@ -95,7 +95,6 @@ export class WalletsListComponent implements OnInit {
 			try {
 				fs.writeFileSync(this.dbfile, upddbjson);
 				try {
-
 					fs.renameSync(`${this.wdir}${wallet_name}`, `${this.wdir}${wallet_name}-Deleted`);
 					try {
 						fs.renameSync(`${this.wdir}${wallet_name}.keys`, `${this.wdir}${wallet_name}.keys-Deleted`);
@@ -117,8 +116,11 @@ export class WalletsListComponent implements OnInit {
 		this.message = message;
 	}
 
+	showError(emessage: string): void {
+		this.emessage = emessage;
+	}
+
 	ngOnInit(): void {
-		// read Wallet Data.
 		try {
 			const dbstring: string = fs.readFileSync(this.dbfile, 'utf8');
 			this.dbjson = dbstring;
@@ -126,10 +128,9 @@ export class WalletsListComponent implements OnInit {
 			this.wcount = JSON.parse(dbstring).wallet_data.length;
 			this.walletList$ = this.walletslistService.getWalletList();
 		} catch (err: any) {
+			this.buttonSwitch = true;
 			this.dbjson = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "seed1.xcash.tech:18281"}}';
-			this.wcount = 0;
-			this.walletslistService.loadWallets(this.dbjson);
-			this.showMessage('Error occured reading wallet db file.  It should be automically created on startup.');
+			this.showError('Error occured reading wallet db file. The file should be automically created on startup.');
 		}
 	}
 
@@ -138,7 +139,16 @@ export class WalletsListComponent implements OnInit {
 	}
 
 	exitCreateModal(): void {
+		// Sync array with display data
 		this.showCreateModal = false;
+		try {
+			const dbstring: string = fs.readFileSync(this.dbfile, 'utf8');
+			this.dbjson = dbstring;
+		} catch (err: any) {
+			this.buttonSwitch = true;
+			this.dbjson = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "seed1.xcash.tech:18281"}}';
+			this.showError('Error occured reading wallet db file. The file should be automically created on startup.');
+		}
 	}
 
 	importWallet(): void {
@@ -146,7 +156,16 @@ export class WalletsListComponent implements OnInit {
 	}
 
 	exitImportModal(): void {
+		// Sync array with display data
 		this.showImportModal = false;
+		try {
+			const dbstring: string = fs.readFileSync(this.dbfile, 'utf8');
+			this.dbjson = dbstring;
+		} catch (err: any) {
+			this.buttonSwitch = true;
+			this.dbjson = '{"wallet_data": [],"contact_data": [],"wallet_settings": {"autolock": 10,"remote_node": "seed1.xcash.tech:18281"}}';
+			this.showError('Error occured reading wallet db file. The file should be automically created on startup.');
+		}
 	}
 
 }

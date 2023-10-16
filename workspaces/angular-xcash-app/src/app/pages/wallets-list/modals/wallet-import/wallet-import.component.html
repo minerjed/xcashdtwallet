@@ -26,7 +26,7 @@
               <div class="field">
                 <textarea class="textarea is-hovered has-text-weight-semibold is-clickable" name="mnemonic"
                   [(ngModel)]="walletMnemonicseed" required [pattern]="mnemonicwordsCk" #mnemonicInput="ngModel"
-                  placeholder="Enter the 25 words for your Mnemonic Seed seprated by spaces." rows="2"></textarea>
+                  placeholder="Enter the 25 words for your Mnemonic Seed seprated by spaces." rows="3"></textarea>
                 <div *ngIf="mnemonicInput.invalid && mnemonicInput.touched">
                   <div *ngIf="mnemonicInput.errors?.required">This field is required.</div>
                   <div *ngIf="mnemonicInput.errors?.pattern">You did not enter {{ wordlength }} words with no trailing
@@ -105,9 +105,6 @@
             <p class="is-centered">{{ message }}</p>
           </div>
         </div>
-        <!--
-    Get Name and Password, second form
--->
         <div *ngIf="getwalletName">
           <div class="field mt-4">
             <label class="label">Wallet Name:</label>
@@ -169,13 +166,11 @@
             <p class="is-centered">{{ message }}</p>
           </div>
         </div>
-        <!--
-    Sync wallet, third form
--->
+        <!-- Sync wallet, third form  -->
         <div *ngIf="showCreate">
-          <p class="mt-4">{{ textMessage }}<br><br><br><br></p>
+          <div class="notification {{ messageType }} mt-4">
+            {{ textMessage }}</div><br><br>
         </div>
-        <!--  -->
       </section>
       <footer class="modal-card-foot">
         <div *ngIf="usingSeed">

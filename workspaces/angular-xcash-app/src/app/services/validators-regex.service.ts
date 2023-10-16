@@ -18,6 +18,7 @@ export class ValidatorsRegexService {
   public readonly xcash_reserve_proof_amount: string = '';
   public readonly reserve_proof: string = '';
   public readonly message_settings: string = '';
+  public readonly delegate_name: string = '';
   
   constructor(private constantsService: ConstantsService) { 
 
@@ -33,6 +34,7 @@ export class ValidatorsRegexService {
     this.signature = `^${this.constantsService.signature_prefix}[a-zA-Z0-9]{${this.constantsService.signature_length_settings}}$`;
     this.xcash_reserve_proof_amount = `\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply}|^ALL$)\\b$`;
     this.reserve_proof = `^ReserveProofV1[a-zA-Z0-9]+$`;
-    this.message_settings = `^([a-zA-Z0-9 ]{1,${this.constantsService.message_settings_length}})$`
+    this.message_settings = `^([a-zA-Z0-9 ]{1,${this.constantsService.message_settings_length}})$`;
+    this.delegate_name = `^[a-zA-Z0-9._-]+$`;
   }
 }

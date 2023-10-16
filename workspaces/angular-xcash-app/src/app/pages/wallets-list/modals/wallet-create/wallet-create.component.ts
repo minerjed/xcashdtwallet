@@ -39,9 +39,17 @@ export class WalletCreateComponent {
   walletViewkey: string = '';
   walletMnemonicseed: string = '';
   publicAddress: any = '';
+  tippyOptions = {
+    trigger: 'click',
+    hideOnClick: false,
+    onShow: (instance: any) => {
+      setTimeout(() => {
+        instance.hide();
+      }, 700);
+    }
+  };
   privatekeys: any = { "seed": "", "viewkey": "", "spendkey": "" };
   @ViewChild('walletnameinput', { static: false }) walletnameinput: any;
-
   @ViewChild('passwordinput', { static: false }) passwordinput: any;
   @ViewChild('confirmpasswordinput', { static: false }) confirmpasswordinput: any;
 
@@ -73,24 +81,31 @@ export class WalletCreateComponent {
       if (checkfile) {
         this.showMessage('The wallet name is already exists. Try again.');
       } else {
-        const response: rpcReturn = await  this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
+        this.showCreate = true;
+        this.showMain = false;
+        const response: rpcReturn = await this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
         if (response.status) {
           const response: rpcReturn = await this.rpcCallsService.getPublicAddress();
-          let publicaddress = response.data;
-          if (!response.status) {
-            this.showMessage(response.message);
-          } else {
+          if (response.status) {
             try {
-              await this.databaseService.saveWalletData(this.walletname, publicaddress, 0);
-              this.walletsListService.addWallet(this.walletname, publicaddress, 0);
-              this.showMain = false;
-              this.showCreate = true;
-              this.buttonDisabled = false;
+              this.publicAddress = response.data;
+              await this.databaseService.saveWalletData(this.walletname, this.publicAddress, 0);
+              this.walletsListService.addWallet(this.walletname, this.publicAddress, 0);
+              this.showCreate = false;
+              this.continueCreate();
             } catch (error) {
+              this.showMain = true;
+              this.showCreate = false;
               this.showMessage('An error occurred while saving wallet data ' + error);
             }
+          } else {
+            this.showMain = true;
+            this.showCreate = false;
+            this.showMessage(response.message);
           }
         } else {
+          this.showMain = true;
+          this.showCreate = false;
           this.showMessage(response.message);
         }
       }
@@ -99,15 +114,18 @@ export class WalletCreateComponent {
   }
 
   async continueCreate() {
-    this.showspinner = true;
-    this.privatekeys = await this.rpcCallsService.getPrivateKeys();
-    this.walletSpendkey = this.privatekeys.spendkey;
-    this.walletViewkey = this.privatekeys.viewkey;
-    this.walletMnemonicseed = this.privatekeys.seed;
-    this.publicAddress = this.rpcCallsService.getPublicAddress();
-    this.showMain = false;
-    this.showCreate = false;
-    this.showExit = true;
+    const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
+    if (response.status) {
+      this.privatekeys = response.data;
+      this.walletSpendkey = this.privatekeys.spendkey;
+      this.walletViewkey = this.privatekeys.viewkey;
+      this.walletMnemonicseed = this.privatekeys.seed;
+      this.showExit = true;
+    } else {
+      this.showMain = true;
+      this.showCreate = false;
+      this.showMessage(response.message);
+    }
     this.showspinner = false;
   }
 
@@ -132,12 +150,12 @@ export class WalletCreateComponent {
   }
 
   copyToClipboard(value: string) {
-		navigator.clipboard.writeText(value)
-			.then(() => { })
-			.catch(err => {
-				console.error('Failed to copy text: ', err);
-			});
-	}
+    navigator.clipboard.writeText(value)
+      .then(() => { })
+      .catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+  }
 
   showMessage(message: string): void {
     if (message === '') {

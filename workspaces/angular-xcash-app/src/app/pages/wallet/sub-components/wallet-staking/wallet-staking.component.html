@@ -1,10 +1,10 @@
 <form #stakingForm="ngForm">
-  <div *ngIf="notrans">
+  <div *ngIf="displayMessage">
     <div class="container is-fluid">
       <p><strong>{{ initMessage }}</strong></p>
     </div>
   </div>
-  <div id="delegates" [ngClass]="{ 'is-hidden' : notrans }">
+  <div id="delegates" [ngClass]="{ 'is-hidden' : displayMessage }">
     <div class="container is-fluid is-mobile">
       <div class="columns is-mobile">
         <div class="column is-9">
@@ -43,42 +43,64 @@
           </button>
         </div>
       </div>
-    </div>
-    <div class="container is-fluid has-text-weight-semibold mb-4">
-      <p>To Vote for A delegate Pick the Delegate Name from the table below:</p>
-    </div>
-    <div class="container is-fluid">
-      <form>
-        <table id="delegatestable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
-          [dtTrigger]="dtTrigger">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Delegate Name</th>
-              <th>Fee</th>
-              <th>Votes</th>
-              <th>Online</th>
-              <th>Verifier Rounds</th>
-              <th>Producer Rounds</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let displaydelegate of displayDelegates">
-              <td>{{ displaydelegate.id }}</td>
-              <td><a (click)="castVote(displaydelegate.name)">{{ displaydelegate.name }}</a></td>
-              <td>{{ displaydelegate.fee }}%</td>
-              <td>{{ displaydelegate.vote_count | voteFormat }}</td>
-              <td>{{ displaydelegate.online_percentage }}%</td>
-              <td>{{ displaydelegate.vtotal_rounds }}</td>
-              <td>{{ displaydelegate.total_rounds }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
+      <div id="delegates" [ngClass]="{ 'is-hidden' : delegateList }">
+        <div class="field has-text-weight-bold">
+          <label for="name">Delegate:</label>
+          <div class="control has-icons-right">
+          <input type="text" name="delegatename" class="input is-hovered" [(ngModel)]="delegateName"
+            #delegatenameinput="ngModel" [pattern]="nameCk" placeholder="Enter the delegate name" required>
+          <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'name')">
+            <fa-icon [icon]="faPaste"></fa-icon>
+          </span>
+          </div>
+          <div class="help" *ngIf="delegatenameinput.invalid && (delegatenameinput.touched || delegatenameinput.dirty)">
+            Delegate name may only contain numbers, letters, underscores, hyphens, and periods.
+          </div>
+        </div>
+        <div class="buttons">
+          <button type="submit" class="button is-primary" [disabled]="stakingForm.invalid" (click)="castVote(delegateName)">Vote</button>
+          <button type="button" class="button is-hovered" (click)="exitVoteModal()">Cancel</button>
+        </div>
+      </div>
+      <div id="delegates" [ngClass]="{ 'is-hidden' : !delegateList }">
+        <div class="container is-fluid has-text-weight-semibold mb-4">
+          <p>To Vote for A delegate Pick the Delegate Name from the table below:</p>
+        </div>
+        <div class="container is-fluid">
+          <form>
+            <table id="delegatestable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
+              [dtTrigger]="dtTrigger">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Delegate Name</th>
+                  <th>Fee</th>
+                  <th>Votes</th>
+                  <th>Online</th>
+                  <th>Verifier Rounds</th>
+                  <th>Producer Rounds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let displaydelegate of displayDelegates">
+                  <td>{{ displaydelegate.id }}</td>
+                  <td><a (click)="castVote(displaydelegate.name)">{{ displaydelegate.name }}</a></td>
+                  <td>{{ displaydelegate.fee }}%</td>
+                  <td>{{ displaydelegate.vote_count | voteFormat }}</td>
+                  <td>{{ displaydelegate.online_percentage }}%</td>
+                  <td>{{ displaydelegate.vtotal_rounds }}</td>
+                  <td>{{ displaydelegate.total_rounds }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </form>
-<app-wallet-vote [delegateVote]="delegateVote" [xcashbalance]='xcashbalance' *ngIf="showVoteModal" (onClose)="exitVoteModal()"></app-wallet-vote>
+<app-wallet-vote [delegateVote]="delegateVote" [xcashbalance]='xcashbalance' *ngIf="showVoteModal"
+  (onClose)="exitVoteModal()"></app-wallet-vote>
 <app-wallet-revote [delegateVote]="delegateVote" *ngIf="showRevoteModal"
   (onClose)="exitReVoteModal()"></app-wallet-revote>
 <app-wallet-sweep [walletname]="walletname" [walletaddress]="walletaddress" *ngIf="showSweepModal"

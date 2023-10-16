@@ -3,5 +3,5 @@ export class WindowApiConst {
 	public static readonly XCASHOFFICIAL = 'xcash-official-v2';
 
 	/** Verion number for XCashdtwallet - change also in package.json */
-	public static readonly XCASHVERSION = '2.0.0';
+	public static readonly XCASHVERSION = '2.0.1';
 }

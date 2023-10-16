@@ -171,4 +171,8 @@ export class WalletComponent implements OnInit {
 		}
 	}
 
+	refreshTrans(): void {
+		this.showtab = 100;
+	}
+
 }

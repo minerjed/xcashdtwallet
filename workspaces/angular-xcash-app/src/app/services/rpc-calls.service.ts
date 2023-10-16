@@ -128,7 +128,7 @@ export class RpcCallsService {
         "fee": ckdata.result.fee_list[0] / decimal_places,
         "total": (ckdata.result.fee_list[0] + ckdata.result.amount_list[0]) / decimal_places
       };
-      return { status: true, message: 'Success.', data: ckdata.result };
+      return { status: true, message: 'Success.', data: wsdata };
     }
   }
 
@@ -307,7 +307,14 @@ export class RpcCallsService {
       APIs.exec(`${rpccommand}`);
       await new Promise(resolve => setTimeout(resolve, 10000));
       await this.openWallet(walletData.walletName, walletData.password);
-      const publicaddress: any = await this.getPublicAddress();
+      const wsdata: any = await this.getPublicAddress();
+      let wspublicaddress: string = '';
+      if (wsdata.status) {
+        wspublicaddress = wsdata.data;
+      } else {
+        // End and retrun
+        return { status: false, message: wsdata.message, data: null  };
+      }
       let block_height: number = 0;
       let current_block_height: number = 0;
       for (; ;) {
@@ -345,7 +352,7 @@ export class RpcCallsService {
       if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-2`)) {
         fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-2`);
       }
-      return { status: true, message: 'Success.', data: { 'result': publicaddress, 'balance': xcashbalance } };
+      return { status: true, message: 'Success.', data: { 'publicaddress': wspublicaddress, 'balance': xcashbalance } };
     } catch (error) {
       return { status: false, message: 'Failed to import wallet, ' + error, data: null };
     }
