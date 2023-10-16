@@ -56,7 +56,17 @@ if (!fs.existsSync(wdir)) {
 			fs.copyFileSync(shortCut, dtshortCut);
 		}, 5000);
 	}
+} else {
+	// Update link on windows
+	if (process.platform === "win32") {
+		const shortCut = `${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+		const dtshortCut = `${process.env.USERPROFILE}\\Desktop\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+		setTimeout(() => {
+			fs.copyFileSync(shortCut, dtshortCut);
+		}, 5000);
+	}
 }
+
 // create rpc file
 const rpcUserAgent = crypto.randomBytes(100).toString('hex');
 fs.writeFileSync(rpcfile, rpcUserAgent);
