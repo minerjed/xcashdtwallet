@@ -59,7 +59,6 @@
         </div>
         <div class="buttons">
           <button type="submit" class="button is-primary" [disabled]="stakingForm.invalid" (click)="castVote(delegateName)">Vote</button>
-          <button type="button" class="button is-hovered" (click)="exitVoteModal()">Cancel</button>
         </div>
       </div>
       <div id="delegates" [ngClass]="{ 'is-hidden' : !delegateList }">

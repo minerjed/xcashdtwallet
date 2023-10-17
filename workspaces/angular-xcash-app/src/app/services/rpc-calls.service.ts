@@ -31,7 +31,7 @@ export class RpcCallsService {
 
   public async openWallet(wallet: string, password: string): Promise<rpcReturn> {
     // make sure no wallets are open
-    this.closeWallet();
+    // await this.closeWallet();
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
     const result: string = await this.getPostRequestData(intrans);
     const ckerror: any = result;

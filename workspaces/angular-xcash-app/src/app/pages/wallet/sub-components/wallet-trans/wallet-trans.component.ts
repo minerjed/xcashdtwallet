@@ -12,7 +12,7 @@ declare var $: any;
 	templateUrl: './wallet-trans.component.html',
 	styleUrls: ['./wallet-trans.component.sass']
 })
-export class WalletTransComponent implements OnInit, AfterViewInit {
+export class WalletTransComponent implements OnInit {
 	@ViewChild(DataTableDirective, { static: false })
 	dtElement!: DataTableDirective;
 	dtOptions: DataTables.Settings = {};
@@ -33,42 +33,25 @@ export class WalletTransComponent implements OnInit, AfterViewInit {
 		private rpcCallsService: RpcCallsService,
 	) { };
 
-	async getTransactions(): Promise<void> {
+	async ngOnInit() {
+		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
 		const response: rpcReturn = await this.rpcCallsService.getTransactions();
 		if (response.status) {
 			this.transactions = response.data;
+			if (this.transactions[0].id === 0) {
+				this.transactions = [];
+				this.notrans = true;
+				this.hidetrans = false;
+			} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
+				this.dtTrigger.next(this.transactions);
+				await new Promise(resolve => setTimeout(resolve, 1000));
+				this.changePageLength(7);
+				this.hidetrans = false;
+			}
 		} else {
 			this.message = response.message;
 		}
 		this.showSpinner = false;
-	}
-
-	ngOnInit(): void {
-		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
-		this.getTransactions();
-	}
-
-	async waitForArray() {
-		while (this.transactions.length < 1) {
-			// Wait for a short time before checking again
-			await new Promise(resolve => setTimeout(resolve, 100));
-		}
-		// Hide the transactions until ready to display
-		if (this.transactions[0].id === 0) {
-			this.transactions = [];
-			this.notrans = true;
-			this.hidetrans = false;
-		} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
-			await new Promise(resolve => setTimeout(resolve, 1000));
-			this.dtTrigger.next(this.transactions);
-			await new Promise(resolve => setTimeout(resolve, 500));
-			this.changePageLength(7);
-			this.hidetrans = false;
-		}
-	}
-
-	ngAfterViewInit(): void {
-		this.waitForArray();
 	}
 
 	showdetails(id: number): void {
