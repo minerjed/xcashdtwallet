@@ -121,7 +121,7 @@ export class WalletImportComponent {
         this.buttonDisabled = true;
         this.message = 'The Wallet Name entered already exists.  Try again.';
       } else {
-        this.textMessage = 'The wallet is now synchronizing and this process will take a while. Thank you for your patience.';
+        this.textMessage = 'The wallet is now synchronizing and this process will take arond an hour. Thank you for your patience.';
         this.getwalletName = false;
         this.showCreate = true;
         this.showspinner = true;
@@ -129,14 +129,19 @@ export class WalletImportComponent {
         this.Walletdata.walletName = this.walletname;
         this.Walletdata.password = this.walletpassword;
         const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata);
-        if (!response.status) { 
+        if (response.status) {
+          try {
+            await this.databaseService.saveWalletData(this.walletname, response.data.publicaddress, response.data.balance);
+            this.walletsListService.addWallet(this.walletname, response.data.publicaddress, response.data.balance);
+            this.messageType = 'is-success';
+            this.textMessage = 'Success. Wallet import complete.';
+          } catch (err) {
+            this.messageType = 'is-danger';
+            this.textMessage = 'Failed to update database file: ', err;
+          }
+        } else {
           this.messageType = 'is-danger';
           this.textMessage = response.message;
-        } else {
-          this.messageType = 'is-success';
-          await this.databaseService.saveWalletData(this.walletname, response.data.publicaddress, response.data.balance);
-          this.walletsListService.addWallet(this.walletname, response.data.publicaddress, response.data.balance);
-          this.textMessage = 'Success. Wallet import complete.';
         }
         this.buttonDisabled = false;
       }

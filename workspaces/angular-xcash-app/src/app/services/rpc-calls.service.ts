@@ -31,7 +31,7 @@ export class RpcCallsService {
 
   public async openWallet(wallet: string, password: string): Promise<rpcReturn> {
     // make sure no wallets are open
-    // await this.closeWallet();
+    await this.closeWallet();
     const intrans = `{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename":"${wallet}","password":"${password}"}`;
     const result: string = await this.getPostRequestData(intrans);
     const ckerror: any = result;
@@ -261,7 +261,7 @@ export class RpcCallsService {
     if (ckdata.hasOwnProperty('error')) {
       return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
-      return { status: true, message: 'Success.', data: ckdata.result.heights };
+      return { status: true, message: 'Success.', data: ckdata.result.height };
     }
   }
 
@@ -306,46 +306,30 @@ export class RpcCallsService {
       const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
       APIs.exec(`${rpccommand}`);
       await new Promise(resolve => setTimeout(resolve, 10000));
-      await this.openWallet(walletData.walletName, walletData.password);
-      const wsdata: any = await this.getPublicAddress();
-      let wspublicaddress: string = '';
-      if (wsdata.status) {
-        wspublicaddress = wsdata.data;
-      } else {
-        // End and retrun
-        return { status: false, message: wsdata.message, data: null  };
+      const wsopen: any = await this.openWallet(walletData.walletName, walletData.password);
+      if (!wsopen.status) {
+        return { status: false, message: 'RPC error, ' + wsopen.message, data: null };
       }
-      let block_height: number = 0;
-      let current_block_height: number = 0;
-      for (; ;) {
-        const response1: rpcReturn = await this.getCurrentBlockHeight();
-        if (response1.status) {
-          block_height = response1.data;
-        } else {
-          return { status: false, message: 'RPC error, ' + response1.message, data: null };
-        }
-        await new Promise(resolve => setTimeout(resolve, 60000));
-        const response2: rpcReturn = await this.getCurrentBlockHeight();
-        if (response2.status) {
-          current_block_height = response2.data;
-        } else {
-          return { status: false, message: 'RPC error, ' + response2.message, data: null };
-        }
-        if (block_height === current_block_height && block_height !== 0) {
-          break;
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 60000));
-        }
+      const wsaddress: any = await this.getPublicAddress();
+      let wspublicaddress: string = '';
+      if (wsaddress.status) {
+        wspublicaddress = wsaddress.data;
+      } else {
+        return { status: false, message: 'RPC error, ' + wsaddress.message, data: null  };
+      }
+      await new Promise(resolve => setTimeout(resolve, 120000));
+      const wsblock: rpcReturn = await this.getCurrentBlockHeight();
+      if (!wsblock.status) {
+         return { status: false, message: 'RPC error, ' + wsblock.message, data: null };
       }
       let xcashbalance = 0;
-      const response: rpcReturn = await this.getBalance();
-      if (response.status) {
-        xcashbalance = response.data
+      const wsbalance: rpcReturn = await this.getBalance();
+      if (wsbalance.status) {
+        xcashbalance = wsbalance.data
       } else {
-        return { status: false, message: 'RPC error, ' + response.message, data: null };
+        return { status: false, message: 'RPC error, ' + wsbalance.message, data: null };
       }
       await this.closeWallet();
-      await new Promise(resolve => setTimeout(resolve, 10000));
       if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-1`)) {
         fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-1`);
       }

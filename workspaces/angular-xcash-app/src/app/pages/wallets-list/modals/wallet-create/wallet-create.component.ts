@@ -91,8 +91,8 @@ export class WalletCreateComponent {
               this.publicAddress = response.data;
               await this.databaseService.saveWalletData(this.walletname, this.publicAddress, 0);
               this.walletsListService.addWallet(this.walletname, this.publicAddress, 0);
+              await this.continueCreate();
               this.showCreate = false;
-              this.continueCreate();
             } catch (error) {
               this.showMain = true;
               this.showCreate = false;
@@ -114,6 +114,9 @@ export class WalletCreateComponent {
   }
 
   async continueCreate() {
+    //  wait for the wallet to synchronize 
+    await new Promise(resolve => setTimeout(resolve, 120000));
+    const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
     const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
     if (response.status) {
       this.privatekeys = response.data;
@@ -126,6 +129,8 @@ export class WalletCreateComponent {
       this.showCreate = false;
       this.showMessage(response.message);
     }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await this.rpcCallsService.closeWallet();
     this.showspinner = false;
   }
 
