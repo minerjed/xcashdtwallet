@@ -120,11 +120,18 @@ export class ContactsComponent implements OnInit {
         if ((this.modelMod.public_address !== this.addresstoMod) && (this.ckAddress(this.modelMod.public_address))) {
           this.showMessage("This contact address is already in use. Try again.");
         } else {
+          this.hidetrans = true;
+          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+            dtInstance.destroy();
+          });
           this.databaseService.editContacts(this.modelMod);
           this.contactlistService.modifyContact(this.modelMod.id, this.modelMod.name, this.modelMod.public_address);
           this.contactList$ = this.contactlistService.getContactList();
           this.contacts = this.contactList$.getValue();
+          this.dtTrigger.next(this.contacts);
           await new Promise(resolve => setTimeout(resolve, 500));
+          this.changePageLength(7);
+          this.hidetrans = false;
         }
       }
     }
@@ -142,14 +149,14 @@ export class ContactsComponent implements OnInit {
     this.showspinner = true;
     this.modelDel = data;
     if (this.modelDel.confirmflag) {
-      this.databaseService.deleteContacts(this.modelDel.id);
-      this.contactlistService.removeContact(this.modelDel.id);
-      this.contactList$ = this.contactlistService.getContactList();
-      this.contacts = this.contactList$.getValue();
       this.hidetrans = true;
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
         dtInstance.destroy();
       });
+      this.databaseService.deleteContacts(this.modelDel.id);
+      this.contactlistService.removeContact(this.modelDel.id);
+      this.contactList$ = this.contactlistService.getContactList();
+      this.contacts = this.contactList$.getValue();
       this.dtTrigger.next(this.contacts);
       await new Promise(resolve => setTimeout(resolve, 500));
       this.changePageLength(7);
