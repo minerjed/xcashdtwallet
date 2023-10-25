@@ -30,7 +30,7 @@ export class WalletStakingComponent implements OnInit {
 	delegates: Delegate[] = [];
 	message: string = '';
 	showspinner: boolean = true;
-	showspinnerGetDel: boolean = true;
+	showspinnerdel: boolean = true;
 	displayMessage: boolean = true;
 	showVoteModal: boolean = false;
 	showRevoteModal: boolean = false;
@@ -43,7 +43,7 @@ export class WalletStakingComponent implements OnInit {
 	delegateName: string = '';
 	nameCk: string = '';
 	initMessage: string = 'Connecting to Delegates Explorer...';
-	displayDelegates = [{ id: 0, name: "", fee: "", vote_count: 0, online_percentage: "", vtotal_rounds: "", total_rounds: "" }];
+	displayDelegates = [{ id: 0, name: "", fee: 0, vote_count: 0, online_percentage: 0, vtotal_rounds: 0, total_rounds: 0 }];
 
 	@Input() xcashbalance: number = 0;
 	@Output() onClose = new EventEmitter();
@@ -81,7 +81,7 @@ export class WalletStakingComponent implements OnInit {
 				this.showMessage(response.message);
 			}
 		}
-		this.showspinnerGetDel = false;
+		this.showspinner = false;
 	}
 
 	async getDelegates(): Promise<void> {
@@ -95,15 +95,15 @@ export class WalletStakingComponent implements OnInit {
 			this.delegates = data;
 			let indx = 1;
 			for (const delegate of this.delegates) {
-				if (delegate.shared_delegate_status === 'shared' && delegate.online_status === 'true') {
+				if (delegate.sharedDelegate && delegate.online) {
 					this.displayDelegates.push({
 						id: indx,
-						name: delegate.delegate_name,
-						fee: delegate.delegate_fee,
-						vote_count: Math.round(parseFloat(delegate.total_vote_count) / 1000000),
-						vtotal_rounds: delegate.block_verifier_total_rounds,
-						online_percentage: delegate.block_verifier_online_percentage,
-						total_rounds: delegate.block_producer_total_rounds
+						name: delegate.delegateName,
+						fee: delegate.fee,
+						vote_count: Math.round(delegate.votes / 1000000),
+						vtotal_rounds: delegate.totalRounds,
+						online_percentage: delegate.onlinePercentage,
+						total_rounds: delegate.totalBlockProducerRounds
 					});
 					indx++;
 				}
@@ -113,10 +113,11 @@ export class WalletStakingComponent implements OnInit {
 			this.changePageLength(3);
 		} else {
 			this.showspinner = false;
-			this.initMessage = 'The Delegates Explorer site is not responding. So you will need to enter the Delegate name manually.';
+			this.initMessage = 'The xCash API is not responding. You will need to enter the Delegate name manually.';
 			await new Promise(resolve => setTimeout(resolve, 5000));
 			this.displayMessage = false;
 		}
+		this.showspinnerdel = false;
 	}
 
 	async sweepTrans() {
