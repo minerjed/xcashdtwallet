@@ -167,13 +167,6 @@ export class WalletSendComponent implements OnInit {
 		this.infoMessage = '';
 	}
 
-	cancelStSend() {
-		this.toAddress = '';
-		this.toPaymentId = '';
-		this.toAmount = '';
-		this.router.navigate(['']);
-	}
-
 	useContacts() {
 		this.contactModal = true;
 	}

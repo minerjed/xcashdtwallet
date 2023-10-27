@@ -127,7 +127,6 @@ export class WalletReserveProofComponent implements OnInit {
   }
 
   callDisplayModal(id: any): void {
-    console.log(this.passMessage);
     this.passMessage = this.reserveProofArray[id].message;
     this.passSignature = this.reserveProofArray[id].signature;
     this.passAmount = this.reserveProofArray[id].amount;

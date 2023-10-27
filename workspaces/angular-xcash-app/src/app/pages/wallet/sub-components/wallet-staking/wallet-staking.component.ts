@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { XcashDelegatesService } from 'src/app/services/xcash-delegates.service';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Delegate } from 'src/app/models/delegates';
-import { faRefresh, faBroom, faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faBroom, faPaste, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
 import { DataTableDirective } from 'angular-datatables';
@@ -24,6 +24,7 @@ export class WalletStakingComponent implements OnInit {
 	faRefresh = faRefresh;
 	faBroom = faBroom;
 	faPaste = faPaste;
+	faSquareCheck = faSquareCheck;
 	dtOptions: DataTables.Settings = { "deferRender": true };
 	dtTrigger: Subject<any> = new Subject<any>();
 	walletaddress: string = '';
@@ -39,10 +40,10 @@ export class WalletStakingComponent implements OnInit {
 	delegateVote: string = '';
 	delegated: boolean = false;
 	walletname: string = '';
-	delegateList: boolean = false;
+	hidedelegates: boolean = true;
 	delegateName: string = '';
 	nameCk: string = '';
-	initMessage: string = 'Connecting to Delegates Explorer...';
+	initMessage: string = 'Connecting to Delegates API...';
 	displayDelegates = [{ id: 0, name: "", fee: 0, vote_count: 0, online_percentage: 0, vtotal_rounds: 0, total_rounds: 0 }];
 
 	@Input() xcashbalance: number = 0;
@@ -91,7 +92,6 @@ export class WalletStakingComponent implements OnInit {
 		} catch (error) { }
 		if (Array.isArray(data)) {
 			this.displayMessage = false;
-			this.delegateList = true;
 			this.delegates = data;
 			let indx = 1;
 			for (const delegate of this.delegates) {
@@ -110,7 +110,8 @@ export class WalletStakingComponent implements OnInit {
 			}
 			this.dtTrigger.next(this.displayDelegates);
 			await new Promise(resolve => setTimeout(resolve, 500));
-			this.changePageLength(3);
+			this.changePageLength(5);
+			this.hidedelegates = false;
 		} else {
 			this.showspinner = false;
 			this.initMessage = 'The xCash API is not responding. You will need to enter the Delegate name manually.';
@@ -178,7 +179,7 @@ export class WalletStakingComponent implements OnInit {
 		});
 		$('div.dataTables_length').find('select, label').remove();
 		var newDropdown = $('<select></select>');
-		newDropdown.append('<option value="3">3</option>');
+		newDropdown.append('<option value="5">5</option>');
 		newDropdown.append('<option value="10">10</option>');
 		newDropdown.append('<option value="25">25</option>');
 		newDropdown.append('<option value="50">50</option>');

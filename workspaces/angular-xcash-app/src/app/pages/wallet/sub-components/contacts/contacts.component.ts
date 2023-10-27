@@ -93,7 +93,7 @@ export class ContactsComponent implements OnInit {
           });
           this.dtTrigger.next(this.contacts);
           await new Promise(resolve => setTimeout(resolve, 500));
-          this.changePageLength(7);
+          this.changePageLength(5);
           this.hidetrans = false;
           this.noContacts = false;
         }
@@ -130,7 +130,7 @@ export class ContactsComponent implements OnInit {
           this.contacts = this.contactList$.getValue();
           this.dtTrigger.next(this.contacts);
           await new Promise(resolve => setTimeout(resolve, 500));
-          this.changePageLength(7);
+          this.changePageLength(5);
           this.hidetrans = false;
         }
       }
@@ -159,7 +159,7 @@ export class ContactsComponent implements OnInit {
       this.contacts = this.contactList$.getValue();
       this.dtTrigger.next(this.contacts);
       await new Promise(resolve => setTimeout(resolve, 500));
-      this.changePageLength(7);
+      this.changePageLength(5);
       this.hidetrans = false;
       if (this.contacts.length === 0) {
         this.noContacts = true;

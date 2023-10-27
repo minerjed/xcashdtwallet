@@ -31,7 +31,6 @@ export class WalletSignDataComponent implements OnInit {
   showSignModal = false;
   showVerifyModal = false;
   initArray: boolean = false;
-//  createdSignature: string = "";
   wsdata = { data: "", signature: "" };
   wsvdata = { outdata: "", outSignAddress: "", outSignature: "" };
   showDisplayModal = false;

@@ -3,17 +3,9 @@
 	<p class="is-centered">{{ message }}</p>
 </div>
 <div class="container is-fluid">
-	<div class="columns is-justify-content-flex-end mb-0 mt-1">
-		<div class="column is-narrow">
-			<div class="buttons">
-				<button type="submit" class="button is-info is-small" (click)="showCreate()">Create</button>
-			</div>
-		</div>
-		<div class="column is-narrow">
-			<div class="buttons">
-				<button type="submit" class="button is-info is-small" (click)="showVerify()">Verify</button>
-			</div>
-		</div>
+	<div class="buttons is-justify-content-flex-end mb-0 mt-1">
+		<button type="submit" class="button is-primary mr-5" (click)="showCreate()">Sign</button>
+		<button type="submit" class="button is-primary" (click)="showVerify()">Verify</button>
 	</div>
 	<div [ngClass]="{ 'is-hidden' : showspinner }">
 		<div id="nocontact" [ngClass]="{ 'is-hidden' : !noreserveProof }">
@@ -70,7 +62,8 @@
 	[inPubKey]="walletaddress" [inStatus]="passStatus" [inAmount]="passAmount" *ngIf="showDisplayModal"
 	(onClose)="exitDisplayModal()">
 </app-wallet-display-reserve-proof>
-<app-wallet-reserve-proof-verify *ngIf="showVerifyModal" (onClose)="exitSignData($event)"></app-wallet-reserve-proof-verify>
+<app-wallet-reserve-proof-verify *ngIf="showVerifyModal"
+	(onClose)="exitSignData($event)"></app-wallet-reserve-proof-verify>
 <div class="spinner-container" *ngIf="showspinner">
 	<div class="spinner"></div>
 </div>

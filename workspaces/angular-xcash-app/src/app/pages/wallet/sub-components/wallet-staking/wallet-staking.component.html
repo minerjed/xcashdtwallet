@@ -6,60 +6,50 @@
   </div>
   <div id="delegates" [ngClass]="{ 'is-hidden' : displayMessage }">
     <div class="container is-fluid is-mobile mt-0 pt-0">
-      <div class="columns is-mobile mt-0 pt-0">
-        <div class="column is-9 mt-0 pt-0">
-          <div class="field">
-            <div class="control">
-              <input class="input is-hovered has-text-weight-bold" type="text" name="cdelegate"
-                [(ngModel)]="currentDelegate" readonly>
-            </div>
-          </div>
-        </div>
-        <div class="column is-3 is-flex is-justify-content-flex-end mt-0 pt-0">
-          <div class="field">
-            <button type="submit" class="button is-primary" (click)="reVote()">
-              <span class="icon"><fa-icon [icon]="faRefresh"></fa-icon></span>
-              &nbsp;&nbsp;ReVote
-            </button>
-          </div>
-        </div>
-      </div>
       <div class="notification is-warning mt-2 mx-1" *ngIf="message">
         <button class="delete" (click)="showMessage('');"></button>
         <p class="is-centered">{{ message }}</p>
       </div>
-      <div class="columns is-mobile mt-0 pt-0">
-        <div class="column is-6">
-          <div class="has-text-weight-bold">
-            <p>Prepare Wallet For Vote:</p>
+      <div class="columns pb-0 mb-0">
+        <div class="column is-two-thirds pt-2">
+          <div class="field">
+            <input class="input is-hovered has-text-weight-bold" type="text" name="cdelegate"
+              [(ngModel)]="currentDelegate" readonly>
           </div>
         </div>
-        <div class="column is-6 is-flex is-justify-content-flex-end mt-0 pt-0">
-          <button type="submit" class="button is-primary" (click)="sweepTrans()">
-            <span class="icon"><fa-icon [icon]="faBroom"></fa-icon></span>
-            &nbsp;&nbsp;Sweep
-          </button>
+        <div class="column pt-2">
+          <div class="buttons is-right">
+            <button type="submit" class="button is-primary mr-5" (click)="reVote()">
+              <span class="icon"><fa-icon [icon]="faRefresh"></fa-icon></span>
+              &nbsp;&nbsp;ReVote
+            </button>
+            <button type="submit" class="button is-primary" (click)="sweepTrans()">
+              <span class="icon"><fa-icon [icon]="faBroom"></fa-icon></span>
+              &nbsp;&nbsp;Sweep
+            </button>
+          </div>
         </div>
       </div>
-      <div id="delegates" [ngClass]="{ 'is-hidden' : delegateList }">
+      <div id="delegates" [ngClass]="{ 'is-hidden' : !hidedelegates }">
         <div class="field has-text-weight-bold">
           <label for="name">Delegate:</label>
           <div class="control has-icons-right">
-          <input type="text" name="delegatename" class="input is-hovered" [(ngModel)]="delegateName"
-            #delegatenameinput="ngModel" [pattern]="nameCk" placeholder="Enter the delegate name" required>
-          <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'name')">
-            <fa-icon [icon]="faPaste"></fa-icon>
-          </span>
+            <input type="text" name="delegatename" class="input is-hovered" [(ngModel)]="delegateName"
+              #delegatenameinput="ngModel" [pattern]="nameCk" placeholder="Enter the delegate name" required>
+            <span class="icon is-small is-right is-clickable" (click)="onPaste($event, 'name')">
+              <fa-icon [icon]="faPaste"></fa-icon>
+            </span>
           </div>
           <div class="help" *ngIf="delegatenameinput.invalid && (delegatenameinput.touched || delegatenameinput.dirty)">
             Delegate name may only contain numbers, letters, underscores, hyphens, and periods.
           </div>
         </div>
         <div class="buttons">
-          <button type="submit" class="button is-primary" [disabled]="stakingForm.invalid" (click)="castVote(delegateName)">Vote</button>
+          <button type="submit" class="button is-primary" [disabled]="stakingForm.invalid"
+            (click)="castVote(delegateName)">Vote</button>
         </div>
       </div>
-      <div id="delegates" [ngClass]="{ 'is-hidden' : !delegateList }">
+      <div id="delegates" [ngClass]="{ 'is-hidden' : hidedelegates }">
         <div class="container is-fluid has-text-weight-semibold mt-0 pt-0">
           <p>To Vote for A delegate Pick the Delegate Name from the table below:</p>
         </div>
