@@ -48,7 +48,7 @@
                     </label>
                     <div>
                         <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="rpMessage"
-                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required rows="2"
+                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" rows="2"
                             placeholder="Enter the optional reserve proof message"></textarea>
                         <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
                             Data string can contan letters and numbers with a max length of {{ messageLength }}.
