@@ -460,7 +460,7 @@ export class RpcCallsService {
       return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
       ckdata.result.good === true && ckdata.result.spent === 0 ? 'true' : 'false';
-      return { status: true, message: 'Success.', data: ckdata.result.good };
+      return { status: true, message: 'Success.', data: ckdata.result };
     }
   }
 

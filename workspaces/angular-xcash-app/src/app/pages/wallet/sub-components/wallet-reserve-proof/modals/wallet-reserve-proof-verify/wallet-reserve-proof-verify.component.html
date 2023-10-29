@@ -33,7 +33,7 @@
                     <div>
                         <textarea type="text" name="signature" class="textarea input is-hovered"
                             [(ngModel)]="rpSignature" #signatueinput="ngModel" [pattern]="rpCk" required
-                            placeholder="Enter the reserve proof signature to verify" rows="5"></textarea>
+                            placeholder="Enter the reserve proof signature to verify" rows="3"></textarea>
                         <div class="help"
                             *ngIf="signatueinput.invalid && (signatueinput.touched || signatueinput.dirty)">
                             Invalid format, please enter a valid signature address.
@@ -52,6 +52,28 @@
                             placeholder="Enter the optional reserve proof message"></textarea>
                         <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
                             Data string can contan letters and numbers with a max length of {{ messageLength }}.
+                        </div>
+                    </div>
+                </div>
+                <div id="amounts" [ngClass]="{ 'is-hidden' : hideAmounts }">
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field is-horizontal">
+                                <label class="label pr-1">Reserve Total:</label>
+                                <div class="control">
+                                    <input class="input is-hovered is-small" type="text" name="total"
+                                        [(ngModel)]="totalAmt" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field is-horizontal">
+                                <label class="label pr-1">Spent:</label>
+                                <div class="control">
+                                    <input class="input is-hovered is-small" type="text" name="spent"
+                                        [(ngModel)]="spentAmt" readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

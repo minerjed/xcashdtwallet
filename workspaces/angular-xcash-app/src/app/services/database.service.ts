@@ -250,9 +250,8 @@ export class DatabaseService {
           const response: rpcReturn = await this.rpcallsService.verifyReserveproof({
             "public_address": public_address, "message": item.message, "reserveproof": item.reserve_proof
           });
-          console.log(response);
           if (response.status) {
-            status[count] = response.data === true ? "Valid" : "Invalid";
+            status[count] = response.data.good === true ? "Valid" : "Invalid";
           } else {
             status[count] = 'Error';
           }
