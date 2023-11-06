@@ -66,13 +66,13 @@ export class WalletsListComponent implements OnInit {
 							fs.renameSync(`${this.wdir}${old_wallet}.keys`, `${this.wdir}${this.model.newname}.keys`);
 							this.dbjson = upddbjson;
 						} catch (err: any) {
-							this.showMessage('Error renaming wallet keys file. ' + err.code);
+							this.showMessage('Error renaming wallet keys file.');
 						}
 					} catch (err: any) {
-						this.showMessage('Error renaming wallet file. ' + err.code);
+						this.showMessage('Error renaming wallet file.');
 					}
 				} catch (err: any) {
-					this.showMessage('Error reading wallet db file. ' + err.code);
+					this.showMessage('Error reading wallet db file.');
 				}
 			}
 		}
@@ -101,13 +101,13 @@ export class WalletsListComponent implements OnInit {
 						this.dbjson = upddbjson;
 						this.wcount = JSON.parse(this.dbjson).wallet_data.length;
 					} catch (err: any) {
-						this.showMessage('Error deleting wallet keys file. ' + err.code);
+						this.showMessage('Error deleting wallet keys file.');
 					}
 				} catch (err: any) {
-					this.showMessage('Error deleting wallet file. ' + err.code);
+					this.showMessage('Error deleting wallet file.');
 				}
 			} catch (err: any) {
-				this.showMessage('Error updating wallet db file. ' + err.code);
+				this.showMessage('Error updating wallet db file.');
 			}
 		}
 	}

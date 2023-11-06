@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/app/services/database.service';
 import { WalletsListService } from 'src/app/services/wallets-list.service';
 import { faKey, faEye, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { rpcReturn } from 'src/app/models/rpc-return';
+import { XcashGetblockhightService } from 'src/app/services/xcash-getblockhight.service';
 
 @Component({
   selector: 'app-wallet-import',
@@ -44,6 +45,8 @@ export class WalletImportComponent {
   textSettingsMax: number = 0;
   textSettingsMin: number = 0;
   publicAddress: any = '';
+  blockHeight: any = '';
+  currentBK: number = 0;
   message: string = '';
   textMessage: string = '';
   Walletdata: any = { "walletName": "walletName", "password": "password", "seed": "", "viewkey": "", "privatekey": "", "publicaddress": "" };
@@ -54,18 +57,21 @@ export class WalletImportComponent {
   @ViewChild('walletnameinput', { static: false }) walletnameinput: any;
   @ViewChild('passwordinput', { static: false }) passwordinput: any;
   @ViewChild('confirmpasswordinput', { static: false }) confirmpasswordinput: any;
+  @ViewChild('blockHeightInput', { static: false }) blockHeightInput: any;
   [key: string]: any;
 
   constructor(
     private rpcCallsService: RpcCallsService,
     private validatorsRegexService: ValidatorsRegexService,
     private constantsService: ConstantsService,
+    private xcashgetblockhightService: XcashGetblockhightService,
     private changeDetectorRef: ChangeDetectorRef,
     private databaseService: DatabaseService,
     private walletsListService: WalletsListService
   ) { };
 
   ngOnInit(): void {
+    this.getBlockHeight();
     this.wordlength = this.constantsService.mnemonic_seed_word_length;
     this.keylength = this.constantsService.private_key_length;
     this.xcashlength = this.constantsService.xcash_public_address_length_settings;
@@ -80,9 +86,19 @@ export class WalletImportComponent {
     this.textSettingsMin = this.constantsService.text_settings_minlength;
   }
 
+  async getBlockHeight() {
+    try {
+      const data = await this.xcashgetblockhightService.getDelegates();
+      if ('height' in data) {
+        this.currentBK = data.height;
+      }
+    } catch (error) { }
+  }
+
   confirmseedImport(formInvalid: any): void {
-    if (formInvalid) {
+    if (formInvalid || this.blockHeight > this.currentBK) {
       this.mnemonicInput.control.markAsTouched();
+      this.blockHeightInput.control.markAsTouched();
     } else {
       this.getwalletName = true;
       this.usingSeed = false;
@@ -92,14 +108,15 @@ export class WalletImportComponent {
   }
 
   confirmkeyImport(formInvalid: any): void {
-    if (formInvalid) {
+    if (formInvalid || this.blockHeight > this.currentBK) {
       this.walletspendkeyInput.control.markAsTouched();
       this.walletviewkeyInput.control.markAsTouched();
       this.walletpublickeyInput.control.markAsTouched();
+      this.blockHeightInput.control.markAsTouched();
     } else {
       if (this.walletsListService.findbyPublicKey(this.walletPublicKey)) {
         this.buttonDisabled = true;
-        this.message = 'The Wallet Public Key entered already exists.  Try again.';
+        this.message = 'The Wallet Public Key entered already exists. Try again.';
       } else {
         this.getwalletName = true;
         this.usingSeed = false;
@@ -112,32 +129,42 @@ export class WalletImportComponent {
   }
 
   async confirmkeyWalletInfo(formInvalid: any) {
-    if (formInvalid) {
+    if (formInvalid || this.walletpassword !== this.confirmpassword) {
       this.walletnameinput.control.markAsTouched();
       this.passwordinput.control.markAsTouched();
       this.confirmpasswordinput.control.markAsTouched();
     } else {
       if (this.walletsListService.findWallet(this.walletname)) {
         this.buttonDisabled = true;
-        this.message = 'The Wallet Name entered already exists.  Try again.';
+        this.message = 'The Wallet Name entered already exists. Try again.';
       } else {
-        this.textMessage = 'The wallet is now synchronizing and this process will take arond an hour. Thank you for your patience.';
+        this.textMessage = 'Importing wallet data, Please wait...';
         this.getwalletName = false;
         this.showCreate = true;
         this.showspinner = true;
         this.buttonDisabled = true;
         this.Walletdata.walletName = this.walletname;
         this.Walletdata.password = this.walletpassword;
-        const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata);
+        const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata, this.blockHeight);
         if (response.status) {
           try {
-            await this.databaseService.saveWalletData(this.walletname, response.data.publicaddress, response.data.balance);
+            await this.databaseService.saveWalletData(this.walletname, response.data.publicaddress, response.data.balance,
+              this.blockHeight);
             this.walletsListService.addWallet(this.walletname, response.data.publicaddress, response.data.balance);
             this.messageType = 'is-success';
-            this.textMessage = 'Success. Wallet import complete.';
+            this.textMessage = 'Success. Wallet import complete. ' +
+              'The wallet is now synchronizing and this process may take up to an hour. Thank you for your patience.';
+            //  wait for the wallet to synchronize 
+            await new Promise(resolve => setTimeout(resolve, 120000));
+            const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
+            this.textMessage = 'Wallet synchronization complete. Click Exit to continue.';
+            this.rpcCallsService.closeWallet();
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            // bug in RPC process keeps wallet keys file open so restart the process
+            await this.rpcCallsService.killRPC();
           } catch (err) {
             this.messageType = 'is-danger';
-            this.textMessage = 'Failed to update database file: ', err;
+            this.textMessage = 'Failed to update database file.';
           }
         } else {
           this.messageType = 'is-danger';
@@ -169,7 +196,7 @@ export class WalletImportComponent {
       this[targetField] = clipboardText;
       this.changeDetectorRef.detectChanges();
     } catch (err) {
-      console.error('Failed to read clipboard contents: ', err);
+      console.error('Failed to read clipboard contents:');
     }
   }
 

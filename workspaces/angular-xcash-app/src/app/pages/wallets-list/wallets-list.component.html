@@ -14,6 +14,14 @@
   </div>
 </section>
 <section class="section">
+  <div class="notification is-warning mt-3" *ngIf="message">
+    <button class="delete" (click)="showMessage('')"></button>
+    <p class="is-centered">{{ message }}</p>
+  </div>
+  <div class="notification is-danger mt-3" *ngIf="emessage">
+    <button class="delete" (click)="showError('')"></button>
+    <p class="is-centered">{{ emessage }}</p>
+  </div>
   <div class="container is-fluid">
     <div class="is-size-4" *ngIf="wcount===0">
       Lets Create Your First X-CASH wallet!
@@ -52,14 +60,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="notification is-warning mt-3" *ngIf="message">
-    <button class="delete" (click)="showMessage('')"></button>
-    <p class="is-centered">{{ message }}</p>
-  </div>
-  <div class="notification is-danger mt-3" *ngIf="emessage">
-    <button class="delete" (click)="showError('')"></button>
-    <p class="is-centered">{{ emessage }}</p>
   </div>
 </section>
 <app-wallet-delete [idForDel]="idForDel" [nameForDel]="nameForDel" *ngIf="showDelModal"

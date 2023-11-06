@@ -18,7 +18,8 @@ export class DatabaseService {
 
   constructor(private rpcallsService: RpcCallsService) { }
 
-  public async saveWalletData(walletname: string, publicaddress: string, balance: number): Promise<void> {
+  public async saveWalletData(walletname: string, publicaddress: string, balance: number,
+    blockheight: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
@@ -29,7 +30,8 @@ export class DatabaseService {
           sub_address_count: 0,
           integrated_addresses: [],
           reserve_proofs: [],
-          signed_data: []
+          signed_data: [],
+          block_height: blockheight
         });
         fs.writeFileSync(this.dbfile, JSON.stringify(database_data));
         resolve();
@@ -241,7 +243,7 @@ export class DatabaseService {
     let database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
     let count: number = 0;
     let status: string[] = [];
-//    let retStatus: string;
+    //    let retStatus: string;
     try {
       if (database_data.wallet_data[wallet_count].reserve_proofs.length > 0) {
         database_data.wallet_data[wallet_count].reserve_proofs.forEach(async (item: {
@@ -291,6 +293,21 @@ export class DatabaseService {
       return (true);
     } catch (error) {
       return (false);
+    }
+  }
+
+  public async getWalletCreateBlock(public_address: string): Promise<number> {
+    try {
+      const database_data: any = JSON.parse(fs.readFileSync(this.dbfile, "utf8"));
+      const wallet_count: number = await this.getCurrentWallet(public_address);
+      let ckblockHeight = database_data?.wallet_data[wallet_count]?.block_height;
+      let blockHeight = 0;
+      if (ckblockHeight !== undefined) {
+        blockHeight = ckblockHeight;
+      }
+      return (blockHeight);
+    } catch (error) {
+      return (0);
     }
   }
 

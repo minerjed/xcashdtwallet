@@ -6,6 +6,7 @@ import { ConstantsService } from 'src/app/services/constants.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { faKey, faEye, faWallet, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { rpcReturn } from 'src/app/models/rpc-return';
+import { XcashGetblockhightService } from 'src/app/services/xcash-getblockhight.service';
 
 @Component({
   selector: 'app-wallet-create',
@@ -24,6 +25,7 @@ export class WalletCreateComponent {
   buttonDisabled: boolean = false;
   showMain: boolean = true;
   showCreate: boolean = false;
+  showKeys: boolean = false;
   showExit: boolean = false;
   walletname: string = '';
   walletpassword: string = '';
@@ -34,11 +36,14 @@ export class WalletCreateComponent {
   textSettings: string = '';
   textSettingsMax: number = 0;
   textSettingsMin: number = 0;
+  textMessage: string = '';
+  messageType: string = '';
   message: string = '';
   walletSpendkey: string = '';
   walletViewkey: string = '';
   walletMnemonicseed: string = '';
   publicAddress: any = '';
+  blockheight: any = 0;
   tippyOptions = {
     trigger: 'click',
     hideOnClick: false,
@@ -57,6 +62,7 @@ export class WalletCreateComponent {
     private walletsListService: WalletsListService,
     private validatorsRegexService: ValidatorsRegexService,
     private constantsService: ConstantsService,
+    private xcashgetblockhightService: XcashGetblockhightService,
     private databaseService: DatabaseService,
     private elementRef: ElementRef
   ) { };
@@ -69,8 +75,8 @@ export class WalletCreateComponent {
     this.textSettingsMin = this.constantsService.text_settings_minlength;
   }
 
-  async confirmCreate(isInvalid: any) {
-    if (isInvalid) {
+  async confirmCreate(isInvalid: any, pass1: string, pass2: string) {
+    if (isInvalid || pass1 !== pass2) {
       this.walletnameinput.control.markAsTouched();
       this.passwordinput.control.markAsTouched();
       this.confirmpasswordinput.control.markAsTouched();
@@ -81,22 +87,28 @@ export class WalletCreateComponent {
       if (checkfile) {
         this.showMessage('The wallet name is already exists. Try again.');
       } else {
+        this.textMessage = 'Creating wallet, Please wait...';
         this.showCreate = true;
         this.showMain = false;
+        try {
+          const data = await this.xcashgetblockhightService.getDelegates();
+          if ('height' in data) {
+            this.blockheight = data.height;
+          }
+        } catch (error) { }
         const response: rpcReturn = await this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
         if (response.status) {
           const response: rpcReturn = await this.rpcCallsService.getPublicAddress();
           if (response.status) {
             try {
               this.publicAddress = response.data;
-              await this.databaseService.saveWalletData(this.walletname, this.publicAddress, 0);
+              await this.databaseService.saveWalletData(this.walletname, this.publicAddress, 0, this.blockheight);
               this.walletsListService.addWallet(this.walletname, this.publicAddress, 0);
-              await this.continueCreate();
-              this.showCreate = false;
+              await this.getKeys();
             } catch (error) {
               this.showMain = true;
               this.showCreate = false;
-              this.showMessage('An error occurred while saving wallet data ' + error);
+              this.showMessage('An error occurred while saving wallet data.');
             }
           } else {
             this.showMain = true;
@@ -113,24 +125,41 @@ export class WalletCreateComponent {
     }
   }
 
-  async continueCreate() {
-    //  wait for the wallet to synchronize 
-    await new Promise(resolve => setTimeout(resolve, 120000));
-    const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
+  async getKeys() {
     const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
     if (response.status) {
       this.privatekeys = response.data;
       this.walletSpendkey = this.privatekeys.spendkey;
       this.walletViewkey = this.privatekeys.viewkey;
       this.walletMnemonicseed = this.privatekeys.seed;
-      this.showExit = true;
+      this.showCreate = false;
+      this.showKeys = true;
     } else {
       this.showMain = true;
       this.showCreate = false;
       this.showMessage(response.message);
     }
+    this.showspinner = false;
+  }
+
+  async continueCreate() {
+    this.showKeys = false;
+    this.showExit = true;
+    this.showspinner = true;
+    this.buttonDisabled = true;
+    this.messageType = 'is-success';
+    this.textMessage = 'Success. Wallet created. ' +
+      'The wallet is now synchronizing and this process may take up to an hour. Thank you for your patience.';
+    //  wait for the wallet to synchronize 
+    await new Promise(resolve => setTimeout(resolve, 120000));
+    const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
     await new Promise(resolve => setTimeout(resolve, 1000));
+    this.textMessage = 'Wallet synchronization complete. Click Exit to continue.';
     await this.rpcCallsService.closeWallet();
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    // bug in RPC process keeps wallet keys file open so restart the process
+    await this.rpcCallsService.killRPC();
+    this.buttonDisabled = false;
     this.showspinner = false;
   }
 
@@ -158,7 +187,7 @@ export class WalletCreateComponent {
     navigator.clipboard.writeText(value)
       .then(() => { })
       .catch(err => {
-        console.error('Failed to copy text: ', err);
+        console.error('Failed to copy text.');
       });
   }
 

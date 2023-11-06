@@ -4,17 +4,43 @@
 </div>
 <div class="container is-fluid">
     <div container>
-        <div class="has-text-weight-semibold mb-3">Be sure to store your Private Keys data in a safe place. They are
-            needed to restore your wallet.</div>
+        <div class="columns is-flex mt-0 pt-0 mb-0 pb-0">
+            <div class="column is-5 has-text-weight-bold mt-0 pt-0">
+                Store your Private Keys in a safe place.
+            </div>
+            <div class="column is-flex is-5 pt-0 mb-0 pb-0">
+                <div *ngIf="blockheight !== 0">
+                    <div class="field-body mt-0 pt-0">
+                        <div class="field is-horizontal">
+                            <label class="label is-flex is-align-items-center mr-2 nowrap">Block Height:</label>
+                            <div class="control has-icons-right">
+                                <input class="input is-hovered has-text-weight-semibold" type="text" name="blockheight"
+                                    [(ngModel)]="blockheight" readonly #walletblockheight>
+                                <span class="icon is-small is-right is-clickable"
+                                    (click)="copyToClipboard(walletblockheight.value)" [ngxTippy]="'Text Coppied'"
+                                    [tippyProps]="tippyOptions">
+                                    <fa-icon [icon]="faCopy"></fa-icon>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-flex is-2 justify-flex-end is-one-quarter pt-0 mb-0 pb-0">
+                <div class="buttons">
+                    <button type="button" class="button is-hovered is-primary" (click)="printCreate()">Print</button>
+                </div>
+            </div>
+        </div>
         <div class="field">
             <label class="label is-flex is-align-items-center">Private View Key:</label>
             <div class="field-body">
                 <div class="field">
                     <div class="control has-icons-right">
-                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
-                            [(ngModel)]="walletViewkey" readonly #walletspendkeyInput>
+                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
+                            [(ngModel)]="walletViewkey" readonly #walletviewkeyInput>
                         <span id="button" class="icon is-small is-right is-clickable"
-                            (click)="copyToClipboard(walletspendkeyInput.value)" [ngxTippy]="'Text Coppied'"
+                            (click)="copyToClipboard(walletviewkeyInput.value)" [ngxTippy]="'Text Coppied'"
                             [tippyProps]="tippyOptions">
                             <fa-icon [icon]="faCopy"></fa-icon>
                         </span>
@@ -27,10 +53,10 @@
             <div class="field-body">
                 <div class="field">
                     <div class="control has-icons-right">
-                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
-                            [(ngModel)]="walletSpendkey" readonly #walletviewkeyInput>
+                        <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
+                            [(ngModel)]="walletSpendkey" readonly #walletspendkeyInput>
                         <span id="button" class="icon is-small is-right is-clickable"
-                            (click)="copyToClipboard(walletviewkeyInput.value)" [ngxTippy]="'Text Coppied'"
+                            (click)="copyToClipboard(walletspendkeyInput.value)" [ngxTippy]="'Text Coppied'"
                             [tippyProps]="tippyOptions">
                             <fa-icon [icon]="faCopy"></fa-icon>
                         </span>
@@ -41,15 +67,15 @@
         <div class="field">
             <label class="label is-flex is-align-items-center">Public Address:&nbsp;
                 <span id="button" class="icon is-small is-right is-clickable"
-                (click)="copyToClipboard(publicaddressInput.value)" [ngxTippy]="'Text Coppied'"
-                [tippyProps]="tippyOptions">
-                <fa-icon [icon]="faCopy"></fa-icon>
-            </span>
+                    (click)="copyToClipboard(publicaddressInput.value)" [ngxTippy]="'Text Coppied'"
+                    [tippyProps]="tippyOptions">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                </span>
             </label>
             <div class="field-body">
                 <div class="field">
                     <textarea class="textarea is-hovered has-text-weight-semibold" type="text" name="publicAddress"
-                        [(ngModel)]="publicAddress" readonly #publicaddressInput rows="1"></textarea>
+                        [(ngModel)]="publicAddress" readonly #publicaddressInput rows="2"></textarea>
                 </div>
             </div>
         </div>
@@ -64,19 +90,7 @@
             <div class="field-body">
                 <div class="field">
                     <textarea class="textarea is-hovered has-text-weight-semibold" name="mnemonic"
-                        [(ngModel)]="walletMnemonicseed" readonly #mnemonicInput rows="2"></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="field is-horizontalmt-3">
-            <div class="field-body">
-                <div class="field">
-                    <div class="control">
-                        <div class="buttons">
-                            <button type="button" class="button is-hovered is-primary is-small"
-                                (click)="printCreate()">Print</button>
-                        </div>
-                    </div>
+                        [(ngModel)]="walletMnemonicseed" readonly #mnemonicInput rows="3"></textarea>
                 </div>
             </div>
         </div>

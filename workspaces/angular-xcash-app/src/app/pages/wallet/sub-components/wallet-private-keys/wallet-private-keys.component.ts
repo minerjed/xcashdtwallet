@@ -3,6 +3,7 @@ import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { ActivatedRoute } from '@angular/router';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { rpcReturn } from 'src/app/models/rpc-return';
+import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
   selector: 'app-wallet-private-keys',
@@ -21,6 +22,7 @@ export class WalletPrivateKeysComponent {
   showLoginModal: boolean = true;
   showSpinner: boolean = false;
   message: string = '';
+  blockheight: any = '';
   @Output() onClose = new EventEmitter();
   tippyOptions = {
     trigger: 'click',
@@ -35,6 +37,7 @@ export class WalletPrivateKeysComponent {
   constructor(
     private rpcCallsService: RpcCallsService,
     private route: ActivatedRoute,
+    private databaseService: DatabaseService,
     private elementRef: ElementRef
   ) { };
 
@@ -55,6 +58,9 @@ export class WalletPrivateKeysComponent {
 
   async viewprivatekeys() {
     this.showSpinner = true;
+    this.blockheight = await this.databaseService.getWalletCreateBlock(this.publicAddress);
+    console.log(this.blockheight)
+
     const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
     if (response.status) {
       this.privatekeys = response.data;

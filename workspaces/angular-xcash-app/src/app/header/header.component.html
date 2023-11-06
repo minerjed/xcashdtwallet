@@ -3,36 +3,37 @@
     <a class="navbar-item">
       <img src="assets/images/xcash_logo.png" width="113" height="28" title="X-Cash Wallet">
     </a>
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="xnavbar">
+    <a role="button" class="navbar-burger" [class.is-active]="isActive" (click)="toggleNavbar()" aria-label="menu"
+    aria-expanded="false">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  <div id="xnavbar" class="navbar-menu">
+  <div id="xnavbar" class="navbar-menu"  [class.is-active]="isActive">
     <div class="navbar-start">
-      <a class="navbar-item" routerLink="">
+      <a class="navbar-item" routerLink="" (click)="closeNavbar()">
         <span class="icon">
           <fa-icon [icon]="faWallet"></fa-icon>
         </span>
         &nbsp;Wallets
       </a>
-      <div class="navbar-item has-dropdown is-hoverable">
+      <div class="navbar-item has-dropdown is-hoverablenpm " (click)="closeNavbar()">
         <a title="About" class="navbar-link is-arrowless">
           About
         </a>
-        <div class="navbar-dropdown">
-            <a class="navbar-item">Version: {{versionInfo}}</a>
-          </div>
+        <div class="navbar-dropdown" (click)="closeNavbar()">
+          <a class="navbar-item">Version: {{versionInfo}}</a>
         </div>
+      </div>
     </div>
     <div class="navbar-end">
-      <a title="Settings" class="navbar-item" routerLink="settings">
+      <a title="Settings" class="navbar-item" routerLink="settings" (click)="closeNavbar()">
         <span class="icon">
           <fa-icon [icon]="faGear"></fa-icon>
         </span>
       </a>
-      <div class="navbar-item has-dropdown is-hoverable">
+      <div class="navbar-item has-dropdown is-hoverable" (click)="closeNavbar()">
         <a title="Currency" class="navbar-link is-arrowless">
           <span class="icon">
             <fa-icon [icon]="faDollar"></fa-icon>

@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async showInfoMessage() {
     this.infoMessage = 'If you have not opened your wallet recently, the first wallet transactions could take a while the wallet synchronizes. Thank you for your patience.';
-    await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Set the timer to expire after 5 seconds
     this.infoMessage = '';
   }
 }

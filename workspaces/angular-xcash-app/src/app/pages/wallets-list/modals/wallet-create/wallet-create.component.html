@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Create New Wallet</p>
+      <p class="modal-card-title">Create New Wallet {{ walletname }}</p>
     </header>
     <form #walletcreateForm="ngForm">
       <section class="modal-card-body">
@@ -67,35 +67,41 @@
             <p class="is-centered">{{ message }}</p>
           </div>
         </div>
-        <div *ngIf="showCreate">
-          Your new wallet, <span class="has-text-weight-semibold">{{ walletname }}</span> is currently being created. 
-          The wallet is now synchronizing and this process will take around an hour. Thank you for your 
-          patience.<br><br><br><br><br><br><br>
+        <div *ngIf="showCreate || showExit">
+          <div class="notification {{ messageType }} mt-4">
+            {{ textMessage }}</div><br><br><br><br><br><br>
         </div>
-        <div *ngIf="showExit">
-          <div class="has-text-weight-semibold mt-4">Be sure to store your Private Keys data in a safe place.</div>
-          <div class="field mt-4">
-            <label class="label is-flex is-align-items-center">Private View Key:</label>
-            <div class="field-body">
-              <div class="field">
-                <div class="control has-icons-right">
-                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
-                    [(ngModel)]="walletViewkey" readonly #walletspendkeyInput>
-                  <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(walletspendkeyInput.value)"
-                    [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
-                    <fa-icon [icon]="faCopy"></fa-icon>
-                  </span>
+        <div *ngIf="showKeys">
+          <div class="columns mt-0 pt-0 mb-0 pb-0">
+            <div class="column has-text-weight-bold is-three-fifths mt-0 pt-0">
+              Store your Private Keys in a safe place.
+            </div>
+            <div class="column is-flex justify-flex-end pt-0 mb-0 pb-0">
+              <div *ngIf="blockheight !== 0">
+                <div class="field-body mt-0 pt-0">
+                  <div class="field is-horizontal">
+                    <label class="label is-flex is-align-items-center mr-2 nowrap">Block Height:</label>
+                    <div class="control has-icons-right">
+                      <input class="input is-hovered has-text-weight-semibold" type="text" name="blockheight"
+                        [(ngModel)]="blockheight" readonly #walletblockheight>
+                      <span class="icon is-small is-right is-clickable"
+                        (click)="copyToClipboard(walletblockheight.value)" [ngxTippy]="'Text Coppied'"
+                        [tippyProps]="tippyOptions">
+                        <fa-icon [icon]="faCopy"></fa-icon>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="field">
-            <label class="label is-flex is-align-items-center">Private Spend Key:</label>
+          <div class="field mt-0 pt-0">
+            <label class="label is-flex is-align-items-center mt-0 pt-0">Private View Key:</label>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
                   <input class="input is-hovered has-text-weight-semibold" type="text" name="walletviewkey"
-                    [(ngModel)]="walletSpendkey" readonly #walletviewkeyInput>
+                    [(ngModel)]="walletViewkey" readonly #walletviewkeyInput>
                   <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(walletviewkeyInput.value)"
                     [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
                     <fa-icon [icon]="faCopy"></fa-icon>
@@ -104,7 +110,22 @@
               </div>
             </div>
           </div>
-          <div class="field">
+          <div class="field  mt-0 pt-0">
+            <label class="label is-flex is-align-items-center">Private Spend Key:</label>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-right">
+                  <input class="input is-hovered has-text-weight-semibold" type="text" name="walletspendkey"
+                    [(ngModel)]="walletSpendkey" readonly #walletspendkeyInput>
+                  <span class="icon is-small is-right is-clickable" (click)="copyToClipboard(walletspendkeyInput.value)"
+                    [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field  mt-0 pt-0">
             <label class="label is-flex is-align-items-center">Public Address:&nbsp;
               <span id="button" class="icon is-small is-right is-clickable"
                 (click)="copyToClipboard(publicaddressInput.value)" [ngxTippy]="'Text Coppied'"
@@ -120,7 +141,7 @@
               </div>
             </div>
           </div>
-          <div class="field">
+          <div class="field mt-0 pt-0">
             <label class="label is-flex is-align-items-center">Mnemonic Seed:&nbsp;
               <span id="button" class="icon is-small is-right is-clickable"
                 (click)="copyToClipboard(mnemonicInput.value)" [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
@@ -140,13 +161,18 @@
       <footer class="modal-card-foot">
         <div *ngIf="showMain">
           <button id="createbutton" type="submit" class="button is-primary"
-            (click)="confirmCreate(walletcreateForm.invalid)" [disabled]="buttonDisabled">Confirm</button>
+            (click)="confirmCreate(walletcreateForm.invalid, walletpassword, confirmpassword)"
+            [disabled]="buttonDisabled">Confirm</button>
           <button type="button" class="button  is-hovered" (click)="cancelCreate()"
             [disabled]="buttonDisabled">Cancel</button>
         </div>
-        <div *ngIf="showExit">
+        <div *ngIf="showKeys">
           <button type="button" class="button is-primary" (click)="printCreate()">Print</button>
-          <button type="button" class="button  is-hovered" (click)="cancelCreate()">Exit</button>
+          <button type="button" class="button  is-hovered" (click)="continueCreate()">Continue</button>
+        </div>
+        <div *ngIf="showExit">
+          <button type="button" class="button is-hovered mt-0 pt-0" [disabled]="buttonDisabled"
+            (click)="cancelCreate()">Exit</button>
         </div>
       </footer>
     </form>

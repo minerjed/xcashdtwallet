@@ -22,7 +22,7 @@ export class HeaderComponent {
   faAddressBook = faAddressBook;
   faGear = faGear;
   faDollar = faDollar;
-
+  isActive: boolean = false
   currencies = [
     'BTC', 'BRL', 'CNY', 'EUR', 'GBP', 'JPY', 'KRW', 'RUB', 'USD', 'VND'
   ];
@@ -39,6 +39,14 @@ export class HeaderComponent {
       this.curCurrency = 'USD';
     }
     this.currencyService.tocurrency = this.curCurrency;
+  }
+
+  toggleNavbar() {
+    this.isActive = !this.isActive;
+  }
+
+  closeNavbar() {
+    this.isActive = false;
   }
 
 }
