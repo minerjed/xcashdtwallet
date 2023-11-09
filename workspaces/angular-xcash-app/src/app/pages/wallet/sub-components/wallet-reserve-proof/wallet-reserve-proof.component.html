@@ -11,13 +11,12 @@
 		<div id="nocontact" [ngClass]="{ 'is-hidden' : !noreserveProof }">
 			<p>No Reserve Proofs have been created. Click the Create button to add your first Reserve Proof.</p>
 		</div>
-		<div id="subaddress" [ngClass]="{ 'is-hidden' : hidetrans || noreserveProof }">
+		<div id="walreservepr" [ngClass]="{ 'is-hidden' : hidetrans || noreserveProof }">
 			<div calss="container">
 				<form>
 					<div id="subaddress">
 						<div class="container">
-							<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
-								class="table is-striped mx-auto is-hoverable" id="subaddid">
+							<table #walreserveprid id="walreserveprid" class="table is-striped mx-auto is-hoverable" >
 								<thead>
 									<tr>
 										<th>ID</th>

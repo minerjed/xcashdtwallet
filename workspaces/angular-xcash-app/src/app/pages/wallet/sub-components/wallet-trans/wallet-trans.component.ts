@@ -1,9 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
-import { Subject } from 'rxjs';
 import { Transaction } from 'src/app/models/transaction';
-import { DataTableDirective } from 'angular-datatables';
 import { rpcReturn } from 'src/app/models/rpc-return';
 declare var $: any;
 
@@ -12,11 +10,8 @@ declare var $: any;
 	templateUrl: './wallet-trans.component.html',
 	styleUrls: ['./wallet-trans.component.sass']
 })
-export class WalletTransComponent implements OnInit {
-	@ViewChild(DataTableDirective, { static: false })
-	dtElement!: DataTableDirective;
-	dtOptions: DataTables.Settings = {};
-	dtTrigger: Subject<any> = new Subject<any>();
+export class WalletTransComponent implements OnInit  {
+	@ViewChild('transtable') table!: ElementRef;
 	walletname: string = '';
 	walletpw: string = '';
 	transactions: Transaction[] = [];
@@ -43,9 +38,12 @@ export class WalletTransComponent implements OnInit {
 				this.notrans = true;
 				this.hidetrans = false;
 			} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
-				this.dtTrigger.next(this.transactions);
 				await new Promise(resolve => setTimeout(resolve, 1000));
-				this.changePageLength(7);
+				$(this.table.nativeElement).DataTable({
+					lengthMenu: [7, 25, 50, 100],
+					pageLength: 7,
+					deferRender: true
+  				});
 				this.hidetrans = false;
 			}
 		} else {
@@ -65,36 +63,8 @@ export class WalletTransComponent implements OnInit {
 		this.showTransModal = false;
 	}
 
-	ngOnDestroy(): void {
-		this.dtTrigger.unsubscribe();
-	}
-
-	changePageLength(newLength: number): void {
-		// I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
-		const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-			dtInstance.page.len(newLength).draw();
-		});
-		$('div.dataTables_length').find('select, label').remove();
-		var newDropdown = $('<select></select>');
-		newDropdown.append('<option value="7">7</option>');
-		newDropdown.append('<option value="10">10</option>');
-		newDropdown.append('<option value="25">25</option>');
-		newDropdown.append('<option value="50">50</option>');
-		newDropdown.append('<option value="100">100</option>');
-		$('div.dataTables_length').append(newDropdown);
-		var table = $('#myTable').DataTable();
-		$('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
-		newDropdown.on('change', () => {
-			this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
-				const val = newDropdown.val();
-				if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
-					dtInstance.page.len(+val).draw();
-				}
-			});
-		});
-	}
-
 	showMessage(message: string): void {
 		this.message = message;
 	}
+
 }

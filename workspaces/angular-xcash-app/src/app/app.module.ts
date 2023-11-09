@@ -3,20 +3,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-
 import { WalletsListComponent } from './pages/wallets-list/wallets-list.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { WalletTransComponent } from './pages/wallet/sub-components/wallet-trans/wallet-trans.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { ContactsComponent } from './pages/wallet/sub-components/contacts/contacts.component';
-
 import { WalletLoginComponent } from './pages/wallet/modals/wallet-login/wallet-login.component';
-import { DataTablesModule } from 'angular-datatables';
-
 import { ConstantsService } from './services/constants.service';
 import { ValidatorsRegexService } from './services/validators-regex.service';
 import { WalletsListService } from './services/wallets-list.service';
@@ -28,7 +23,6 @@ import { WalletRevoteComponent } from './pages/wallet/sub-components/wallet-stak
 import { WalletCreateComponent } from './pages/wallets-list/modals/wallet-create/wallet-create.component';
 import { WalletImportComponent } from './pages/wallets-list/modals/wallet-import/wallet-import.component';
 import { DecimalPipe } from '@angular/common';
-
 import { XcashCurrencyPipe } from './pipes/xcash-currency.pipe';
 import { XcashPublicAddressPipe } from './pipes/xcash-public-address.pipe';
 import { XcashDataFormatPipe } from './pipes/xcash-data-format.pipe';
@@ -107,7 +101,6 @@ import { WalletDisplayReserveProofComponent } from './pages/wallet/sub-component
     FontAwesomeModule,
     HttpClientModule,
     FormsModule,
-    DataTablesModule,
     NgxTippyModule
   ],
   providers: [

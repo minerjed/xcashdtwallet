@@ -1,13 +1,10 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit, ElementRef, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { XcashDelegatesService } from 'src/app/services/xcash-delegates.service';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Delegate } from 'src/app/models/delegates';
 import { faRefresh, faBroom, faPaste, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
-import { Subject } from 'rxjs';
 import { XcashCurrencyPipe } from 'src/app/pipes/xcash-currency.pipe';
-import { DataTableDirective } from 'angular-datatables';
 import { rpcReturn } from 'src/app/models/rpc-return';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 declare var $: any;
@@ -18,15 +15,11 @@ declare var $: any;
 	styleUrls: ['./wallet-staking.component.sass']
 })
 export class WalletStakingComponent implements OnInit {
-	@ViewChild(DataTableDirective, { static: false })
-	dtElement!: DataTableDirective;
-	@ViewChild('stakingForm', { static: false }) stakingForm!: NgForm;
+	@ViewChild('delegatestable') table!: ElementRef;
 	faRefresh = faRefresh;
 	faBroom = faBroom;
 	faPaste = faPaste;
 	faSquareCheck = faSquareCheck;
-	dtOptions: DataTables.Settings = { "deferRender": true };
-	dtTrigger: Subject<any> = new Subject<any>();
 	walletaddress: string = '';
 	delegates: Delegate[] = [];
 	message: string = '';
@@ -108,9 +101,11 @@ export class WalletStakingComponent implements OnInit {
 					indx++;
 				}
 			}
-			this.dtTrigger.next(this.displayDelegates);
-			await new Promise(resolve => setTimeout(resolve, 500));
-			this.changePageLength(5);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			$(this.table.nativeElement).DataTable({
+				lengthMenu: [5, 25, 50, 100],
+				pageLength: 5
+			  });
 			this.hidedelegates = false;
 		} else {
 			this.showspinner = false;
@@ -154,10 +149,6 @@ export class WalletStakingComponent implements OnInit {
 		this.message = message;
 	}
 
-	ngOnDestroy(): void {
-		this.dtTrigger.unsubscribe();
-	}
-
 	async onPaste(event: Event, infield: string): Promise<void> {
 		event.preventDefault(); // prevent default paste behavior
 		try {
@@ -170,31 +161,6 @@ export class WalletStakingComponent implements OnInit {
 		} catch (err) {
 			console.error('Failed to read clipboard contents: ', err);
 		}
-	}
-
-	changePageLength(newLength: number): void {
-		// I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
-		const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-			dtInstance.page.len(newLength).draw();
-		});
-		$('div.dataTables_length').find('select, label').remove();
-		var newDropdown = $('<select></select>');
-		newDropdown.append('<option value="5">5</option>');
-		newDropdown.append('<option value="10">10</option>');
-		newDropdown.append('<option value="25">25</option>');
-		newDropdown.append('<option value="50">50</option>');
-		newDropdown.append('<option value="100">100</option>');
-		$('div.dataTables_length').append(newDropdown);
-		var table = $('#myTable').DataTable();
-		$('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
-		newDropdown.on('change', () => {
-			this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
-				const val = newDropdown.val();
-				if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
-					dtInstance.page.len(+val).draw();
-				}
-			});
-		});
 	}
 
 }

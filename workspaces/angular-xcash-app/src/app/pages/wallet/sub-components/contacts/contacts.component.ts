@@ -1,11 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { ContactListService } from 'src/app/services/contact-list.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { BehaviorSubject } from 'rxjs';
 import { Contact } from 'src/app/models/contact.model';
-import { Subject } from 'rxjs';
 import { faTrashCan, faEdit, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { DataTableDirective } from 'angular-datatables';
 declare var $: any;
 
 @Component({
@@ -13,11 +11,8 @@ declare var $: any;
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.sass']
 })
-export class ContactsComponent implements OnInit {
-  @ViewChild(DataTableDirective, { static: false })
-  dtElement!: DataTableDirective;
-  dtOptions: DataTables.Settings = { "deferRender": true };
-  dtTrigger: Subject<any> = new Subject<any>();
+export class ContactsComponent implements OnInit, OnDestroy {
+  @ViewChild('contacttable') table!: ElementRef;
   contacts: Contact[] = [];
   faTrashCan = faTrashCan;
   faEdit = faEdit;
@@ -58,9 +53,11 @@ export class ContactsComponent implements OnInit {
     this.contactlistService.loadContacts(this.contacts);
     this.contactList$ = this.contactlistService.getContactList();
     if (this.contacts.length >= 1) {
-      this.dtTrigger.next(this.contacts);
       await new Promise(resolve => setTimeout(resolve, 500));
-      this.changePageLength(5);
+      $(this.table.nativeElement).DataTable({
+        lengthMenu: [5, 25, 50, 100],
+        pageLength: 5
+      });
       this.hidetrans = false;
     } else {
       this.noContacts = true;
@@ -88,12 +85,14 @@ export class ContactsComponent implements OnInit {
           this.contactList$ = this.contactlistService.getContactList();
           this.contacts = this.contactList$.getValue();
           this.hidetrans = true;
-          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-            dtInstance.destroy();
-          });
-          this.dtTrigger.next(this.contacts);
+          if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
+            $(this.table.nativeElement).DataTable().destroy();
+          }
           await new Promise(resolve => setTimeout(resolve, 500));
-          this.changePageLength(5);
+          $(this.table.nativeElement).DataTable({
+            lengthMenu: [5, 25, 50, 100],
+            pageLength: 5
+          })
           this.hidetrans = false;
           this.noContacts = false;
         }
@@ -121,16 +120,18 @@ export class ContactsComponent implements OnInit {
           this.showMessage("This contact address is already in use. Try again.");
         } else {
           this.hidetrans = true;
-          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-            dtInstance.destroy();
-          });
+          if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
+            $(this.table.nativeElement).DataTable().destroy();
+          }
           this.databaseService.editContacts(this.modelMod);
           this.contactlistService.modifyContact(this.modelMod.id, this.modelMod.name, this.modelMod.public_address);
           this.contactList$ = this.contactlistService.getContactList();
           this.contacts = this.contactList$.getValue();
-          this.dtTrigger.next(this.contacts);
           await new Promise(resolve => setTimeout(resolve, 500));
-          this.changePageLength(5);
+          $(this.table.nativeElement).DataTable({
+            lengthMenu: [5, 25, 50, 100],
+            pageLength: 5
+          })
           this.hidetrans = false;
         }
       }
@@ -150,16 +151,18 @@ export class ContactsComponent implements OnInit {
     this.modelDel = data;
     if (this.modelDel.confirmflag) {
       this.hidetrans = true;
-      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-        dtInstance.destroy();
-      });
+      if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
+        $(this.table.nativeElement).DataTable().destroy();
+      }
       this.databaseService.deleteContacts(this.modelDel.id);
       this.contactlistService.removeContact(this.modelDel.id);
       this.contactList$ = this.contactlistService.getContactList();
       this.contacts = this.contactList$.getValue();
-      this.dtTrigger.next(this.contacts);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      this.changePageLength(5);
+			await new Promise(resolve => setTimeout(resolve, 500));
+      $(this.table.nativeElement).DataTable({
+        lengthMenu: [5, 25, 50, 100],
+        pageLength: 5
+      })
       this.hidetrans = false;
       if (this.contacts.length === 0) {
         this.noContacts = true;
@@ -199,33 +202,9 @@ export class ContactsComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.dtTrigger.unsubscribe();
-  }
-
-
-  changePageLength(newLength: number): void {
-    // I think a bug in angular-datatable is preventing the setting of dtoptions so created this workaround for now
-    const dtInstance = this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.page.len(newLength).draw();
-    });
-    $('div.dataTables_length').find('select, label').remove();
-    var newDropdown = $('<select></select>');
-    newDropdown.append('<option value="5">5</option>');
-    newDropdown.append('<option value="10">10</option>');
-    newDropdown.append('<option value="25">25</option>');
-    newDropdown.append('<option value="50">50</option>');
-    newDropdown.append('<option value="100">100</option>');
-    $('div.dataTables_length').append(newDropdown);
-    var table = $('#myTable').DataTable();
-    $('div.dataTables_length').append('<label>Show </label>').append(newDropdown).append(' entries');
-    newDropdown.on('change', () => {
-      this.dtElement?.dtInstance.then((dtInstance: DataTables.Api) => {
-        const val = newDropdown.val();
-        if (typeof val === 'number' || (typeof val === 'string' && !isNaN(+val))) {
-          dtInstance.page.len(+val).draw();
-        }
-      });
-    });
+    if (this.contactList$) {
+      this.contactList$.complete();
+    }
   }
 
 }

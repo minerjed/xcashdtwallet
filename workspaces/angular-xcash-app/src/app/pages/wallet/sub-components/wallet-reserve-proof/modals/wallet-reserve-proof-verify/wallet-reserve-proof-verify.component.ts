@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ValidatorsRegexService } from 'src/app/services/validators-regex.service';
 import { ConstantsService } from 'src/app/services/constants.service';
 import { faPaste } from '@fortawesome/free-solid-svg-icons';
@@ -34,6 +34,9 @@ export class WalletReserveProofVerifyComponent implements OnInit {
   spentAmt: string = '';
   totalAmt: string = '';
   hideAmounts: boolean = true;
+  @ViewChild('signAddressinput', { static: false }) signAddressinput: any;
+	@ViewChild('signatueinput', { static: false }) signatueinput: any;
+	@ViewChild('datainput', { static: false }) datainput: any;
 
   ngOnInit() {
     this.dataCk = this.validatorsRegexService.message_settings;
@@ -42,27 +45,38 @@ export class WalletReserveProofVerifyComponent implements OnInit {
     this.messageLength = this.constantsService.message_settings_length;
   }
 
-  cancelVerify() { this.onClose.emit({}); }
-  async selectVerify() {
-    this.showSpinner = true;
-    const passData = { message: this.rpMessage, public_address: this.rpAddress, reserveproof: this.rpSignature }
-    const response: rpcReturn = await this.rpcCallsService.verifyReserveproof(passData);
-    if (response.status) {
-      if (response.data.good) {
-        this.spentAmt = this.xcashcurrencyPipe.transform(response.data.spent /
-          this.constantsService.xcash_decimal_places, '1.0-2');
-        this.totalAmt = this.xcashcurrencyPipe.transform(response.data.total /
-          this.constantsService.xcash_decimal_places, '1.0-2');
-        this.hideAmounts = false;
-        this.message = 'Signed Data Verifed Successfully'
-        this.messageType = 'is-success';
+  cancelVerify() {
+    this.onClose.emit({});
+  }
+
+  async selectVerify(isInvalid: any) {
+    if (!isInvalid) {
+      this.showSpinner = true;
+      const passData = { message: this.rpMessage, public_address: this.rpAddress, reserveproof: this.rpSignature }
+      const response: rpcReturn = await this.rpcCallsService.verifyReserveproof(passData);
+      if (response.status) {
+        if (response.data.good) {
+          this.spentAmt = this.xcashcurrencyPipe.transform(response.data.spent /
+            this.constantsService.xcash_decimal_places, '1.0-2');
+          this.totalAmt = this.xcashcurrencyPipe.transform(response.data.total /
+            this.constantsService.xcash_decimal_places, '1.0-2');
+          this.hideAmounts = false;
+          this.message = 'Signed Data Verifed Successfully'
+          this.messageType = 'is-success';
+        } else {
+          this.message = 'Signed Data Verification Failed'
+          this.messageType = 'is-danger';
+        }
       } else {
-        this.message = 'Signed Data Verification Failed'
+        this.message = response.message;
         this.messageType = 'is-danger';
       }
     } else {
-      this.message = response.message;
-      this.messageType = 'is-danger';
+			this.signAddressinput.control.markAsTouched();
+			this.signatueinput.control.markAsTouched();
+			this.datainput.control.markAsTouched();
+
+
     }
     this.showSpinner = false;
   }

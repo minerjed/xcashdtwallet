@@ -9,8 +9,7 @@
 <div id="transactions" [ngClass]="{ 'is-hidden' : hidetrans || notrans }">
   <div *ngIf="!notrans">
     <div class="container">
-      <table id="transtable" class="table is-striped mx-auto is-hoverable" datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
+      <table #transtable id="transtable" class="table is-striped mx-auto is-hoverable">
         <thead>
           <tr>
             <th>ID</th>

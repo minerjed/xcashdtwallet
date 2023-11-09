@@ -152,7 +152,6 @@
 	},
 	"dependencies": {
 		"@electron/remote": "^2.0.9",
-		"angular-datatables": "^15.0.1",
 		"datatables.net": "^1.13.6",
 		"datatables.net-dt": "^1.13.6",
 		"electron-squirrel-startup": "^1.0.0",
