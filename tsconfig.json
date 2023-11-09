@@ -17,10 +17,10 @@
 		},
 		"types": [
 			"node",
-			"webdriverio/async",
+			"@wdio/globals/types",
 			"@wdio/jasmine-framework",
 			"expect-webdriverio"
 		]
 	},
-	"include": ["workspaces/electron-xcash-app/**/*", "workspaces/electron-e2e/**/*"]
+	"include": ["workspaces/electron-xcash-app/**/*", "workspaces/shared-lib/**/*"]
 }
