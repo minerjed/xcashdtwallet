@@ -38,7 +38,6 @@ export class Window {
 				// Use a preload script to enhance security
 				preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
 			},
-
 		});
 
 		// Disable the remote module to enhance security
