@@ -10,12 +10,15 @@ export class ContactsDeleteComponent implements OnInit {
   @Input() inId: number = 0;
   @Input() inName: string = "";
 
-  @Output() onClose = new EventEmitter<{id : number, confirmflag : boolean}>();
+  @Output() onClose = new EventEmitter<{ id: number, confirmflag: boolean }>();
 
   ngOnInit() {
-   }
+  }
 
-  cancelDel() { this.onClose.emit({id: 0, confirmflag: false}); }
-  confirmDel() { this.onClose.emit({id: this.inId, confirmflag: true}); }
+  cancelDel() { this.onClose.emit({ id: 0, confirmflag: false }); }
+  confirmDel(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({ id: this.inId, confirmflag: true });
+  }
 
 }

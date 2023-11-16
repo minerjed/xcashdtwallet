@@ -56,7 +56,7 @@
           <textarea class="textarea is-hovered" type="text" placeholder="Enter recipient address" id="toAddress"
             name="toAddress" [(ngModel)]="toAddress" #toAddressInput="ngModel" required [pattern]="xcashaddressCk"
             autofocus placeholder="Enter recipient xcash address or click contacts icon" (blur)="searchAddress()"
-            rows="1"></textarea>
+            rows="2"></textarea>
           <div *ngIf="toAddressInput.invalid && toAddressInput.touched">
             <div *ngIf="toAddressInput.errors?.required">This field is required.</div>
             <div *ngIf="toAddressInput.errors?.pattern">Enter a valid XCASH address.</div>

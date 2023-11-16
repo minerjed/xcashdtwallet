@@ -19,7 +19,7 @@
                         <fa-icon [icon]="faPaste"></fa-icon>
                     </span>
                         <div class="help"
-                            *ngIf="contactnameinput.invalid && (contactnameinput.touched || contactnameinput.dirty)">
+                            *ngIf="contactnameinput.invalid && contactname !== ''">
                             New wallet name must be between {{ minlen }} and {{ maxlen }} characters and only contain
                             numbers and letters.
                         </div>
@@ -35,7 +35,7 @@
                         <textarea type="text" name="contactaddress" class="textarea is-hovered" [(ngModel)]="contactaddress"
                             #contactaddressinput="ngModel" [pattern]="addressCk" required rows="2"></textarea>
                         <div class="help"
-                            *ngIf="contactaddressinput.invalid && (contactaddressinput.touched || contactaddressinput.dirty)">
+                            *ngIf="contactaddressinput.invalid && contactaddress !==''">
                             Wallet address must be a vaild xCash address.
                         </div>
                     </div>
@@ -43,7 +43,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button type="submit" class="button is-primary" [disabled]="contactaddfrom.invalid"
-                    (click)="selectMod()">Modify</button>
+                    (click)="selectMod($event)">Modify</button>
                 <button type="button" class="button is-hovered" (click)="cancelMod()">Cancel</button>
             </footer>
         </form>

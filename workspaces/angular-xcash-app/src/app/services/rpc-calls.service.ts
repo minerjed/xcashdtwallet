@@ -456,9 +456,15 @@ export class RpcCallsService {
   }
 
   public async createReserveproof(reserveproofData: any): Promise<rpcReturn> {
-    const newAmmount = reserveproofData.amount * this.constantsService.xcash_decimal_places;
-    const intrans = `{"jsonrpc":"2.0","id":"0","method":"get_reserve_proof",
-      "params":{"all":false,"account_index":0,"amount":${newAmmount},"message":"${reserveproofData.message}"}}`;
+    const newAmount = reserveproofData.amount * this.constantsService.xcash_decimal_places;
+    let intrans = '';
+    if (reserveproofData.message === '') {
+      intrans = `{"jsonrpc":"2.0","id":"0","method":"get_reserve_proof",
+      "params":{"all":false,"account_index":0,"amount":${newAmount}}`;
+    } else {
+      intrans = `{"jsonrpc":"2.0","id":"0","method":"get_reserve_proof",
+      "params":{"all":false,"account_index":0,"amount":${newAmount},"message":"${reserveproofData.message}"}}`;
+    }
     const result: string = await this.getPostRequestData(intrans);
     const ckdata: any = result;
     if (ckdata.hasOwnProperty('error')) {

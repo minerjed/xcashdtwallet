@@ -19,12 +19,13 @@ export class ValidatorsRegexService {
   public readonly reserve_proof: string = '';
   public readonly message_settings: string = '';
   public readonly delegate_name: string = '';
+  public readonly text_name: string = '';
   
   constructor(private constantsService: ConstantsService) { 
-
     this.xcash_address = `^(${this.constantsService.xcash_public_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_public_address_length_settings}}|${this.constantsService.xcash_integrated_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_integrated_address_length_settings}}|${this.constantsService.xcash_sub_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_sub_address_length_settings}})$`;
     this.xcash_only_address = `^(${this.constantsService.xcash_public_address_prefix}[a-zA-Z0-9]{${this.constantsService.xcash_public_address_length_settings}})$`;
     this.text_settings = `^[a-zA-Z0-9]{${this.constantsService.text_settings_minlength},${this.constantsService.text_settings_length}}$`;
+    this.text_name = `^[a-zA-Z0-9 ]{${this.constantsService.text_settings_minlength},${this.constantsService.text_settings_length}}$`;
     this.payment_id = `^([0-9a-f]{${this.constantsService.unencrypted_payment_id_length}}|[0-9a-f]{${this.constantsService.encrypted_payment_id_length}}|)$`;
     this.xcash_amount = `\\b(^[0-9]{1,11}.[0-9]{0,5}[1-9]{1}$|^[1-9]{1}[0-9]{0,10}$|${this.constantsService.xcash_total_supply})\\b$`;
     this.password_format = `^[a-zA-Z0-9~!@#$%^&*_+=?]*`;

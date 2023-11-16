@@ -15,9 +15,10 @@
                     </label>
                     <div>
                         <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="signData"
-                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required rows="3"></textarea>
-                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
-                            Data string can contan letters and numbers with a max length of {{ messageLength }}.
+                            #mnemonicInput #datainput="ngModel" [pattern]="dataCk" required 
+                            placeholder="Enter the Data what was Signed" rows="3"></textarea>
+                        <div class="help" *ngIf="datainput.invalid && signData !==''">
+                            Data string can contan letters, numbers, and spaces with a max length of {{ messageLength }}.
                         </div>
                     </div>
                 </div>
@@ -33,7 +34,7 @@
                             [(ngModel)]="signAddress" #signAddressinput="ngModel" [pattern]="addressCk" required
                             placeholder="Enter the signatory address to verify" rows="2"></textarea>
                         <div class="help"
-                            *ngIf="signAddressinput.invalid && (signAddressinput.touched || signAddressinput.dirty)">
+                            *ngIf="signAddressinput.invalid && signAddress !== ''">
                             Invalid fomat, please enter a valid xCash address.
                         </div>
                     </div>
@@ -50,7 +51,7 @@
                             #signatueinput="ngModel" [pattern]="signatureCk" required
                             placeholder="Enter the signature to verify" rows="2"></textarea>
                         <div class="help"
-                            *ngIf="signatueinput.invalid && (signatueinput.touched || signatueinput.dirty)">
+                            *ngIf="signatueinput.invalid && signature !== ''">
                             Invalid format, please enter a valid signature address.
                         </div>
                     </div>
@@ -62,7 +63,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
-                    (click)="selectVerify()">Verify</button>
+                    (click)="selectVerify($event)">Verify</button>
                 <button type="button" class="button is-hovered" (click)="cancelVerify
                 ()">Cancel</button>
             </footer>

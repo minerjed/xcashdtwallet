@@ -24,7 +24,10 @@ export class WalletAddSignDataComponent implements OnInit {
   }
 
   cancelAdd() { this.onClose.emit({ outdata: 'skip' }); }
-  selectAdd() { this.onClose.emit({ outdata: this.signData }); }
+  selectAdd(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({ outdata: this.signData });
+  }
 
   async onPaste(event: Event): Promise<void> {
     event.preventDefault(); // prevent default paste behavior

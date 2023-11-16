@@ -20,7 +20,7 @@ export class WalletIntegratedAddressAddComponent implements OnInit {
   nameCk: string = '';
   minlen: number = 0;
   maxlen: number = 0;
-  lenEncry : number = 0;
+  lenEncry: number = 0;
   addressCk: string = '';
   idCk: string = '';
 
@@ -33,8 +33,13 @@ export class WalletIntegratedAddressAddComponent implements OnInit {
     this.lenEncry = this.constantsService.encrypted_payment_id_length;
   }
 
-  cancelAdd() { this.onClose.emit({ outlabel: 'skip', outencryptedId: ''}); }
-  selectAdd() { this.onClose.emit({ outlabel: this.intlabel, outencryptedId: this.intpaymentId}); }
+  cancelAdd() { this.onClose.emit({ outlabel: 'skip', outencryptedId: '' }); }
+  selectAdd(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({
+      outlabel: this.intlabel, outencryptedId: this.intpaymentId
+    });
+  }
 
   async onPaste(event: Event, infield: string): Promise<void> {
     event.preventDefault(); // prevent default paste behavior
@@ -43,8 +48,8 @@ export class WalletIntegratedAddressAddComponent implements OnInit {
       if (infield === 'label') {
         this.intlabel = clipboardText;
       } else {
-          this.intpaymentId = clipboardText;
-        } 
+        this.intpaymentId = clipboardText;
+      }
     }
     catch (err) {
       console.error('Failed to read clipboard contents: ', err);

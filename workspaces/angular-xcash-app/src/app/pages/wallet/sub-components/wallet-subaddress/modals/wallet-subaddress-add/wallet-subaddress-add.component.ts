@@ -37,7 +37,12 @@ export class WalletSubaddressAddComponent implements OnInit {
     }
   }
 
-  cancelAdd() { this.onClose.emit({ outlabel: 'skip'}); }
-  selectAdd() { this.onClose.emit({ outlabel: this.sublabel}); }
+  cancelAdd() { this.onClose.emit({ outlabel: 'skip' }); }
+  selectAdd(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({
+      outlabel: this.sublabel
+    });
+  }
 
 }

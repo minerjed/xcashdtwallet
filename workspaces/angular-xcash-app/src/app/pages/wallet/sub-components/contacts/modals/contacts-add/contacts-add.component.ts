@@ -26,7 +26,7 @@ export class ContactsAddComponent implements OnInit {
   addressCk: string = '';
 
   ngOnInit() {
-    this.nameCk = this.validatorsRegexService.text_settings;
+    this.nameCk = this.validatorsRegexService.text_name;
     this.minlen = this.constantsService.text_settings_minlength;
     this.maxlen = this.constantsService.text_settings_length;
     this.addressCk = this.validatorsRegexService.xcash_address;
@@ -47,6 +47,9 @@ export class ContactsAddComponent implements OnInit {
   }
 
   cancelAdd() { this.onClose.emit({ name: '', public_address: '' }); }
-  selectAdd() { this.onClose.emit({ name: this.contactname, public_address: this.contactaddress }); }
+  selectAdd(event: Event) { 
+    event.preventDefault();
+    this.onClose.emit({ name: this.contactname, public_address: this.contactaddress });
+  }
 
 }

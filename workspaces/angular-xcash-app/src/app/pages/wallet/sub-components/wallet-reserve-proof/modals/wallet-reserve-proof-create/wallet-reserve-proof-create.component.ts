@@ -12,14 +12,14 @@ export class WalletReserveProofCreateComponent implements OnInit {
   faPaste = faPaste;
   amount: any = '';
   rpmessage: string = '';
-  @Output() onClose = new EventEmitter<{ amount:  number, message: string}>();
+  @Output() onClose = new EventEmitter<{ amount: number, message: string }>();
   constructor(private validatorsRegexService: ValidatorsRegexService,
     private constantsService: ConstantsService) { }
 
   amountCk: string = '';
   proofCk: string = '';
   rpmessageCk: string = '';
-  messageLength: number = 0;  
+  messageLength: number = 0;
 
   ngOnInit() {
     this.amountCk = this.validatorsRegexService.xcash_reserve_proof_amount;
@@ -29,10 +29,13 @@ export class WalletReserveProofCreateComponent implements OnInit {
   }
 
   cancelAdd() { this.onClose.emit({ amount: 0, message: '' }); }
-  selectAdd() { this.onClose.emit({ amount: this.amount, message: this.rpmessage }); }
+  selectAdd(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({ amount: this.amount, message: this.rpmessage });
+  }
 
   async onPaste(event: Event): Promise<void> {
-    event.preventDefault(); // prevent default paste behavior
+    event.preventDefault();
     try {
       const clipboardText = await navigator.clipboard.readText();
       this.rpmessage = clipboardText;
@@ -42,8 +45,8 @@ export class WalletReserveProofCreateComponent implements OnInit {
     }
   }
 
-  submit(e: any){
+  submit(e: any) {
     e.preventDefault();
-   }
+  }
 
 }

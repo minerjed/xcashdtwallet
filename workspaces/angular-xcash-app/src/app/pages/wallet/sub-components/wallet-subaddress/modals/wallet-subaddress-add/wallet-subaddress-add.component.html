@@ -17,7 +17,7 @@
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
                         <div class="help"
-                            *ngIf="sublabelinput.invalid && (sublabelinput.touched || sublabelinput.dirty)">
+                            *ngIf="sublabelinput.invalid && sublabel !== ''">
                             Label must be between {{ minlen }} and {{ maxlen }} characters and only contain
                             numbers and letters.
                         </div>
@@ -26,7 +26,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button type="submit" class="button is-primary" [disabled]="sublabelfrom.invalid"
-                    (click)="selectAdd()">Add</button>
+                    (click)="selectAdd($event)">Add</button>
                 <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
             </footer>
         </form>

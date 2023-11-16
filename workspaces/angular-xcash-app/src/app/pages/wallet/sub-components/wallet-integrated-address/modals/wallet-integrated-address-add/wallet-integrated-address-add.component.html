@@ -17,7 +17,7 @@
                                 <fa-icon [icon]="faPaste"></fa-icon>
                             </span>
                             <div class="help"
-                                *ngIf="intlabelinput.invalid && (intlabelinput.touched || intlabelinput.dirty)">
+                                *ngIf="intlabelinput.invalid && intlabel !== ''">
                                 Label must be between {{ minlen }} and {{ maxlen }} characters and only contain
                                 numbers and letters.
                             </div>
@@ -35,7 +35,7 @@
                                 <fa-icon [icon]="faPaste"></fa-icon>
                             </span>
                             <div class="help"
-                                *ngIf="intpaymentinput.invalid && (intpaymentinput.touched || intpaymentinput.dirty)">
+                                *ngIf="intpaymentinput.invalid && intpaymentId !== ''">
                                 Encrypted payment id must be {{ lenEncry }} characters long and only contain
                                 numbers and letters.
                             </div>
@@ -45,7 +45,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button id="addbutton" type="submit" class="button is-primary" [disabled]="intlabelfrom.invalid"
-                    (click)="selectAdd()">Add</button>
+                    (click)="selectAdd($event)">Add</button>
                 <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
             </footer>
         </form>

@@ -41,6 +41,9 @@ export class WalletSubaddressModComponent implements OnInit {
   }
 
   cancelMod() { this.onClose.emit({ outId: 0, newLabel: '' }); }
-  selectMod() { this.onClose.emit({ outId: this.modId, newLabel: this.newLabel }); }
+  selectMod(event: Event) {
+    event.preventDefault();
+    this.onClose.emit({ outId: this.modId, newLabel: this.newLabel });
+  }
 
 }

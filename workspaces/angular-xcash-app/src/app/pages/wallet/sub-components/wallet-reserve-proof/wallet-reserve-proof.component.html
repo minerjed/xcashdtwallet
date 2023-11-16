@@ -16,7 +16,7 @@
 				<form>
 					<div id="subaddress">
 						<div class="container">
-							<table #walreserveprid id="walreserveprid" class="table is-striped mx-auto is-hoverable" >
+							<table #walreserveprid id="walreserveprid" class="table is-striped mx-auto is-hoverable">
 								<thead>
 									<tr>
 										<th>ID</th>
@@ -31,10 +31,12 @@
 									<tr *ngFor="let reserveproof of reserveProofArray">
 										<td>{{ reserveproof.id }}</td>
 										<td class="nowrap">
-											<a (click)="callDisplayModal(reserveproof.id-1)">{{ reserveproof.message |
-												xcashDataFormat:15 }}</a>
+											{{ reserveproof.message | xcashDataFormat:15 }}
 										</td>
-										<td>{{ reserveproof.amount }}</td>
+										<td>
+											<a (click)="callDisplayModal(reserveproof.id-1)">
+											{{ reserveproof.amount}}</a>
+										</td>
 										<td>{{ reserveproof.signature | xcashPublicAddress:12 }}
 										</td>
 										<td>{{ reserveproof.status}}</td>

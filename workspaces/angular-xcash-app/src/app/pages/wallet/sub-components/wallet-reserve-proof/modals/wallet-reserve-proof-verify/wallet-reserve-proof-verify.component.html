@@ -1,4 +1,4 @@
-<div class="modal is-active">
+<div class="modal is-active custom-modal-width">
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
@@ -18,7 +18,7 @@
                             placeholder="Enter the adddress that was used to create the reserve proof"
                             rows="2"></textarea>
                         <div class="help"
-                            *ngIf="signAddressinput.invalid && (signAddressinput.touched || signAddressinput.dirty)">
+                            *ngIf="signAddressinput.invalid && rpAddress !== ''">
                             Invalid fomat, please enter a valid xCash address.
                         </div>
                     </div>
@@ -35,7 +35,7 @@
                             [(ngModel)]="rpSignature" #signatueinput="ngModel" [pattern]="rpCk" required
                             placeholder="Enter the reserve proof signature to verify" rows="3"></textarea>
                         <div class="help"
-                            *ngIf="signatueinput.invalid && (signatueinput.touched || signatueinput.dirty)">
+                            *ngIf="signatueinput.invalid && rpSignature !== ''">
                             Invalid format, please enter a valid signature address.
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                         <textarea type="text" class="textarea input is-hovered" name="data" [(ngModel)]="rpMessage"
                             #mnemonicInput #datainput="ngModel" [pattern]="dataCk" rows="2"
                             placeholder="Enter the optional reserve proof message"></textarea>
-                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
+                        <div class="help" *ngIf="datainput.invalid && rpMessage !== ''">
                             Data string can contan letters and numbers with a max length of {{ messageLength }}.
                         </div>
                     </div>
@@ -83,8 +83,8 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button type="submit" class="button is-primary"
-                    (click)="selectVerify(datafrom.invalid)">Verify</button>
+                <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
+                    (click)="selectVerify($event)">Verify</button>
                 <button type="button" class="button is-hovered" (click)="cancelVerify
                 ()">Cancel</button>
             </footer>

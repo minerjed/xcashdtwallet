@@ -39,7 +39,8 @@ export class WalletVerifySignDataComponent implements OnInit {
 
   cancelVerify() { this.onClose.emit({}); }
 
-  async selectVerify() {
+  async selectVerify(event: Event) {
+    event.preventDefault();
     this.showSpinner = true;
     const passData = { data: this.signData, public_address: this.signAddress, signature: this.signature }
     const response: rpcReturn = await this.rpcCallsService.verifySignedData(passData);

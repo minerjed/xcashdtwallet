@@ -29,7 +29,7 @@ export class ContactsModifyComponent implements OnInit{
   addressCk: string = '';
 
   ngOnInit() {
-    this.nameCk = this.validatorsRegexService.text_settings;
+    this.nameCk = this.validatorsRegexService.text_name;
     this.minlen = this.constantsService.text_settings_minlength;
     this.maxlen = this.constantsService.text_settings_length;
     this.addressCk = this.validatorsRegexService.xcash_address;
@@ -52,6 +52,9 @@ export class ContactsModifyComponent implements OnInit{
 	}
 
   cancelMod() { this.onClose.emit({id: 0, name: '', public_address: ''}); }
-  selectMod() { this.onClose.emit({id: this.inId, name: this.contactname, public_address: this.contactaddress}); }
+  selectMod(event: Event) { 
+    event.preventDefault();
+    this.onClose.emit({id: this.inId, name: this.contactname, public_address: this.contactaddress});
+   }
 
 }

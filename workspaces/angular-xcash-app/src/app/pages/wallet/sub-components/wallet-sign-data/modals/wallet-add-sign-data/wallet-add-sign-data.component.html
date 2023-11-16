@@ -15,7 +15,7 @@
                             (click)="onPaste($event)">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
-                        <div class="help" *ngIf="datainput.invalid && (datainput.touched || datainput.dirty)">
+                        <div class="help" *ngIf="datainput.invalid && signData !== ''">
                             Data string can contan letters and numbers with a max length of {{ messageLength }}.
                         </div>
                     </div>
@@ -23,7 +23,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
-                    (click)="selectAdd()">Add</button>
+                    (click)="selectAdd($event)">Add</button>
                 <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
             </footer>
         </form>

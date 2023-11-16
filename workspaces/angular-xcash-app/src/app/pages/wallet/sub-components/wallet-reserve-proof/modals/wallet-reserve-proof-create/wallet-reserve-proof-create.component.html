@@ -1,4 +1,4 @@
-<div class="modal is-active">
+<div class="modal is-active custom-modal-width">
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
@@ -11,7 +11,7 @@
                     <input type="string" name="amount" class="input is-hovered" [(ngModel)]="amount"
                         #amountinput="ngModel" [pattern]="amountCk" required
                         placeholder="Enter the amount for the reserve proof">
-                    <div class="help" *ngIf="amountinput.invalid && (amountinput.touched || amountinput.dirty)">
+                    <div class="help" *ngIf="amountinput.invalid && amount !== ''">
                         Amount entered must be a number.
                     </div>
                 </div>
@@ -24,8 +24,7 @@
                         <span class="icon is-small is-right is-clickable is-fullwidth" (click)="onPaste($event)">
                             <fa-icon [icon]="faPaste"></fa-icon>
                         </span>
-                        <div class="help"
-                            *ngIf="rpmessageinput.invalid && (rpmessageinput.touched || rpmessageinput.dirty)">
+                        <div class="help" *ngIf="rpmessageinput.invalid && rpmessage !== ''">
                             Message can contan letters and numbers with a max length of {{ messageLength }}.
                         </div>
                     </div>
@@ -33,7 +32,7 @@
             </section>
             <footer class="modal-card-foot">
                 <button type="submit" class="button is-primary" [disabled]="datafrom.invalid"
-                    (click)="selectAdd()">Add</button>
+                    (click)="selectAdd($event)">Add</button>
                 <button type="button" class="button is-hovered" (click)="cancelAdd()">Cancel</button>
             </footer>
         </form>
