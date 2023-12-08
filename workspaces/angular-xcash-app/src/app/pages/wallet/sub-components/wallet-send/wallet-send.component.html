@@ -117,7 +117,7 @@
     <div *ngIf="showconfirm">
       <form #confirmForm="ngForm">
         <div class="field">
-          <label class="label">Amount Sent:</label>
+          <label class="label">Amount To Send:</label>
           <div class="control">
             <input class="input is-hovered" type="text" name="sentamount" [(ngModel)]="toAmount" readonly>
           </div>
@@ -125,7 +125,8 @@
         <div class="field">
           <label class="label">Recipient:</label>
           <div class="control">
-            <input class="input is-hovered is-small" type="text" name="sentto" [(ngModel)]="toAddress" readonly>
+            <textarea class="textarea is-hovered" type="text" name="sentto" [(ngModel)]="toAddress" readonly rows="2">
+            </textarea>
           </div>
         </div>
         <div class="field">
@@ -135,7 +136,7 @@
           </div>
         </div>
         <div class="field">
-          <label class="label">Total:</label>
+          <label class="label">Total Including Fee:</label>
           <div class="control">
             <input class="input is-hovered" type="text" name="senttotal" [(ngModel)]="txAmount" readonly>
           </div>

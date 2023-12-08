@@ -21,6 +21,7 @@ export class WalletTransComponent implements OnInit  {
 	notrans: boolean = false;
 	showTransModal: boolean = false;
 	txid: string = '';
+	wscount: number = 0;
 	showSpinner = true;
 
 	constructor(
@@ -38,11 +39,13 @@ export class WalletTransComponent implements OnInit  {
 				this.notrans = true;
 				this.hidetrans = false;
 			} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				await new Promise(resolve => setTimeout(resolve, 3000));
+				if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
+					$(this.table.nativeElement).DataTable().destroy();
+				}
 				$(this.table.nativeElement).DataTable({
 					lengthMenu: [7, 25, 50, 100],
-					pageLength: 7,
-					deferRender: true
+					pageLength: 7
   				});
 				this.hidetrans = false;
 			}

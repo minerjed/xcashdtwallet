@@ -129,14 +129,16 @@ export class WalletSendComponent implements OnInit {
 			this.toAmount, this.toPrivacy, false);
 		this.showspinner = false;
 		if (response.status) {
-			this.showInfoMessage();
+			this.showconfirm = false;
+			this.infoMessage = 'Transaction Sent Successfully.';
+			await new Promise(resolve => setTimeout(resolve, 4000));
+			this.infoMessage = '';
 			this.toAddress = '';
 			this.toPaymentId = '';
 			this.toAmount = '';
 			this.toPrivacy = 'private';
 			this.toMax = false;
 			this.showmain = true;
-			this.showconfirm = false;
 		} else {
 			this.message = response.message;
 		}
@@ -159,12 +161,6 @@ export class WalletSendComponent implements OnInit {
 
 	showMessage(message: string): void {
 		this.message = message;
-	}
-
-	async showInfoMessage() {
-		this.infoMessage = 'Transaction Sent Successfully.';
-		await new Promise(resolve => setTimeout(resolve, 4000)); // Set the timer to expire after 4 seconds
-		this.infoMessage = '';
 	}
 
 	useContacts() {
