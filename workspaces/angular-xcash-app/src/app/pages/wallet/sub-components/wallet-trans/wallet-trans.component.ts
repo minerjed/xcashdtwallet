@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Transaction } from 'src/app/models/transaction';
@@ -10,7 +10,7 @@ declare var $: any;
 	templateUrl: './wallet-trans.component.html',
 	styleUrls: ['./wallet-trans.component.sass']
 })
-export class WalletTransComponent implements OnInit  {
+export class WalletTransComponent implements OnInit {
 	@ViewChild('transtable') table!: ElementRef;
 	walletname: string = '';
 	walletpw: string = '';
@@ -39,20 +39,26 @@ export class WalletTransComponent implements OnInit  {
 				this.notrans = true;
 				this.hidetrans = false;
 			} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
-				await new Promise(resolve => setTimeout(resolve, 3000));
+				await new Promise(resolve => setTimeout(resolve, 1000));
 				if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
 					$(this.table.nativeElement).DataTable().destroy();
 				}
 				$(this.table.nativeElement).DataTable({
 					lengthMenu: [7, 25, 50, 100],
-					pageLength: 7
+					pageLength: 7,
+					"drawCallback": () => {
+						this.onLoaded();
+					}
   				});
-				this.hidetrans = false;
 			}
 		} else {
 			this.message = response.message;
 		}
 		this.showSpinner = false;
+	}
+
+	onLoaded() {
+		this.hidetrans = false;
 	}
 
 	showdetails(id: number): void {
