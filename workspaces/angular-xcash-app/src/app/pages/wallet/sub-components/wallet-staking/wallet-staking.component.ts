@@ -105,7 +105,7 @@ export class WalletStakingComponent implements OnInit {
 			$(this.table.nativeElement).DataTable({
 				lengthMenu: [5, 25, 50, 100],
 				pageLength: 5
-			  });
+			});
 			this.hidedelegates = false;
 		} else {
 			this.showspinner = false;

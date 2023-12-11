@@ -38,6 +38,7 @@ export class WalletTransComponent implements OnInit {
 				this.transactions = [];
 				this.notrans = true;
 				this.hidetrans = false;
+				this.showSpinner = false;
 			} else if (this.transactions.length >= 1 && this.transactions[0].id !== 0) {
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				if ($.fn.DataTable.isDataTable(this.table.nativeElement)) {
@@ -53,12 +54,14 @@ export class WalletTransComponent implements OnInit {
 			}
 		} else {
 			this.message = response.message;
+			this.showSpinner = false;
 		}
-		this.showSpinner = false;
 	}
 
-	onLoaded() {
+	async onLoaded() {
+		await new Promise(resolve => setTimeout(resolve, 1000));
 		this.hidetrans = false;
+		this.showSpinner = false;
 	}
 
 	showdetails(id: number): void {

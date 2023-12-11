@@ -6,9 +6,9 @@ import { firstValueFrom, catchError } from 'rxjs';
   providedIn: 'root'
 })
 export class XcashDelegatesService {
-  
+
   constructor(private http: HttpClient) { }
-  
+
   async getDelegates(): Promise<any> {
     const url = 'https://api.xcash.live/v1/xcash/dpops/unauthorized/delegates/active';
     try {

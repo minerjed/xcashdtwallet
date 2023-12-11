@@ -36,25 +36,23 @@
   <div class="control has-icons-right">
     <input class="input is-static has-background-info is-fullwidth has-text-white" type="text" value="{{walletaddress}}"
       readonly #copyInput>
-      <span id="button" class="icon is-small is-right is-clickable is-fullwidth"
-      (click)="copyToClipboard(copyInput.value)"
-      [ngxTippy]="'Text Coppied'"
-      [tippyProps]="tippyOptions">
+    <span id="button" class="icon is-small is-right is-clickable is-fullwidth"
+      (click)="copyToClipboard(copyInput.value)" [ngxTippy]="'Text Coppied'" [tippyProps]="tippyOptions">
       <fa-icon [icon]="faCopy"></fa-icon>
-      </span>
+    </span>
   </div>
 </div>
 <div class="tabs is-boxed mb-3">
   <ul>
     <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
       <a>
-        <span>Transactions</span><span class="icon is-small is-clickable" (click)="refreshTrans()">&nbsp;&nbsp;<fa-icon
-          [icon]="faRefresh"></fa-icon></span>
+        <span>Send</span>
       </a>
     </li>
     <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">
       <a>
-        <span>Send</span>
+        <span>Transactions</span><span class="icon is-small is-clickable" (click)="refreshTrans()">&nbsp;&nbsp;<fa-icon
+            [icon]="faRefresh"></fa-icon></span>
       </a>
     </li>
     <li (click)="onTabClick(3)" [ngClass]="{ 'is-active' : showtab === 3 }">
@@ -85,7 +83,7 @@
   </ul>
 </div>
 <div *ngIf="showAdvTabs">
- <div class="tabs is-boxed">
+  <div class="tabs is-boxed">
     <ul>
       <li (click)="onTabClickAdv(10)" [ngClass]="{ 'is-active' : showtab === 10 }">
         <a>
@@ -113,11 +111,11 @@
 <app-wallet-login *ngIf="showLoginModal" (onClose)="closeLogin($event)"></app-wallet-login>
 <div [ngSwitch]="showtab">
   <ng-container *ngSwitchCase="1">
-    <app-wallet-trans></app-wallet-trans>
+    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance'
+      [currencySymbol]="currencySymbol"></app-wallet-send>
   </ng-container>
   <ng-container *ngSwitchCase="2">
-    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance' [currencySymbol]="currencySymbol">
-    </app-wallet-send>
+    <app-wallet-trans></app-wallet-trans>
   </ng-container>
   <ng-container *ngSwitchCase="3">
     <app-wallet-staking [xcashbalance]="xcashbalance" (onClose)="closeTab()"></app-wallet-staking>
