@@ -23,6 +23,7 @@ export class WalletTransComponent implements OnInit {
 	txid: string = '';
 	wscount: number = 0;
 	showSpinner = true;
+	showBH = '';
 
 	constructor(
 		private route: ActivatedRoute,
@@ -31,6 +32,9 @@ export class WalletTransComponent implements OnInit {
 
 	async ngOnInit() {
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
+		const wsdata: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
+		this.showBH = wsdata.data;
+		await new Promise(resolve => setTimeout(resolve, 1000));
 		const response: rpcReturn = await this.rpcCallsService.getTransactions();
 		if (response.status) {
 			this.transactions = response.data;
@@ -50,7 +54,7 @@ export class WalletTransComponent implements OnInit {
 					"drawCallback": () => {
 						this.onLoaded();
 					}
-  				});
+				});
 			}
 		} else {
 			this.message = response.message;
@@ -59,7 +63,6 @@ export class WalletTransComponent implements OnInit {
 	}
 
 	async onLoaded() {
-		await new Promise(resolve => setTimeout(resolve, 1000));
 		this.hidetrans = false;
 		this.showSpinner = false;
 	}

@@ -1,3 +1,4 @@
+<div class="container is-fluid">
 <form>
 <div class="notification is-warning mt-1" *ngIf="message">
 	<button class="delete" (click)="showMessage('');"></button>
@@ -32,10 +33,12 @@
       </table>
     </div>
   </div>
+  <p class="is-size-7">( block height: {{showBH}} )</p>
 </div>
 </form>
 <app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
   *ngIf="showTransModal"></app-transaction-details>
 <div class="spinner-container" *ngIf="showSpinner">
   <div class="spinner"></div>
+</div>
 </div>
