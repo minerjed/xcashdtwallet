@@ -36,9 +36,9 @@
       <p class="is-size-7">( block height: {{showBH}} )</p>
     </div>
   </form>
-  <app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
-    *ngIf="showTransModal"></app-transaction-details>
-  <div class="spinner-container" *ngIf="showSpinner">
-    <div class="spinner"></div>
-  </div>
+</div>
+<app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
+  *ngIf="showTransModal"></app-transaction-details>
+<div class="spinner-container" *ngIf="showSpinner">
+  <div class="spinner"></div>
 </div>
