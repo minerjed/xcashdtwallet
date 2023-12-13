@@ -1,44 +1,44 @@
 <div class="container is-fluid">
-<form>
-<div class="notification is-warning mt-1" *ngIf="message">
-	<button class="delete" (click)="showMessage('');"></button>
-</div>
-<div *ngIf="notrans">
-  <div class="container is-fluid">
-    <p><strong>There are no transacations to display.</strong></p>
-  </div>
-</div>
-<div id="transactions" [ngClass]="{ 'is-hidden' : hidetrans || notrans }">
-  <div *ngIf="!notrans">
-    <div class="container">
-      <table #transtable id="transtable" class="table is-striped mx-auto is-hoverable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Amount</th>
-            <th>Transaction ID</th>
-            <th>Type</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let transaction of transactions">
-            <td>{{ transaction.id}}</td>
-            <td>{{ transaction.amount | xcash:'1.0-2'}}</td>
-            <td><a (click)="showdetails(transaction.id)">{{ transaction.txid | xcashPublicAddress:8 }}</a></td>
-            <td>{{ transaction.transactionType}}</td>
-            <td class="is-nowrap">{{ transaction.date | date:'MM/dd/yyyy, h:mm a'}}</td>
-          </tr>
-        </tbody>
-      </table>
+  <form>
+    <div class="notification is-warning mt-1" *ngIf="message">
+      <button class="delete" (click)="showMessage('');"></button>
     </div>
+    <div *ngIf="notrans">
+      <div class="container is-fluid">
+        <p><strong>There are no transacations to display.</strong></p>
+      </div>
+    </div>
+    <div id="transactions" [ngClass]="{ 'is-hidden' : hidetrans || notrans }">
+      <div *ngIf="!notrans">
+        <div class="container">
+          <table #transtable id="transtable" class="table is-striped mx-auto is-hoverable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Amount</th>
+                <th>Transaction ID</th>
+                <th>Type</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of transactions">
+                <td>{{ transaction.id}}</td>
+                <td>{{ transaction.amount | xcash:'1.0-2'}}</td>
+                <td><a (click)="showdetails(transaction.id)">{{ transaction.txid | xcashPublicAddress:8 }}</a></td>
+                <td>{{ transaction.transactionType}}</td>
+                <td class="is-nowrap">{{ transaction.date | date:'MM/dd/yyyy, h:mm a'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="is-size-7">( block height: {{showBH}} )</p>
+    </div>
+  </form>
+  <app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
+    *ngIf="showTransModal"></app-transaction-details>
+  <div class="spinner-container" *ngIf="showSpinner">
+    <div class="spinner"></div>
   </div>
-  <p class="is-size-7">( block height: {{showBH}} )</p>
-</div>
-</form>
-<app-transaction-details [txid]="txid" (closeModalEvent)="closeDetModal()"
-  *ngIf="showTransModal"></app-transaction-details>
-<div class="spinner-container" *ngIf="showSpinner">
-  <div class="spinner"></div>
-</div>
 </div>
