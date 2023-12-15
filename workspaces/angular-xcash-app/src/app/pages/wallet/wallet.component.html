@@ -46,13 +46,13 @@
   <ul>
     <li (click)="onTabClick(1)" [ngClass]="{ 'is-active' : showtab === 1 }">
       <a>
-        <span>Send</span>
+        <span>Transactions</span><span class="icon is-small is-clickable" (click)="refreshTrans()">&nbsp;&nbsp;<fa-icon
+          [icon]="faRefresh"></fa-icon></span>
       </a>
     </li>
     <li (click)="onTabClick(2)" [ngClass]="{ 'is-active' : showtab === 2 }">
       <a>
-        <span>Transactions</span><span class="icon is-small is-clickable" (click)="refreshTrans()">&nbsp;&nbsp;<fa-icon
-            [icon]="faRefresh"></fa-icon></span>
+        <span>Send</span>
       </a>
     </li>
     <li (click)="onTabClick(3)" [ngClass]="{ 'is-active' : showtab === 3 }">
@@ -111,11 +111,11 @@
 <app-wallet-login *ngIf="showLoginModal" (onClose)="closeLogin($event)"></app-wallet-login>
 <div [ngSwitch]="showtab">
   <ng-container *ngSwitchCase="1">
-    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance'
-      [currencySymbol]="currencySymbol"></app-wallet-send>
+    <app-wallet-trans></app-wallet-trans>
   </ng-container>
   <ng-container *ngSwitchCase="2">
-    <app-wallet-trans></app-wallet-trans>
+    <app-wallet-send [toXCASH]="toXCASH" [xcashbalance]='xcashbalance'
+    [currencySymbol]="currencySymbol"></app-wallet-send>
   </ng-container>
   <ng-container *ngSwitchCase="3">
     <app-wallet-staking [xcashbalance]="xcashbalance" (onClose)="closeTab()"></app-wallet-staking>

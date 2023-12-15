@@ -152,6 +152,7 @@
 	},
 	"dependencies": {
 		"@electron/remote": "^2.0.9",
+		"clean": "^4.0.2",
 		"datatables.net": "^1.13.7",
 		"datatables.net-dt": "^1.13.7",
 		"electron-squirrel-startup": "^1.0.0",

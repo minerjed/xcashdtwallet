@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RpcCallsService } from 'src/app/services/rpc-calls.service';
 import { Transaction } from 'src/app/models/transaction';
 import { rpcReturn } from 'src/app/models/rpc-return';
+import { XcashGetblockhightService } from 'src/app/services/xcash-getblockhight.service';
 declare var $: any;
 
 @Component({
@@ -22,19 +23,49 @@ export class WalletTransComponent implements OnInit {
 	showTransModal: boolean = false;
 	txid: string = '';
 	wscount: number = 0;
-	showSpinner = true;
-	showBH = '';
+	showSpinner: boolean = true;
+	showBH: number = 0;
+	blockheight: any = 0;
+	displayB: string = 'Checking wallet block height.';
 
 	constructor(
 		private route: ActivatedRoute,
 		private rpcCallsService: RpcCallsService,
+		private xcashgetblockhightService: XcashGetblockhightService
 	) { };
 
 	async ngOnInit() {
 		this.walletname = this.route.snapshot.paramMap.get('wname') ?? '';
+		try {
+			const data = await this.xcashgetblockhightService.getDelegates();
+			if ('height' in data) {
+				this.blockheight = data.height;
+			}
+		} catch (error) { }
 		const wsdata: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
-		this.showBH = wsdata.data;
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		if (wsdata.status) {
+			this.showBH = wsdata.data;
+			if (this.blockheight !== 0) {
+				while (this.showBH < this.blockheight) {
+					await new Promise(resolve => setTimeout(resolve, 1000));
+					const wsdataL: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
+					if (wsdataL.status) {
+						this.showBH = wsdataL.data;
+						const blocksbehind = this.blockheight - this.showBH;
+						if (blocksbehind === 1) {
+							this.displayB = '1 block';
+						} else {
+							this.displayB = blocksbehind + ' blocks';
+						}
+					} else {
+						this.message = wsdata.message;
+						this.showSpinner = false;
+						break;
+					}
+				}
+				this.displayB = '0 blocks'
+			}
+		}
 		const response: rpcReturn = await this.rpcCallsService.getTransactions();
 		if (response.status) {
 			this.transactions = response.data;

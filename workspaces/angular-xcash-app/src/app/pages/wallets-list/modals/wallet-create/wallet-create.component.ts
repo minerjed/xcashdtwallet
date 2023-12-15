@@ -148,7 +148,7 @@ export class WalletCreateComponent {
     this.showspinner = true;
     this.buttonDisabled = true;
     this.messageType = 'is-success';
-    this.textMessage = 'Success. Wallet created. ' +
+    this.textMessage = 'Success, your wallet has been created. ' +
       'The wallet is now synchronizing and this process may take up to an hour. Thank you for your patience.';
     //  wait for the wallet to synchronize 
     await new Promise(resolve => setTimeout(resolve, 120000));
@@ -156,7 +156,7 @@ export class WalletCreateComponent {
     await new Promise(resolve => setTimeout(resolve, 1000));
     this.textMessage = 'Wallet synchronization complete. Click Exit to continue.';
     await this.rpcCallsService.closeWallet();
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     // bug in RPC process keeps wallet keys file open so restart the process
     await this.rpcCallsService.killRPC();
     this.buttonDisabled = false;

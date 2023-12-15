@@ -8,6 +8,11 @@
         <p><strong>There are no transacations to display.</strong></p>
       </div>
     </div>
+    <div *ngIf="showSpinner">
+      <div class="container is-fluid">
+        <p>Wallet is {{ displayB }} behind. Please wait...</p>
+      </div>
+    </div>
     <div id="transactions" [ngClass]="{ 'is-hidden' : hidetrans || notrans }">
       <div *ngIf="!notrans">
         <div class="container">
@@ -33,7 +38,7 @@
           </table>
         </div>
       </div>
-      <p class="is-size-7">( block height: {{showBH}} )</p>
+      <p class="is-size-7">( Wallet block height: {{showBH}} )</p>
     </div>
   </form>
 </div>
