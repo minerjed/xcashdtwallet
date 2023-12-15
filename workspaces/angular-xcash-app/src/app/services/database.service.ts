@@ -13,7 +13,7 @@ const APIs: any = window['electronAPIs'];
   providedIn: 'root'
 })
 export class DatabaseService {
-  wdir = APIs.platform !== "win32" ? `${APIs.env.HOME}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
+  wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
   dbfile: string = `${this.wdir}database.txt`;
 
   constructor(private rpcallsService: RpcCallsService) { }
