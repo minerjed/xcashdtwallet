@@ -6,6 +6,7 @@ import { App } from './components/app';
 import * as crypto from "crypto";
 import { exec } from 'child_process';
 import { WindowApiConst } from 'shared-lib';
+import { app, dialog } from 'electron';
 
 declare const global: Global;
 
@@ -16,6 +17,11 @@ declare global {
 	}
 }
 // Load config
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+	dialog.showErrorBox('An Error Occurred', 'You can not run multiple copies of this program at the same time');
+	app.exit();
+}
 const currentEnvironment = process.env.X_NODE_ENV || process.env.NODE_ENV;
 const appConfigs = fs.readJsonSync(path.join(__dirname, 'config.json'));
 const defaultConfig = appConfigs.development;
@@ -80,23 +86,23 @@ if (!fs.existsSync(dbfile)) {
 	const dbdata = JSON.parse(data);
 	rnode = dbdata.wallet_settings.remote_node;
 }
-if (fs.existsSync(`{rpcexe}`)) {
-	console.error(`Can not find RPC image.  Shutting down...`);
-} else {
-	if (process.platform === "win32") {
-		exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-	} else {
-		exec("killall -9 'xcash-wallet-rpc-win.exe'");
-	}
-	setTimeout(() => {
-		//Start the RPC process	
-		// delete any xcash rpc log
-		if (fs.existsSync(rpclog)) {
-			fs.unlinkSync(rpclog);
-		}
-		const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
-		exec(`${rpccommand}`);
-	}, 5000);
-	//  Launch app
-	App.launch();
+if (!fs.existsSync(rpcexe)) {
+	dialog.showErrorBox('An Error Occurred', 'Can not find RPC image.');
+	app.quit();
 }
+if (process.platform === "win32") {
+	exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+} else {
+	exec("killall -9 'xcash-wallet-rpc-win.exe'");
+}
+setTimeout(() => {
+	//Start the RPC process	
+	// delete any xcash rpc log
+	if (fs.existsSync(rpclog)) {
+		fs.unlinkSync(rpclog);
+	}
+	const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
+	exec(`${rpccommand}`);
+}, 5000);
+//  Launch app
+App.launch();
