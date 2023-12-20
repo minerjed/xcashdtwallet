@@ -45,7 +45,7 @@ export class WalletImportComponent {
   textSettingsMax: number = 0;
   textSettingsMin: number = 0;
   publicAddress: any = '';
-  blockHeight: any = '';
+  blockHeight: any = 0;
   currentBK: number = 0;
   message: string = '';
   textMessage: string = '';
