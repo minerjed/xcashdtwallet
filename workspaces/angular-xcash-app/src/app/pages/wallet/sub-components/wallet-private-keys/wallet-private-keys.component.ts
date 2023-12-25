@@ -84,9 +84,7 @@ export class WalletPrivateKeysComponent {
   printCreate(): void {
     this.elementRef.nativeElement.classList.add('print-mode'); // Add a CSS class to the component's native element for print styling
     window.print(); // Trigger the print functionality
-    setTimeout(() => {
-      this.elementRef.nativeElement.classList.remove('print-mode'); // Remove the CSS class after printing
-    }, 5000);
+    this.elementRef.nativeElement.classList.remove('print-mode'); // Remove the CSS class after printing
   }
 
   showMessage(message: string): void {
