@@ -1,6 +1,6 @@
 {
 	"name": "angular-xcash-app",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"scripts": {
 		"start": "ng serve",
 		"package": "ng build --configuration production --base-href ./",
