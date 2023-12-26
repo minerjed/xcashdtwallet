@@ -269,8 +269,8 @@ export class RpcCallsService {
     try {
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-      } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-win.exe'");
+      } else { 
+        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
       const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
@@ -300,7 +300,7 @@ export class RpcCallsService {
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
       } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-win.exe'");
+        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
       const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
@@ -349,7 +349,7 @@ export class RpcCallsService {
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
       } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-win.exe'");
+        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
       const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;

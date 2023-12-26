@@ -34,7 +34,7 @@ export class App {
 		if (process.platform === "win32") {
 			exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
 		} else {
-			exec("killall -9 'xcash-wallet-rpc-win.exe'");
+			exec("killall -9 'xcash-wallet-rpc-linux'");
 		}
 	}
 
