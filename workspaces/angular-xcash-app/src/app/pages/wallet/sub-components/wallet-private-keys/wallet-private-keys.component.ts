@@ -59,8 +59,6 @@ export class WalletPrivateKeysComponent {
   async viewprivatekeys() {
     this.showSpinner = true;
     this.blockheight = await this.databaseService.getWalletCreateBlock(this.publicAddress);
-    console.log(this.blockheight)
-
     const response: rpcReturn = await this.rpcCallsService.getPrivateKeys();
     if (response.status) {
       this.privatekeys = response.data;

@@ -272,7 +272,7 @@ export class RpcCallsService {
       } else { 
         APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
       const rpcexe = APIs.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
       const rpclog = `${wdir}xcash-wallet-rpc.log`;
@@ -286,26 +286,28 @@ export class RpcCallsService {
       if (fs.existsSync(rpclog)) {
         fs.unlinkSync(rpclog);
       }
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       fs.writeFileSync(IMPORT_WALLET_FILE, IMPORT_WALLET_DATA);
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       // open the wallet in import mode
       APIs.exec(`${rpcexe}  --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --generate-from-json "${IMPORT_WALLET_FILE}" --daemon-address "${rnode}" --rpc-user-agent "${rpcUserAgent}"`);
-      await new Promise(resolve => setTimeout(resolve, 10000));
-      fs.unlinkSync(IMPORT_WALLET_FILE);
-      if (fs.existsSync(rpclog)) {
-        fs.unlinkSync(rpclog);
-      }
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 20000));
+      await this.closeWallet();
+      await new Promise(resolve => setTimeout(resolve, 5000));
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
       } else {
         APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      fs.unlinkSync(IMPORT_WALLET_FILE);
+      if (fs.existsSync(rpclog)) {
+        fs.unlinkSync(rpclog);
+      }
+      await new Promise(resolve => setTimeout(resolve, 5000));
       const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
       APIs.exec(`${rpccommand}`);
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       const wsopen: any = await this.openWallet(walletData.walletName, walletData.password);
       if (!wsopen.status) {
         return { status: false, message: 'RPC error, ' + wsopen.message, data: null };
