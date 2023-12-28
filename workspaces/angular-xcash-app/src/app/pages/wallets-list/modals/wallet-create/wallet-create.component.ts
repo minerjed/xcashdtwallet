@@ -87,16 +87,11 @@ export class WalletCreateComponent {
       if (checkfile) {
         this.showMessage('The wallet name is already exists. Try again.');
       } else {
-        this.textMessage = 'Creating wallet, Please wait...';
+        this.textMessage = 'Creating and synchronizing wallet data (estimated time: approximately one hour). Your patience is appreciated...';
         this.showCreate = true;
         this.showMain = false;
-        try {
-          const data = await this.xcashgetblockhightService.getDelegates();
-          if ('height' in data) {
-            this.blockheight = data.height;
-          }
-        } catch (error) { }
         const response: rpcReturn = await this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
+        this.blockheight = response.data;
         if (response.status) {
           const response: rpcReturn = await this.rpcCallsService.getPublicAddress();
           if (response.status) {
@@ -148,17 +143,8 @@ export class WalletCreateComponent {
     this.showspinner = true;
     this.buttonDisabled = true;
     this.messageType = 'is-success';
-    this.textMessage = 'Success, your wallet has been created. ' +
-      'The wallet is now synchronizing and this process may take up to an hour. Thank you for your patience.';
-    //  wait for the wallet to synchronize 
-    await new Promise(resolve => setTimeout(resolve, 120000));
-    const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    this.textMessage = 'Wallet synchronization complete. Click Exit to continue.';
+    this.textMessage = 'Success, your wallet has been created. Click Exit to continue.';
     await this.rpcCallsService.closeWallet();
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    // bug in RPC process keeps wallet keys file open so restart the process
-    await this.rpcCallsService.killRPC();
     this.buttonDisabled = false;
     this.showspinner = false;
   }

@@ -21,8 +21,8 @@ export class RpcCallsService {
     try {
       const res = await fetch(this.constantsService.xcash_rpc_url, settings);
       return await res.json();
-    } catch (error) {
-      console.log('received error:', JSON.stringify(error));
+    } catch (error: any) {
+      console.log('Connection refused is expected when importing wallet');
       const ret =
         { "error": { "code": -1, "message": "Failed to connect to daemon" }, "id": "0", "jsonrpc": "2.0" };
       return (ret);
@@ -239,7 +239,25 @@ export class RpcCallsService {
     if (ckdata.hasOwnProperty('error')) {
       return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
     } else {
-      return { status: true, message: 'Success.', data: null };
+      let block_height: number = 0;
+      let current_block_height: number = 0;
+      for (; ;) {
+        const wsheight: rpcReturn = await this.getCurrentBlockHeight();
+        if (wsheight.status) {
+          block_height = wsheight.data;
+        }
+        await new Promise(resolve => setTimeout(resolve, 30000));
+        const wscurrent: rpcReturn = await this.getCurrentBlockHeight();
+        if (wscurrent.status) {
+          current_block_height = wscurrent.data;
+        }
+        if (block_height <= current_block_height && block_height !== 0) {
+          break;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 240000)); // Wait for 4 minutes
+        }
+      }
+      return { status: true, message: 'Success.', data: current_block_height };
     }
   }
 
@@ -269,10 +287,10 @@ export class RpcCallsService {
     try {
       if (APIs.platform === "win32") {
         APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-      } else { 
+      } else {
         APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 10000));
       const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
       const rpcexe = APIs.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
       const rpclog = `${wdir}xcash-wallet-rpc.log`;
@@ -286,31 +304,28 @@ export class RpcCallsService {
       if (fs.existsSync(rpclog)) {
         fs.unlinkSync(rpclog);
       }
-      await new Promise(resolve => setTimeout(resolve, 5000));
       fs.writeFileSync(IMPORT_WALLET_FILE, IMPORT_WALLET_DATA);
       await new Promise(resolve => setTimeout(resolve, 5000));
       // open the wallet in import mode
       APIs.exec(`${rpcexe}  --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --generate-from-json "${IMPORT_WALLET_FILE}" --daemon-address "${rnode}" --rpc-user-agent "${rpcUserAgent}"`);
-      await new Promise(resolve => setTimeout(resolve, 20000));
-      await this.closeWallet();
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      if (APIs.platform === "win32") {
-        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-      } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
-      }
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      fs.unlinkSync(IMPORT_WALLET_FILE);
-      if (fs.existsSync(rpclog)) {
-        fs.unlinkSync(rpclog);
-      }
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
-      APIs.exec(`${rpccommand}`);
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      const wsopen: any = await this.openWallet(walletData.walletName, walletData.password);
-      if (!wsopen.status) {
-        return { status: false, message: 'RPC error, ' + wsopen.message, data: null };
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      let block_height: number = 0;
+      let current_block_height: number = 0;
+      for (; ;) {
+        const wsheight: rpcReturn = await this.getCurrentBlockHeight();
+        if (wsheight.status) {
+          block_height = wsheight.data;
+        }
+        await new Promise(resolve => setTimeout(resolve, 30000));
+        const wscurrent: rpcReturn = await this.getCurrentBlockHeight();
+        if (wscurrent.status) {
+          current_block_height = wscurrent.data;
+        }
+        if (block_height <= current_block_height && block_height !== 0) {
+          break;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 240000)); // Wait for 4 minutes
+        }
       }
       const wsaddress: any = await this.getPublicAddress();
       let wspublicaddress: string = '';
@@ -326,6 +341,23 @@ export class RpcCallsService {
       } else {
         return { status: false, message: 'RPC error, ' + wsbalance.message, data: null };
       }
+      await this.closeWallet();
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      if (APIs.platform === "win32") {
+        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+      } else {
+        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      if (fs.existsSync(IMPORT_WALLET_FILE)) {
+        fs.unlinkSync(IMPORT_WALLET_FILE);
+      }
+      if (fs.existsSync(rpclog)) {
+        fs.unlinkSync(rpclog);
+      }
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
+      APIs.exec(`${rpccommand}`);
       if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-1`)) {
         fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-1`);
       }
@@ -335,31 +367,6 @@ export class RpcCallsService {
       return { status: true, message: 'Success.', data: { 'publicaddress': wspublicaddress, 'balance': xcashbalance } };
     } catch (error) {
       return { status: false, message: 'Failed to import wallet, ' + error, data: null };
-    }
-  }
-
-  public async killRPC(): Promise<rpcReturn> {
-    try {
-      const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
-      const rpcexe = APIs.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
-      const rpclog = `${wdir}xcash-wallet-rpc.log`;
-      const dbfile = `${wdir}database.txt`;
-      const data = fs.readFileSync(dbfile, "utf8");
-      const dbdata = JSON.parse(data);
-      const rnode = dbdata.wallet_settings.remote_node;
-      const rpcUserAgent = navigator.userAgent;
-      if (APIs.platform === "win32") {
-        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-      } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
-      }
-      await new Promise(resolve => setTimeout(resolve, 10000));
-      const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
-      APIs.exec(`${rpccommand}`);
-      await new Promise(resolve => setTimeout(resolve, 10000));
-      return { status: true, message: 'Success.', data: '' };
-    } catch (error) {
-      return { status: false, message: 'Error shutting down RPC process.' + error, data: null };
     }
   }
 

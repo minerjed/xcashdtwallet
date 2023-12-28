@@ -138,7 +138,7 @@ export class WalletImportComponent {
         this.buttonDisabled = true;
         this.message = 'The Wallet Name entered already exists. Try again.';
       } else {
-        this.textMessage = 'Importing wallet data, Please wait...';
+        this.textMessage = 'Importing and synchronizing wallet data (estimated time: approximately one hour). Your patience is appreciated...';
         this.getwalletName = false;
         this.showCreate = true;
         this.showspinner = true;
@@ -152,16 +152,7 @@ export class WalletImportComponent {
               this.blockHeight);
             this.walletsListService.addWallet(this.walletname, response.data.publicaddress, response.data.balance);
             this.messageType = 'is-success';
-            this.textMessage = 'Success. Wallet import complete. ' +
-              'The wallet is now synchronizing and this process may take up to an hour. Thank you for your patience.';
-            //  wait for the wallet to synchronize 
-            await new Promise(resolve => setTimeout(resolve, 120000));
-            const wsblock: rpcReturn = await this.rpcCallsService.getCurrentBlockHeight();
-            this.textMessage = 'Wallet synchronization complete. Click Exit to continue.';
-            this.rpcCallsService.closeWallet();
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            // bug in RPC process keeps wallet keys file open so restart the process
-            await this.rpcCallsService.killRPC();
+            this.textMessage = 'Success. Wallet import complete. Click Exit to continue.';
           } catch (err) {
             this.messageType = 'is-danger';
             this.textMessage = 'Failed to update database file.';

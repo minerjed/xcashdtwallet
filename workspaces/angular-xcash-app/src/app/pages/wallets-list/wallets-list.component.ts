@@ -86,7 +86,7 @@ export class WalletsListComponent implements OnInit {
 
 	selectedDelWallet(idConfirmed: number) {
 		this.showDelModal = false;
-		if (idConfirmed) {
+		if (idConfirmed !== null){
 			this.walletslistService.removeWallet(idConfirmed);
 			let dbparse: any = JSON.parse(this.dbjson);
 			let wallet_name: string = dbparse.wallet_data[idConfirmed].wallet_name;
