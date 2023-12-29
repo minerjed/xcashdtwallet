@@ -353,6 +353,9 @@ export class RpcCallsService {
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
       // Cleanup
+      if (fs.existsSync(IMPORT_WALLET_FILE)) {
+        fs.unlinkSync(IMPORT_WALLET_FILE);
+      }
       if (fs.existsSync(rpclog)) {
         fs.unlinkSync(rpclog);
       }
