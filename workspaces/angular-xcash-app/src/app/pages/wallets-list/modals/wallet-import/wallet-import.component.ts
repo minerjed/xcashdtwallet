@@ -189,7 +189,9 @@ export class WalletImportComponent {
           saveHeight = height;
         } else {
           if (saveHeight !== '') {
-            this.textMessage = 'Synchronizing wallet data. Finishing up...'
+            if (this.messageType === '') {
+                this.textMessage = 'Synchronizing wallet data. Finishing up...'
+            }
           }
         }
       } catch (err: any) { }
