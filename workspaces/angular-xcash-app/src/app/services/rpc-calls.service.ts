@@ -285,12 +285,6 @@ export class RpcCallsService {
 
   public async importWallet(walletData: any, blockheight: number,): Promise<rpcReturn> {
     try {
-      if (APIs.platform === "win32") {
-        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
-      } else {
-        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
-      }
-      await new Promise(resolve => setTimeout(resolve, 10000));
       const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
       const rpcexe = APIs.platform !== "win32" ? `/usr/lib/xcashdtwallet/resources/xcash-wallet-rpc-linux` : (`${APIs.userProfile}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcash-wallet-rpc-win.exe`).replace(/\\/g, "\\\\");
       const rpclog = `${wdir}xcash-wallet-rpc.log`;
@@ -301,13 +295,21 @@ export class RpcCallsService {
       const rpcUserAgent = navigator.userAgent;
       const IMPORT_WALLET_DATA = walletData.seed != '' ? `{"version":1,"filename":"${wdir}${walletData.walletName}","scan_from_height":${blockheight},"password":"${walletData.password}","seed":"${walletData.seed}"}` : `{"version":1,"filename":"${wdir}${walletData.walletName}","scan_from_height":${blockheight},"password":"${walletData.password}","address":"${walletData.publicaddress}","viewkey":"${walletData.viewkey}","spendkey":"${walletData.privatekey}"}`;
       const IMPORT_WALLET_FILE = `${wdir}importwallet.txt`;
+      if (fs.existsSync(`${wdir}${walletData.walletName}`) || fs.existsSync(`${wdir}${walletData.walletName}.keys`)) {
+        return { status: false, message: 'This wallet file already exists.  Please use a different name or delete the existing file before importing.', data: null };
+      }
+      if (APIs.platform === "win32") {
+        APIs.exec("taskkill /F /IM xcash-wallet-rpc-win.exe");
+      } else {
+        APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
+      }
+      await new Promise(resolve => setTimeout(resolve, 10000));
       if (fs.existsSync(rpclog)) {
         fs.unlinkSync(rpclog);
       }
       fs.writeFileSync(IMPORT_WALLET_FILE, IMPORT_WALLET_DATA);
       await new Promise(resolve => setTimeout(resolve, 5000));
       // open the wallet in import mode
-      console.log('Starting rpc process');
       APIs.exec(`${rpcexe}  --rpc-bind-port 18285 --disable-rpc-login --log-level 2 --log-file ${rpclog} --generate-from-json "${IMPORT_WALLET_FILE}" --daemon-address "${rnode}" --rpc-user-agent "${rpcUserAgent}"`);
       await new Promise(resolve => setTimeout(resolve, 10000));
       let block_height: number = 0;
