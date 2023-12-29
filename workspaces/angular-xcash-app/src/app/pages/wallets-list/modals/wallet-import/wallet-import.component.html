@@ -117,7 +117,7 @@
           <div class="field">
             <label class="label is-flex is-align-items-center">
               Block Height: (leave 0 or for faster import enter the block height when the wallet was originally created)
-            </label>>
+            </label>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
@@ -175,7 +175,7 @@
                 long.</div>
               <div *ngIf="passwordinput.errors?.pattern">Password must contain only characters, numbers, and special
                 characters: ~!&#64;#$%^&*_+=?</div>
-              </div>
+            </div>
           </div>
           <div class="field mt-4">
             <label class="label">Confirm Password:</label>
@@ -203,6 +203,7 @@
         </div>
         <!-- Sync wallet, third form  -->
         <div *ngIf="showCreate">
+          <p class="has-text-weight-semibold">Current Block Height:&nbsp; {{currentBK}} </p>
           <div class="notification {{ messageType }} mt-4">
             {{ textMessage }}</div><br><br><br><br><br>
         </div>

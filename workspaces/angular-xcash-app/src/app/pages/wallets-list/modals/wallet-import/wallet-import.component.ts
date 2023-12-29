@@ -8,6 +8,10 @@ import { WalletsListService } from 'src/app/services/wallets-list.service';
 import { faKey, faEye, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { rpcReturn } from 'src/app/models/rpc-return';
 import { XcashGetblockhightService } from 'src/app/services/xcash-getblockhight.service';
+import { WindowApiConst } from 'shared-lib';
+
+const fs: any = window['electronFs'];
+const APIs: any = window['electronAPIs'];
 
 @Component({
   selector: 'app-wallet-import',
@@ -145,6 +149,7 @@ export class WalletImportComponent {
         this.buttonDisabled = true;
         this.Walletdata.walletName = this.walletname;
         this.Walletdata.password = this.walletpassword;
+        this.showLog();
         const response: rpcReturn = await this.rpcCallsService.importWallet(this.Walletdata, this.blockHeight);
         if (response.status) {
           try {
@@ -164,6 +169,30 @@ export class WalletImportComponent {
         this.buttonDisabled = false;
       }
       this.showspinner = false;
+    }
+  }
+
+  async showLog() {
+    const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
+    const rpclog = `${wdir}xcash-wallet-rpc.log`;
+    let saveHeight: any = '';
+    while (this.showspinner) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 30000)); // Wait for 2 minutes
+        const data: string = fs.readFileSync(rpclog, 'utf8');
+        const lines = data.split('\n');
+        const lastLine = lines[lines.length - 2];
+        const match = lastLine.match(/height:? (\d+)/);
+        if (match) {
+          const height = match[1];
+          this.textMessage = 'Synchronizing wallet data. Processing block:  ' + height;
+          saveHeight = height;
+        } else {
+          if (saveHeight !== '') {
+            this.textMessage = 'Synchronizing wallet data. Finishing up...'
+          }
+        }
+      } catch (err: any) { }
     }
   }
 

@@ -22,6 +22,7 @@ if (!gotTheLock) {
 	dialog.showErrorBox('An Error Occurred', 'You can not run multiple copies of this program at the same time');
 	app.exit();
 }
+const squirrelEvent = process.argv[1];
 const currentEnvironment = process.env.X_NODE_ENV || process.env.NODE_ENV;
 const appConfigs = fs.readJsonSync(path.join(__dirname, 'config.json'));
 const defaultConfig = appConfigs.development;
@@ -64,12 +65,14 @@ if (!fs.existsSync(wdir)) {
 	}
 } else {
 	// Update link on windows
-	if (process.platform === "win32") {
-		const shortCut = `${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
-		const dtshortCut = `${process.env.USERPROFILE}\\Desktop\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
-		setTimeout(() => {
-			fs.copyFileSync(shortCut, dtshortCut);
-		}, 5000);
+	if (squirrelEvent === '--squirrel-install' || squirrelEvent === '--squirrel-updated' ) {
+		if (process.platform === "win32") {
+			const shortCut = `${process.env.USERPROFILE}\\AppData\\Local\\xcashdtwallet\\app-${WindowApiConst.XCASHVERSION}\\resources\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+			const dtshortCut = `${process.env.USERPROFILE}\\Desktop\\xcashwallet.lnk`.replace(/\\/g, "\\\\");
+			setTimeout(() => {
+				fs.copyFileSync(shortCut, dtshortCut);
+			}, 5000);
+		}
 	}
 }
 
@@ -95,14 +98,18 @@ if (process.platform === "win32") {
 } else {
 	exec("killall -9 'xcash-wallet-rpc-linux'");
 }
-setTimeout(() => {
-	//Start the RPC process	
-	// delete any xcash rpc log
-	if (fs.existsSync(rpclog)) {
-		fs.unlinkSync(rpclog);
-	}
-	const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 1 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
-	exec(`${rpccommand}`);
-}, 5000);
+
+console.log('squirrelEvent: ' + squirrelEvent);
+if (squirrelEvent !== '--squirrel-uninstall' && squirrelEvent !== '--squirrel-obsolete') {
+	setTimeout(() => {
+		//Start the RPC process	
+		// delete any xcash rpc log
+		if (fs.existsSync(rpclog)) {
+			fs.unlinkSync(rpclog);
+		}
+		const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 2 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
+		exec(`${rpccommand}`);
+	}, 5000);
+}
 //  Launch app
 App.launch();

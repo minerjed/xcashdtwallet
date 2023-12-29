@@ -7,6 +7,10 @@ import { DatabaseService } from 'src/app/services/database.service';
 import { faKey, faEye, faWallet, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { rpcReturn } from 'src/app/models/rpc-return';
 import { XcashGetblockhightService } from 'src/app/services/xcash-getblockhight.service';
+import { WindowApiConst } from 'shared-lib';
+
+const fs: any = window['electronFs'];
+const APIs: any = window['electronAPIs'];
 
 @Component({
   selector: 'app-wallet-create',
@@ -44,6 +48,7 @@ export class WalletCreateComponent {
   walletMnemonicseed: string = '';
   publicAddress: any = '';
   blockheight: any = 0;
+  currentBK: number = 0;
   tippyOptions = {
     trigger: 'click',
     hideOnClick: false,
@@ -68,11 +73,21 @@ export class WalletCreateComponent {
   ) { };
 
   ngOnInit(): void {
+    this.getBlockHeight();
     this.passwordLength = this.constantsService.password_length;
     this.passwordFormat = this.validatorsRegexService.password_format;
     this.textSettings = this.validatorsRegexService.text_settings;
     this.textSettingsMax = this.constantsService.text_settings_length;
     this.textSettingsMin = this.constantsService.text_settings_minlength;
+  }
+
+  async getBlockHeight() {
+    try {
+      const data = await this.xcashgetblockhightService.getDelegates();
+      if ('height' in data) {
+        this.currentBK = data.height;
+      }
+    } catch (error) { }
   }
 
   async confirmCreate(isInvalid: any, pass1: string, pass2: string) {
@@ -87,7 +102,8 @@ export class WalletCreateComponent {
       if (checkfile) {
         this.showMessage('The wallet name is already exists. Try again.');
       } else {
-        this.textMessage = 'Creating and synchronizing wallet data (estimated time: approximately one hour). Your patience is appreciated...';
+        this.showLog();
+        this.textMessage = ' (estimated time: approximately one hour). Your patience is appreciated...';
         this.showCreate = true;
         this.showMain = false;
         const response: rpcReturn = await this.rpcCallsService.createWallet(this.walletname, this.walletpassword);
@@ -117,6 +133,24 @@ export class WalletCreateComponent {
         }
       }
       this.showspinner = false;
+    }
+  }
+
+  async showLog() {
+    const wdir = APIs.platform !== "win32" ? `${APIs.homeDir}/${WindowApiConst.XCASHOFFICIAL}/` : (`${APIs.userProfile}\\${WindowApiConst.XCASHOFFICIAL}\\`).replace(/\\/g, "\\\\");
+    const rpclog = `${wdir}xcash-wallet-rpc.log`;
+    while (this.showspinner) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 30000)); // Wait for 2 minutes
+        const data: string = fs.readFileSync(rpclog, 'utf8');
+        const lines = data.split('\n');
+        const lastLine = lines[lines.length - 2];
+        const match = lastLine.match(/height:? (\d+)/);
+        if (match) {
+          const height = match[1];
+          this.textMessage = 'Synchronizing wallet data. Processing block:  ' + height;
+        }
+      } catch (err: any) { }
     }
   }
 

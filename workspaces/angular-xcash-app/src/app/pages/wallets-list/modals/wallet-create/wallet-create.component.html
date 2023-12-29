@@ -68,8 +68,9 @@
           </div>
         </div>
         <div *ngIf="showCreate || showExit">
+          <p class="has-text-weight-semibold">Current Block Height:&nbsp; {{currentBK}} </p>          
           <div class="notification {{ messageType }} mt-4">
-            {{ textMessage }}</div><br><br><br><br><br><br>
+            {{ textMessage }}</div><br><br><br><br><br><br><br><br>
         </div>
         <div *ngIf="showKeys">
           <div class="columns mt-0 pt-0 mb-0 pb-0">
