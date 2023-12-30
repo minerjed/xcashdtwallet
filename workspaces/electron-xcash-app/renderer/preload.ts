@@ -19,7 +19,8 @@ contextBridge.exposeInMainWorld('electronFs', {
 	unlinkSync: fs.unlinkSync,
 	renameSync: fs.renameSync,
 	writeFileSync: fs.writeFileSync,
-	existsSync: fs.existsSync
+	existsSync: fs.existsSync,
+	readdirSync: fs.readdirSync
 });
 
 contextBridge.exposeInMainWorld('electronAPIs', {

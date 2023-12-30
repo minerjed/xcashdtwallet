@@ -352,20 +352,15 @@ export class RpcCallsService {
         APIs.exec("killall -9 'xcash-wallet-rpc-linux'");
       }
       await new Promise(resolve => setTimeout(resolve, 10000));
-      // Cleanup
-      if (fs.existsSync(IMPORT_WALLET_FILE)) {
-        fs.unlinkSync(IMPORT_WALLET_FILE);
-      }
-      if (fs.existsSync(rpclog)) {
-        fs.unlinkSync(rpclog);
-      }
-      for (let i = 1; i <= 10; i++) {
-        try {
-          if (fs.existsSync(`${wdir}xcash-wallet-rpc.log-part-${i}`)) {
-            fs.unlinkSync(`${wdir}xcash-wallet-rpc.log-part-${i}`);
+      // Cleanup logs
+      try {
+        const files = fs.readdirSync(wdir);
+        files.forEach((file: any) => {
+          if (file.startsWith('xcash-wallet-rpc')) {
+            fs.unlinkSync(`${wdir}${file}`);
           }
-        } catch (err) {
-        }
+        });
+      } catch (err) {
       }
       await new Promise(resolve => setTimeout(resolve, 5000));
       const rpccommand: string = `${rpcexe} --rpc-bind-port 18285 --disable-rpc-login --log-level 2 --log-file ${rpclog} --wallet-dir ${wdir} --daemon-address ${rnode} --rpc-user-agent ${rpcUserAgent}`;
