@@ -140,6 +140,7 @@
           <div class="control">
             <input class="input is-hovered" type="text" name="senttotal" [(ngModel)]="txAmount" readonly>
           </div>
+          <div class="" *ngIf="txTrans > 1">This amount will be split and sent in {{txTrans}} transactions due to its large size.</div>
         </div>
         <div class="buttons">
           <button class="button is-primary" (click)="confirmSend()">Confirm</button>

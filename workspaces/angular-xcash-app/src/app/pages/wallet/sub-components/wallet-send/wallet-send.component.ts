@@ -53,6 +53,7 @@ export class WalletSendComponent implements OnInit {
 	contactModal: boolean = false;
 	txFee: number = 0;
 	txAmount: number = 0;
+	txTrans: number = 0;
 	txPrivacy: string = '';
 	infoMessage: string = '';
 	@ViewChild('toAddressInput', { static: false }) toAddressInput: any;
@@ -76,9 +77,8 @@ export class WalletSendComponent implements OnInit {
 		this.paymentidlen1 = this.constantsService.encrypted_payment_id_length;
 		this.paymentidlen2 = this.constantsService.unencrypted_payment_id_length;
 	}
-
 	async submitSend(isInvalid: any) {
-		if (!isInvalid) {
+		if ((!isInvalid) && (this.toAmount <= this.xcashbalance)) {
 			this.showspinner = true;
 			const retdata: any = await this.rpcCallsService.sendPayment(this.toAddress, this.toPaymentId,
 				this.toAmount, this.toPrivacy, true);
@@ -87,6 +87,7 @@ export class WalletSendComponent implements OnInit {
 				this.showconfirm = true;
 				this.txFee = retdata.data.fee;
 				this.txAmount = retdata.data.total;
+				this.txTrans = retdata.data.numtrans;
 				if (this.toPrivacy === 'private') {
 					this.txPrivacy = 'Private';
 				} else {

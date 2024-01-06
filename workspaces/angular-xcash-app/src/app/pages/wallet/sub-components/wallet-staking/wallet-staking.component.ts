@@ -30,10 +30,12 @@ export class WalletStakingComponent implements OnInit {
 	showRevoteModal: boolean = false;
 	showSweepModal: boolean = false;
 	currentDelegate: string = '';
+	saveCurrent: string = '';
 	delegateVote: string = '';
 	delegated: boolean = false;
 	walletname: string = '';
 	hidedelegates: boolean = true;
+	hidemanual: boolean = true;
 	delegateName: string = '';
 	nameCk: string = '';
 	initMessage: string = 'Connecting to Delegates API...';
@@ -67,7 +69,8 @@ export class WalletStakingComponent implements OnInit {
 			let delegateName = splitData[0];
 			let totalValue = splitData[1].split(': ')[1];
 			let transformedTotalValue = this.xcashCurrencyPipe.transform(totalValue, '1.0-2');
-			this.currentDelegate = delegateName + ' amount staked: ' + transformedTotalValue
+			this.currentDelegate = delegateName + '  amount staked: ' + transformedTotalValue
+			this.saveCurrent = delegateName;
 		} else {
 			if (response.data == 'novote') {
 				this.currentDelegate = 'This wallet has not staked to a delegate.';
@@ -112,6 +115,7 @@ export class WalletStakingComponent implements OnInit {
 			this.initMessage = 'The xCash API is not responding. You will need to enter the Delegate name manually.';
 			await new Promise(resolve => setTimeout(resolve, 5000));
 			this.displayMessage = false;
+			this.hidemanual = false;
 		}
 		this.showspinnerdel = false;
 	}
@@ -122,6 +126,7 @@ export class WalletStakingComponent implements OnInit {
 
 	reVote(): void {
 		if (this.delegated) {
+			this.delegateVote = this.saveCurrent;
 			this.showRevoteModal = true;
 		} else {
 			this.showMessage('You need to vote for a delegate before using the revote option.');
@@ -133,11 +138,19 @@ export class WalletStakingComponent implements OnInit {
 		this.showVoteModal = true;
 	}
 
-	exitVoteModal(): void {
+	exitVoteModal(delegate: string): void {
+		if (delegate !== "") {
+			this.showspinner = true;
+			this.getVoteStatus();
+		}
 		this.showVoteModal = false;
 	}
 
-	exitReVoteModal(): void {
+	exitReVoteModal(delegate: string): void {
+		if (delegate !== "") {
+			this.showspinner = true;
+			this.getVoteStatus();
+		}
 		this.showRevoteModal = false;
 	}
 

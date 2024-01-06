@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div id="delegates" [ngClass]="{ 'is-hidden' : !hidedelegates }">
+      <div id="manualdelegates" [ngClass]="{ 'is-hidden' : hidemanual}">
         <div class="field has-text-weight-bold">
           <label for="name">Delegate:</label>
           <div class="control has-icons-right">
@@ -86,9 +86,9 @@
   </div>
 </form>
 <app-wallet-vote [delegateVote]="delegateVote" [xcashbalance]='xcashbalance' *ngIf="showVoteModal"
-  (onClose)="exitVoteModal()"></app-wallet-vote>
+  (onClose)="exitVoteModal($event)"></app-wallet-vote>
 <app-wallet-revote [delegateVote]="delegateVote" *ngIf="showRevoteModal"
-  (onClose)="exitReVoteModal()"></app-wallet-revote>
+  (onClose)="exitReVoteModal($event)"></app-wallet-revote>
 <app-wallet-sweep [walletname]="walletname" [walletaddress]="walletaddress" *ngIf="showSweepModal"
   (onClose)="exitSweepModal()"></app-wallet-sweep>
 <div class="spinner-container" *ngIf="showspinner || showspinnerdel">

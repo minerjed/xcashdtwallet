@@ -123,10 +123,18 @@ export class RpcCallsService {
         return { status: false, message: 'RPC error, ' + ckdata.error.message, data: null };
       }
     } else {
+      let total_fee: number = 0;
+      let total_amount: number = 0;
+      for (let i = 0; i < ckdata.result.fee_list.length; i++) {
+        total_fee = total_fee + ckdata.result.fee_list[i];
+      }
+      for (let i = 0; i < ckdata.result.amount_list.length; i++) {
+        total_amount = total_amount + ckdata.result.amount_list[i];
+      }
       const wsdata = {
-        "status": true, "txid": ckdata.result.tx_hash_list[0], "txkey": ckdata.result.tx_key_list[0],
-        "fee": ckdata.result.fee_list[0] / decimal_places,
-        "total": (ckdata.result.fee_list[0] + ckdata.result.amount_list[0]) / decimal_places
+        "status": true, "fee": total_fee / decimal_places,
+        "total": (total_fee + total_amount) / decimal_places,
+        "numtrans": ckdata.result.amount_list.length
       };
       return { status: true, message: 'Success.', data: wsdata };
     }

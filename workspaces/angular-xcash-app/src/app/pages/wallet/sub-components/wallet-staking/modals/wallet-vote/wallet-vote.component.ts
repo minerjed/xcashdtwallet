@@ -17,6 +17,7 @@ export class WalletVoteComponent {
   buttonDisabled: boolean = false;
   voteDisabled: boolean = false;
   showExit = false;
+  delegateSuccess: string = '';
 
   constructor(private rpcCallsService: RpcCallsService) { };
 
@@ -35,8 +36,9 @@ export class WalletVoteComponent {
     const response: rpcReturn = await this.rpcCallsService.delegateVote(this.delegateVote);
     if (response.status) {
       this.modalText = `You have successfully voted for delegate ${this.delegateVote}.  You may close this Delegate Selection window.`
+      this.delegateSuccess = this.delegateVote;
     } else {
-      this.modalText = response.message;
+      this.modalText = response.message + " Please try again after completing the Sweep operation." ;
     }
     this.buttonDisabled = false;
     this.showExit = true;
@@ -44,6 +46,6 @@ export class WalletVoteComponent {
   }
 
   cancelVote(): void {
-    this.onClose.emit();
+    this.onClose.emit(this.delegateSuccess);
   }
 }
